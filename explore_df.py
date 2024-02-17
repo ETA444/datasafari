@@ -1,58 +1,110 @@
 # imports
 import pandas as pd
+import io
+
+# utility function: filter_kwargs
+# define which kwargs are valid for which method
+valid_kwargs = {
+    'head': ['n'],
+    'describe': ['percentiles', 'include', 'exclude'],
+    'info': ['verbose', 'max_cols', 'memory_usage', 'show_counts']
+}
 
 
-# module function
-def explore_df(df: pd.DataFrame, method: object):
+# define the function
+def filter_kwargs(method, kwargs):
+    """Filter kwargs to include only those valid for the specified method."""
+    return {k: v for k, v in kwargs.items() if k in valid_kwargs.get(method, [])}
+
+
+# main function: explore_df
+def explore_df(df: pd.DataFrame, method: str, output: str = 'print', **kwargs):
     """
-    Function to run describe, head, or info on df.
+    Explores a DataFrame using specified methods, with options for output control
+    and method-specific parameters.
 
     Parameters
     ----------
     df : pandas.DataFrame
-        The DataFrame to explore.
-    method : {'desc', 'head', 'info', 'all'}
-        Specify the method to use.
+        DataFrame to explore.
+    method : str
+        The exploration method to apply on the DataFrame. Options include:
         - 'desc': Display summary statistics using describe().
         - 'head': Display the first few rows using head().
         - 'info': Display concise information about the DataFrame using info().
         - 'na': Display counts of NAs per column and percentage of NAs per column.
-        - 'all': Display all information from above options.
+        - 'all': Execute all the above methods sequentially.
+    output : str, default 'print'
+        Controls the output of the exploration results.
+        - Use 'print' to print the results to the console
+        - Use 'return' to return the results as a string.
+    **kwargs
+        Additional arguments for pandas methods (e.g., 'percentiles' for 'desc').
+        You can use 'all' and provide additional arguments that will be automatically
+        matched to the appropriate pandas' method.
+        - Note: .info(buf=...) is already occupied, thus disabled for use.
 
     Returns
     -------
-    None
+    str or None
+        String if output='return'. Otherwise, prints to console and returns None.
+
+    Examples
+    --------
+    # Summary statistics with custom percentiles
+    explore_df(df, 'desc', percentiles=[0.05, 0.95])
+
+    # Display the first 3 rows
+    explore_df(df, 'head', n=3)
+
+    # Detailed DataFrame information
+    explore_df(df, 'info', verbose=True)
+
+    # Count and percentage of missing values
+    explore_df(df, 'na')
+
+    # Comprehensive exploration with custom settings
+    explore_df(df, 'all', n=3, percentiles=[0.25, 0.75], output='print')
+
+    # Returning comprehensive exploration results as a string
+    result_str = explore_df(df, 'all', n=5, output='return')
+    print(result_str)
+
+    # Using 'all' with kwargs that apply to specific methods
+    # Note: kwargs that don't apply to a specific method are ignored by that method
+    explore_df(df, 'all', n=5, percentiles=[0.1, 0.9], verbose=False)
     """
-    if method.lower() == "desc":
-        print(df.describe())
-    elif method.lower() == "head":
+
+    result = []
+
+    if method.lower() in ["desc", "all"]:
+        desc_kwargs = filter_kwargs('describe', kwargs)
+        result.append(f"<<______DESCRIBE______>>\n{str(df.describe(**desc_kwargs))}\n")
+
+    if method.lower() in ["head", "all"]:
+        head_kwargs = filter_kwargs('head', kwargs)
         pd.set_option('display.max_columns', None)
-        print(df.head())
+        result.append(f"<<______HEAD______>>\n{str(df.head(**head_kwargs))}\n")
         pd.reset_option('display.max_columns')
-    elif method.lower() == "info":
-        print(df.info())
-    elif method.lower() == "na":
-        print(f"\n\n<<______NA_COUNT______>>")
-        print(df.isna().sum())
-        print(f"\n\n<<______NA_PERCENT______>>")
-        print((df.isna().sum() / df.shape[0]) * 100)
-    elif method.lower() == "all":
-        print("<<______HEAD______>>")
-        pd.set_option('display.max_columns', None)
-        print(df.head())
-        pd.reset_option('display.max_columns')
-        print(f"\n\n<<______DESCRIBE______>>")
-        print(df.describe())
-        print(f"\n\n<<______INFO______>>")
-        print(df.info())
-        print(f"\n\n<<______NA_COUNT______>>")
-        print(df.isna().sum())
-        print(f"\n\n<<______NA_PERCENT______>>")
-        print((df.isna().sum() / df.shape[0]) * 100)
+
+    if method.lower() in ["info", "all"]:
+        info_kwargs = filter_kwargs('info', kwargs)
+        buffer = io.StringIO()
+        df.info(buf=buffer, **info_kwargs)
+        result.append(f"<<______INFO______>>\n{buffer.getvalue()}\n")
+
+    if method.lower() in ["na", "all"]:
+        na_count = df.isna().sum()
+        na_percent = (df.isna().sum() / df.shape[0]) * 100
+        result.append(f"<<______NA_COUNT______>>\n{na_count}\n")
+        result.append(f"<<______NA_PERCENT______>>\n{na_percent}\n")
+
+    # Combine all results
+    combined_result = "\n".join(result)
+
+    if output == 'print':
+        print(combined_result)
+    elif output == 'return':
+        return combined_result
     else:
-        print("Methods: 'desc', 'head', 'info' or 'all'")
-
-
-# smoke test
-# tdf = pd.read_csv('./data/soil_measures.csv')
-# explore_df(tdf, 'all')
+        raise ValueError("Invalid output method. Choose 'print' or 'return'.")
