@@ -18,17 +18,22 @@ def filter_kwargs(method, kwargs):
 
 
 # main function: explore_df
-def explore_df(df: pd.DataFrame, method: str, output: str = 'print', **kwargs):
+def explore_df(df: pd.DataFrame, method: str = 'all', output: str = 'print', **kwargs):
     """
     Explores a DataFrame using specified methods, with options for output control
-    and method-specific parameters.
+    and method-specific parameters. The goal is to give you bird's eye view on your data.
+
+    Note: For in-depth exploration of numerical and categorical data, we recommend using:
+    - explore_num()
+    - explore_cat()
 
     Parameters
     ----------
     df : pandas.DataFrame
         DataFrame to explore.
-    method : str
+    method : str, default 'all'
         The exploration method to apply on the DataFrame. Options include:
+        - 'na': Display counts of NAs per column and percentage of NAs per column.
         - 'desc': Display summary statistics using describe().
         - 'head': Display the first few rows using head().
         - 'info': Display concise information about the DataFrame using info().
