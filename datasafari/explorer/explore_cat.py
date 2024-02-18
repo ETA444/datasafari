@@ -31,7 +31,7 @@ def explore_cat(
         raise ValueError("Invalid output method. Choose 'print' or 'return'.")
 
 
-# smoke test
+# smoke tests
 test_df = pd.read_csv('./data/soil_measures.csv')
 variables_of_interest = ['crop']
 unique = explore_cat(
@@ -40,3 +40,7 @@ unique = explore_cat(
     method='unique',
     output='return'
 )
+
+test_df2 = pd.read_csv('./data/rental_info.csv')
+print(test_df2.info())
+explore_cat(test_df2, ['special_features', 'release_year'])
