@@ -3,7 +3,7 @@ import numpy as np
 
 
 # utility function: calculate_entropy
-def calculate_entropy(series: pd.Series) -> float:
+def calculate_entropy(series: pd.Series) -> (float, str):
     """
     Calculate the entropy of a pandas Series (categorical variable), which
     quantifies the unpredictability or diversity of the data within the variable.
@@ -38,8 +38,28 @@ def calculate_entropy(series: pd.Series) -> float:
     """
     counts = series.value_counts()
     probabilities = counts / len(series)
-    entropy = -np.sum(probabilities * np.log2(probabilities + np.finfo(float).eps))  # adding epsilon to avoid log(0)
-    return entropy
+    entropy = -np.sum(probabilities * np.log2(probabilities + np.finfo(float).eps))  # Adding epsilon to avoid log(0)
+
+    # calculate maximum possible entropy for the number of unique categories
+    unique_categories = len(counts)
+    max_entropy = np.log2(unique_categories)
+
+    # calculate entropy ratio which reflect level of diversity
+    entropy_ratio = entropy / max_entropy
+
+    # calculate the percentage of the maximum possible entropy - old
+    # percent_of_max = (entropy / max_entropy) * 100
+    # interpretation = f"{entropy:.4f} ({percent_of_max:.2f}% of max for {unique_categories} categories)"
+
+    # build interpretation
+    if entropy_ratio > 0.85:
+        interpretation = f"\n=> High diversity [max. entropy for this variable = {max_entropy:.3f}]"
+    elif entropy_ratio > 0.5:
+        interpretation = f"\n=> Moderate diversity [max. entropy for this variable = {max_entropy:.3f}]"
+    else:
+        interpretation = f"\n=> Low diversity [max. entropy for this variable = {max_entropy:.3f}]"
+
+    return entropy, interpretation
 
 
 # main function: explore_cat
@@ -131,8 +151,8 @@ def explore_cat(
         result.append("Tip: Higher entropy indicates greater diversity.*\n")
 
         for variable_name in categorical_variables:
-            entropy_val, interpretation = calculate_entropy_and_interpretation(df[variable_name])
-            result.append(f"Entropy of ['{variable_name}']: {interpretation}\n")
+            entropy_val, interpretation = calculate_entropy(df[variable_name])
+            result.append(f"Entropy of ['{variable_name}']: {entropy_val:.3f} {interpretation}\n")
 
         # include additional info tip
         result.append("* For more details on entropy, run: 'print(calculate_entropy.__doc__)'.\n")
