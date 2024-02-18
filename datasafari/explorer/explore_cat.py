@@ -46,6 +46,12 @@ def explore_cat(
 
             result.append(f"< Counts and percentages per unique value of ['{variable_name}'] >\n\n{summary_df}\n\n")
 
+    if method.lower() in ['entropy', 'all']:
+        result.append("<<______ENTROPY OF CATEGORICAL VARIABLES______>>\n")
+        for variable_name in categorical_variables:
+            entropy_val = calculate_entropy(df[variable_name])
+            result.append(f"Entropy of ['{variable_name}']: {entropy_val:.4f}\n")
+
     # Combine all results
     combined_result = "\n".join(result)
 
