@@ -107,9 +107,9 @@ def explore_df(df: pd.DataFrame, method: str = 'all', output: str = 'print', **k
     # Combine all results
     combined_result = "\n".join(result)
 
-    if output == 'print':
+    if output.lower() == 'print':
         print(combined_result)
-    elif output == 'return':
+    elif output.lower() == 'return':
         return combined_result
     else:
         raise ValueError("Invalid output method. Choose 'print' or 'return'.")
