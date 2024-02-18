@@ -1,6 +1,10 @@
 """Module for any sort of calculators used throughout the main subpackages of DataSafari."""
 
 
+import pandas as pd
+import numpy as np
+
+
 # calculate_entropy() used in: explore_cat()
 def calculate_entropy(series: pd.Series) -> (float, str):
     """
