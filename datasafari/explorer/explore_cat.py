@@ -165,19 +165,3 @@ def explore_cat(df: pd.DataFrame, categorical_variables: list, method: str = 'al
         return combined_result
     else:
         raise ValueError("Invalid output method. Choose 'print' or 'return'.")
-
-
-# smoke tests
-df1 = pd.read_csv('./datasets/soil_measures.csv')
-list1 = ['crop']
-unique = explore_cat(
-    df=df1,
-    categorical_variables=list1,
-    method='unique',
-    output='return'
-)
-
-df2 = pd.read_csv('./datasets/rental_info.csv')
-list2 = ['special_features', 'release_year']
-
-explore_cat(df2, list2)
