@@ -11,14 +11,31 @@ def explore_cat(
     # docstring here
     result = []
 
-    if method.lower() in ['unique', 'all']:
+    if method.lower() in ['unique_values', 'all']:
         # initial append for title of method section
         result.append(f"<<______UNIQUE VALUES PER VARIABLE______>>\n")
 
         # get the unique values per variable in categorical_variables list
         for variable_name in categorical_variables:
             unique_values = df[variable_name].unique()
-            result.append(f"['{variable_name}'] Unique values:\n{unique_values}")
+            result.append(f"< Unique values of ['{variable_name}'] >\n\n{unique_values}\n\n")
+
+    if method.lower() in ['counts_percentage', 'all']:
+        # initial append for title of method section
+        result.append(f"<<______COUNTS & PERCENTAGE______>>\n")
+
+        # get the counts and percentages per unique value of variable in categorical_variables list
+        for variable_name in categorical_variables:
+            counts = df[variable_name].value_counts()
+            percentages = df[variable_name].value_counts(normalize=True) * 100
+
+            # combine counts and percentages into a DataFrame
+            summary_df = pd.DataFrame({'Counts': counts, 'Percentages': percentages})
+
+            # format percentages to be 2 decimals
+            summary_df['Percentages'] = summary_df['Percentages'].apply(lambda x: f"{x:.2f}%")
+
+            result.append(f"< Counts and percentages per unique value of ['{variable_name}'] >\n\n{summary_df}\n\n")
 
     # Combine all results
     combined_result = "\n".join(result)
@@ -32,15 +49,16 @@ def explore_cat(
 
 
 # smoke tests
-test_df = pd.read_csv('./data/soil_measures.csv')
-variables_of_interest = ['crop']
+df1 = pd.read_csv('./datasets/soil_measures.csv')
+list1 = ['crop']
 unique = explore_cat(
-    df=test_df,
-    categorical_variables=variables_of_interest,
+    df=df1,
+    categorical_variables=list1,
     method='unique',
     output='return'
 )
 
-test_df2 = pd.read_csv('./data/rental_info.csv')
-print(test_df2.info())
-explore_cat(test_df2, ['special_features', 'release_year'])
+df2 = pd.read_csv('./datasets/rental_info.csv')
+list2 = ['special_features', 'release_year']
+
+explore_cat(df2, list2)
