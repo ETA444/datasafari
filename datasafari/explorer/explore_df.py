@@ -1,6 +1,6 @@
 import pandas as pd
 import io
-from datasafari.utils.filters import filter_kwargs
+from datasafari.utils import filter_kwargs
 
 
 # dictionary for filter_kwargs: define which kwargs are valid for which method
