@@ -2,6 +2,15 @@ import pandas as pd
 import numpy as np
 
 
+# utility function: calculate_entropy
+def calculate_entropy(series: pd.Series) -> float:
+    """Calculate the entropy of a pandas Series (categorical variable)."""
+    counts = series.value_counts()
+    probabilities = counts / len(series)
+    entropy = -np.sum(probabilities * np.log2(probabilities + np.finfo(float).eps))  # adding epsilon to avoid log(0)
+    return entropy
+
+
 # main function: explore_cat
 def explore_cat(
         df: pd.DataFrame,
