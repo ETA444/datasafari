@@ -126,14 +126,15 @@ def explore_cat(
 
     if method.lower() in ['entropy', 'all']:
         result.append("<<______ENTROPY OF CATEGORICAL VARIABLES______>>\n")
-        # short interpretation tip directly after the title
+
+        # include a tip on interpretation
         result.append("Tip: Higher entropy indicates greater diversity.*\n")
 
         for variable_name in categorical_variables:
-            entropy_val = calculate_entropy(df[variable_name])
-            result.append(f"Entropy of ['{variable_name}']: {entropy_val:.4f}\n")
+            entropy_val, interpretation = calculate_entropy_and_interpretation(df[variable_name])
+            result.append(f"Entropy of ['{variable_name}']: {interpretation}\n")
 
-        # add a reference to the calculate_entropy docstring for further reading
+        # include additional info tip
         result.append("* For more details on entropy, run: 'print(calculate_entropy.__doc__)'.\n")
 
     # Combine all results
