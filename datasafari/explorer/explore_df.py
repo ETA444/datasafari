@@ -57,27 +57,27 @@ def explore_df(df: pd.DataFrame, method: str = 'all', output: str = 'print', **k
     Examples
     --------
     # Summary statistics with custom percentiles
-    explore_df(df, 'desc', percentiles=[0.05, 0.95])
+    >>> explore_df(df, 'desc', percentiles=[0.05, 0.95])
 
     # Display the first 3 rows
-    explore_df(df, 'head', n=3)
+    >>> explore_df(df, 'head', n=3)
 
     # Detailed DataFrame information
-    explore_df(df, 'info', verbose=True)
+    >>> explore_df(df, 'info', verbose=True)
 
     # Count and percentage of missing values
-    explore_df(df, 'na')
+    >>> explore_df(df, 'na')
 
     # Comprehensive exploration with custom settings
-    explore_df(df, 'all', n=3, percentiles=[0.25, 0.75], output='print')
+    >>> explore_df(df, 'all', n=3, percentiles=[0.25, 0.75], output='print')
 
     # Returning comprehensive exploration results as a string
-    result_str = explore_df(df, 'all', n=5, output='return')
-    print(result_str)
+    >>> result_str = explore_df(df, 'all', n=5, output='return')
+    >>> print(result_str)
 
     # Using 'all' with kwargs that apply to specific methods
     # Note: kwargs that don't apply to a specific method are ignored by that method
-    explore_df(df, 'all', n=5, percentiles=[0.1, 0.9], verbose=False)
+    >>> explore_df(df, 'all', n=5, percentiles=[0.1, 0.9], verbose=False)
     """
 
     result = []
