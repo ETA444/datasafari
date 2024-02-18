@@ -1,3 +1,6 @@
+"""Module for any sort of filters used throughout the main subpackages of DataSafari."""
+
+
 def filter_kwargs(method, kwargs, valid_kwargs_dict):
     """
     Filter keyword arguments (`kwargs`) to include only those that are valid
