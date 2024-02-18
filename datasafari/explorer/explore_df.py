@@ -1,20 +1,14 @@
-# imports
 import pandas as pd
 import io
+from datasafari.utils.filters import filter_kwargs
 
-# utility function: filter_kwargs
-# define which kwargs are valid for which method
+
+# dictionary for filter_kwargs: define which kwargs are valid for which method
 valid_kwargs = {
     'head': ['n'],
     'describe': ['percentiles', 'include', 'exclude'],
     'info': ['verbose', 'max_cols', 'memory_usage', 'show_counts']
 }
-
-
-# define the function
-def filter_kwargs(method, kwargs):
-    """Filter kwargs to include only those valid for the specified method."""
-    return {k: v for k, v in kwargs.items() if k in valid_kwargs.get(method, [])}
 
 
 # main function: explore_df
@@ -83,17 +77,17 @@ def explore_df(df: pd.DataFrame, method: str = 'all', output: str = 'print', **k
     result = []
 
     if method.lower() in ["desc", "all"]:
-        desc_kwargs = filter_kwargs('describe', kwargs)
+        desc_kwargs = filter_kwargs('describe', kwargs, valid_kwargs)
         result.append(f"<<______DESCRIBE______>>\n{str(df.describe(**desc_kwargs))}\n")
 
     if method.lower() in ["head", "all"]:
-        head_kwargs = filter_kwargs('head', kwargs)
+        head_kwargs = filter_kwargs('head', kwargs, valid_kwargs)
         pd.set_option('display.max_columns', None)
         result.append(f"<<______HEAD______>>\n{str(df.head(**head_kwargs))}\n")
         pd.reset_option('display.max_columns')
 
     if method.lower() in ["info", "all"]:
-        info_kwargs = filter_kwargs('info', kwargs)
+        info_kwargs = filter_kwargs('info', kwargs, valid_kwargs)
         buffer = io.StringIO()
         df.info(buf=buffer, **info_kwargs)
         result.append(f"<<______INFO______>>\n{buffer.getvalue()}\n")
