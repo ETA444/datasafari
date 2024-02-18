@@ -4,7 +4,38 @@ import numpy as np
 
 # utility function: calculate_entropy
 def calculate_entropy(series: pd.Series) -> float:
-    """Calculate the entropy of a pandas Series (categorical variable)."""
+    """
+    Calculate the entropy of a pandas Series (categorical variable), which
+    quantifies the unpredictability or diversity of the data within the variable.
+
+    Entropy is higher when the distribution of categories is more uniform, indicating
+    a higher degree of randomness or diversity. Conversely, entropy is lower when
+    one or a few categories dominate the distribution.
+
+    The entropy (H) is calculated using the formula:
+
+        H = -sum(p_i * log2(p_i))
+
+    where p_i is the proportion of the series belonging to the ith category.
+
+    Parameters:
+    ----------
+    series : pd.Series
+        The series for which to calculate entropy. Should be a categorical variable
+        with discrete values.
+
+    Returns:
+    -------
+    float
+        The entropy of the series. A non-negative value where higher values indicate
+        greater entropy (diversity) and values close to zero indicate less entropy (more uniformity).
+
+    Example:
+    --------
+    >>> example_series = pd.Series(['apple', 'orange', 'apple', 'banana', 'orange', 'banana'])
+    >>> calculate_entropy(example_series)
+    >>> 1.584962500721156  # Example entropy value for a balanced series
+    """
     counts = series.value_counts()
     probabilities = counts / len(series)
     entropy = -np.sum(probabilities * np.log2(probabilities + np.finfo(float).eps))  # adding epsilon to avoid log(0)
