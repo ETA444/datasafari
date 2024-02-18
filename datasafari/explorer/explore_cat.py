@@ -66,41 +66,38 @@ def calculate_entropy(series: pd.Series) -> (float, str):
 
 
 # main function: explore_cat
-def explore_cat(
-        df: pd.DataFrame,
-        categorical_variables: list,
-        method: str = 'all',
-        output: str = 'print'):
+def explore_cat(df: pd.DataFrame, categorical_variables: list, method: str = 'all', output: str = 'print'):
     """
-    Explores categorical variables within a DataFrame, providing insights through
-    various methods. The exploration can yield unique values, counts and percentages
-    of those values, and the entropy to quantify data diversity.
+    Explores categorical variables within a DataFrame, providing insights through various methods. The exploration
+    can yield unique values, counts and percentages of those values, and the entropy to quantify data diversity.
 
-    Parameters
+    Parameters:
     ----------
     df : pd.DataFrame
         The DataFrame containing the data to be explored.
+
     categorical_variables : list
         A list of strings specifying the names of the categorical columns to explore.
+
     method : str, default 'all'
         Specifies the method of exploration to apply. Options include:
-        - 'unique_values': Lists unique values for each specified categorical variable.
-        - 'counts_percentage': Shows counts and percentages for the unique values of each variable.
-        - 'entropy': Calculates the entropy for each variable, providing a measure of data diversity.
-          See the 'calculate_entropy' function for more details on entropy calculation.
-        - 'all': Applies all the above methods sequentially.
+            - 'unique_values': Lists unique values for each specified categorical variable.
+            - 'counts_percentage': Shows counts and percentages for the unique values of each variable.
+            - 'entropy': Calculates the entropy for each variable, providing a measure of data diversity. See the 'calculate_entropy' function for more details on entropy calculation.
+            - 'all': Applies all the above methods sequentially.
+
     output : str, default 'print'
         Determines how the exploration results are outputted. Options are:
-        - 'print': Prints the results to the console.
-        - 'return': Returns the results as a single formatted string.
+            - 'print': Prints the results to the console.
+            - 'return': Returns the results as a single formatted string.
 
-    Returns
-    -------
+    Returns:
+    --------
     str or None
-        If output='return', a string containing the formatted exploration results is returned.
-        If output='print', results are printed to the console, and the function returns None.
+        - If output='return', a string containing the formatted exploration results is returned.
+        - If output='print', results are printed to the console, and the function returns None.
 
-    Examples
+    Examples:
     --------
     # Explore all specified methods for 'Category1' and 'Category2' in 'df'
     >>> explore_cat(df, ['Category1', 'Category2'])
@@ -110,9 +107,8 @@ def explore_cat(
 
     # Calculate and return the entropy of 'Category1' and 'Category2'
     >>> result1 = explore_cat(df, ['Category1', 'Category2'], method='entropy', output='return')
-    >>> print(result1)
 
-    Notes
+    Notes:
     -----
     The 'entropy' method provides a quantitative measure of the unpredictability or
     diversity within each specified categorical column, calculated as outlined in the
