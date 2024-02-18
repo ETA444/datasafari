@@ -1,5 +1,5 @@
 import pandas as pd
-from datasafari.utils.calculators import calculate_entropy
+from datasafari.utils import calculate_entropy
 
 
 # main function: explore_cat
