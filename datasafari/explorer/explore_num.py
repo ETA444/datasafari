@@ -21,9 +21,11 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         # (1) z-score threshold for outlier detection
         threshold_z = 3
 
-        # temporary df used for calculation
-        df_z = df
-        outliers_z = {}
+        # appends #
+        # (1) title of method section
+        result.append(f"<<______OUTLIERS - Z-SCORE METHOD______>>\n")
+        # (2) outlier df info
+        result.append(f"✎ Overview of Results*\n")
 
         # main operation: z-score calculation per variable, and outlier classification.
         for variable_name in numerical_variables:
@@ -49,15 +51,34 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             outlier_rows = df[df[variable_name].isin(outliers_z_dict[variable_name])]
             outliers_z_df = pd.concat([outliers_z_df, outlier_rows], ignore_index=False)
 
-            # Drop z-score column
-            # penguins_clean = df_z.drop(columns=[z_col])
+            # clean the original df
+            df.drop(z_col, axis=1, inplace=True)
 
-        # sanity check - oid should be a dictionary of:
-        # key: column name in df
-        # value: list of values that have z-scores higher than 3
-        # the idea is that we don't burden the df out of the for-loop
-        # with new z-score columns, but extract which rows are outliers
-        result.append(f"{outliers_z.items()}")
+            # informative stats about outliers #
+            outlier_count = len(outlier_z_values)
+            # conditional output string format and stats calculations
+            title = f"< Results for ['{variable_name}'] >\n"
+            result.append(title)
+            if outlier_count == 0:
+                stats = f"➡ Number of outliers: {outlier_count}\n➡ Min: -\n➡ Max: -\n➡ Mean: -"
+                row_indices = f"➡ Location of outliers in your df (indices): -\n"
+                result.append(stats)
+                result.append(row_indices)
+            else:
+                outlier_min = min(outlier_z_values)
+                outlier_max = max(outlier_z_values)
+                outlier_mean = sum(outlier_z_values) / len(outlier_z_values)
+                stats = f"➡ Number of outliers: {outlier_count}\n➡ Min: {outlier_min}\n➡ Max: {outlier_max}\n➡ Mean: {outlier_mean}"
+                row_indices = f"➡ Location of outliers in your df (indices):\n{outlier_rows.index.tolist()}\n"
+                result.append(stats)
+                result.append(row_indices)
+
+        # appends (continued) #
+        # (6-9) method='outlier_z' info
+        result.append(f"✎ * NOTE: If method='outliers_zscore', aside from the overview above, the function RETURNS:")
+        result.append(f"■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
+        result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
+        result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_zscore')")
 
     # Combine all results
     combined_result = "\n".join(result)
