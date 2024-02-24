@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 # main function: explore_num
 def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all', output: str = 'print'):
     """..."""
