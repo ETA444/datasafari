@@ -15,34 +15,31 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     outliers_iqr_dict = {}
     outliers_iqr_df = pd.DataFrame()
 
-    if method.lower() in ['outlier_z', 'all']:
-        # initial append for title of method section
-        result.append(f"<<______OUTLIERS - Z-SCORE METHOD______>>\n")
+    if method.lower() in ['outliers_zscore', 'all']:
+
+        # definitions #
+        # (1) z-score threshold for outlier detection
+        threshold_z = 3
 
         # temporary df used for calculation
         df_z = df
         outliers_z = {}
 
-        # get the unique values per variable in categorical_variables list
+        # main operation: z-score calculation per variable, and outlier classification.
         for variable_name in numerical_variables:
 
             # zscore column name
-            z_col = variable_name+'_zscore'
+            z_col = variable_name + '_zscore'
 
             # calculate z-score for col
-            df_z[z_col] = (
-                    (df_z[variable_name] - df_z[variable_name].mean())
-                    / df_z[variable_name].std()
+            df[z_col] = (
+                    (df[variable_name] - df[variable_name].mean())
+                    / df[variable_name].std()
             )
 
-            # threshold for outlier (z-score > 3 or < -3)
-            threshold = 3
-
-            # identify outliers
-            oid_values = (
-                df_z[
-                    (df_z[z_col].abs() > threshold)
-                ][variable_name].tolist()
+            # classify outlier values
+            outlier_z_values = (
+                df[df[z_col].abs() > threshold_z][variable_name].tolist()
             )
 
             # save results to outliers_z_dict
