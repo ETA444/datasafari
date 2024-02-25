@@ -89,35 +89,31 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
                     / df[variable_name].std()
             )
 
-            # classify outlier values
-            outlier_z_values = (
-                df[df[z_col].abs() > threshold_z][variable_name].tolist()
-            )
+            # outlier classification
+            outlier_rows = df[
+                df[z_col].abs() > threshold_z
+            ]
 
-            # save results to outliers_z_dict
-            outliers_z_dict[variable_name] = outlier_z_values
-
-            # save resulting rows to outliers_z_df
-            outlier_rows = df[df[variable_name].isin(outliers_z_dict[variable_name])]
+            # save results: dictionary and df (objects)
+            outliers_z_dict[variable_name] = outlier_rows[variable_name].tolist()
             outliers_z_df = pd.concat([outliers_z_df, outlier_rows], ignore_index=False)
 
             # clean the original df
             df.drop(z_col, axis=1, inplace=True)
 
-            # informative stats about outliers #
-            outlier_count = len(outlier_z_values)
             # conditional output string format and stats calculations
             title = f"< Results for ['{variable_name}'] >\n"
             result.append(title)
+            outlier_count = len(outliers_z_dict[variable_name])
             if outlier_count == 0:
                 stats = f"➡ Number of outliers: {outlier_count}\n➡ Min: -\n➡ Max: -\n➡ Mean: -"
                 row_indices = f"➡ Location of outliers in your df (indices): -\n"
                 result.append(stats)
                 result.append(row_indices)
             else:
-                outlier_min = min(outlier_z_values)
-                outlier_max = max(outlier_z_values)
-                outlier_mean = sum(outlier_z_values) / len(outlier_z_values)
+                outlier_min = min(outliers_z_dict[variable_name])
+                outlier_max = max(outliers_z_dict[variable_name])
+                outlier_mean = sum(outliers_z_dict[variable_name]) / len(outliers_z_dict[variable_name])
                 stats = f"➡ Number of outliers: {outlier_count}\n➡ Min: {outlier_min}\n➡ Max: {outlier_max}\n➡ Mean: {outlier_mean}"
                 row_indices = f"➡ Location of outliers in your df (indices):\n{outlier_rows.index.tolist()}\n"
                 result.append(stats)
