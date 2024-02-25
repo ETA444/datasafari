@@ -45,11 +45,23 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             outliers_iqr_dict[variable_name] = outlier_rows[variable_name].tolist()
             outliers_iqr_df = pd.concat([outliers_iqr_df, outlier_rows], ignore_index=False)
 
-            # output results
-            result.append(f"< Results for ['{variable_name}'] >")
-            result.append(f"➡ Number of outliers: {len(outlier_rows)}")
-            result.append(f"➡ Outlier values: {outliers_iqr_dict[variable_name]}")
-            result.append(f"➡ Row indices of outliers: {outlier_rows.index.tolist()}\n")
+            # conditional output string format and stats calculations
+            title = f"< Results for ['{variable_name}'] >\n"
+            result.append(title)
+            outlier_count = len(outliers_iqr_dict[variable_name])
+            if outlier_count == 0:
+                stats = f"➡ Number of outliers: {outlier_count}\n➡ Min: -\n➡ Max: -\n➡ Mean: -"
+                row_indices = f"➡ Location of outliers in your df (indices): -\n"
+                result.append(stats)
+                result.append(row_indices)
+            else:
+                outlier_min = min(outliers_iqr_dict[variable_name])
+                outlier_max = max(outliers_iqr_dict[variable_name])
+                outlier_mean = sum(outliers_iqr_dict[variable_name]) / len(outliers_iqr_dict[variable_name])
+                stats = f"➡ Number of outliers: {outlier_count}\n➡ Min: {outlier_min}\n➡ Max: {outlier_max}\n➡ Mean: {outlier_mean}"
+                row_indices = f"➡ Location of outliers in your df (indices):\n{outlier_rows.index.tolist()}\n"
+                result.append(stats)
+                result.append(row_indices)
 
     if method.lower() in ['outliers_zscore', 'all']:
 
