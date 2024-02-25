@@ -21,6 +21,35 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         result.append(f"<<______OUTLIERS - IQR METHOD______>>\n")
         # (2) suitability tip
         result.append(f"Tip: The IQR method is robust against extreme values, ideal for identifying outliers in skewed distributions by focusing on the data's middle 50%.")
+        # (3) subtitle
+        result.append(f"✎ Overview of Results*\n")
+
+        # main operation: quantile definitions, iqr and outlier classification
+        for variable_name in numerical_variables:
+
+            # calculate quantile 1, quantile 3 and inter quantile range for respective column
+            quantile1 = df[variable_name].quantile(0.25)
+            quantile3 = df[variable_name].quantile(0.75)
+            iqr = quantile3 - quantile1
+
+            # determine lower and upper bounds
+            lower_bound = quantile1 - 1.5 * iqr
+            upper_bound = quantile3 + 1.5 * iqr
+
+            # outlier classification
+            outlier_rows = df[
+                (df[variable_name] < lower_bound) | (df[variable_name] > upper_bound)
+            ]
+
+            # save results: dictionary and df (objects)
+            outliers_iqr_dict[variable_name] = outlier_rows[variable_name].tolist()
+            outliers_iqr_df = pd.concat([outliers_iqr_df, outlier_rows], ignore_index=False)
+
+            # output results
+            result.append(f"< Results for ['{variable_name}'] >")
+            result.append(f"➡ Number of outliers: {len(outlier_rows)}")
+            result.append(f"➡ Outlier values: {outliers_iqr_dict[variable_name]}")
+            result.append(f"➡ Row indices of outliers: {outlier_rows.index.tolist()}\n")
 
     if method.lower() in ['outliers_zscore', 'all']:
 
@@ -33,7 +62,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         result.append(f"<<______OUTLIERS - Z-SCORE METHOD______>>\n")
         # (2) suitability tip
         result.append(f"Tip: The Z-Score method excels at identifying outliers in data with a distribution close to normal, highlighting values far from the mean.\n")
-        # (2) outlier df info
+        # (3) subtitle
         result.append(f"✎ Overview of Results*\n")
 
         # main operation: z-score calculation per variable, and outlier classification.
