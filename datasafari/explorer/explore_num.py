@@ -1,4 +1,6 @@
 import pandas as pd
+from scipy.stats import shapiro, skew, kurtosis, anderson
+import numpy as np
 
 
 # main function: explore_num
@@ -14,6 +16,43 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     # (3) method 'outliers_iqr' only, returns these to the user
     outliers_iqr_dict = {}
     outliers_iqr_df = pd.DataFrame()
+
+    if method.lower() in ['distribution', 'all']:
+
+        # appends #
+        # (1) title of method section
+        result.append(f"<<______DISTRIBUTION ANALYSIS______>>")
+        # (2) subtitle
+        result.append(f"✎ Overview of Results*\n")
+
+        # main operation: descriptive stats, skewness, kurtosis, normality testing
+        for variable_name in numerical_variables:
+
+            # modify data for this analysis: no NAs
+            data = df[variable_name].dropna()
+
+            # calculate descriptive stats
+            mean = data.mean()
+            median = data.median()
+            mode = data.mode().tolist()
+            min, max = data.min(), data.max()
+            variance = data.var()
+            std_dev = data.std()
+
+            # calculate skewness, kurtosis and tests for normality
+            skewness = skew(data)
+            kurt = kurtosis(data)
+            shapiro_stat, shapiro_p = shapiro(data)
+            anderson_stat = anderson(data)
+
+            # construct console output
+            result.append(f"< Distribution Summary for: ['{variable_name}'] >\n")
+            result.append(f"➡ Min: {min:.2f}\n➡ Max: {max:.2f}\n➡ Mean: {mean:.2f}\n➡ Median: {median:.2f}\n➡ Mode(s): {mode}")
+            result.append(f"➡ Variance: {variance:.2f}\n➡ Standard Deviation: {std_dev:.2f}")
+            result.append(f"➡ Skewness: {skewness:.2f}\n➡ Kurtosis: {kurt:.2f}")
+            result.append(f"\n★ Shapiro-Wilk Test for Normality:\n   ➡ p-value = {shapiro_p:.4f} (Normal distribution suggested if p > 0.05)")
+            result.append(f"\n★ Anderson-Darling Test for Normality:\n   ➡ statistic = {anderson_stat.statistic:.4f}\n   ➡ significance levels = {anderson_stat.significance_level}\n   ➡ critical values = {anderson_stat.critical_values}\n")
+
     if method.lower() in ['outliers_iqr', 'all']:
 
         # appends #
@@ -27,7 +66,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         # main operation: quantile definitions, iqr and outlier classification
         for variable_name in numerical_variables:
 
-            # calculate quantile 1, quantile 3 and inter quantile range for respective column
+            # calculate quantile 1, quantile 3 and inter quartile range for respective column
             quantile1 = df[variable_name].quantile(0.25)
             quantile3 = df[variable_name].quantile(0.75)
             iqr = quantile3 - quantile1
@@ -169,5 +208,5 @@ cols = [
     'culmen_length_mm', 'culmen_depth_mm',
     'flipper_length_mm', 'body_mass_g'
 ]
-explore_num(pengu, cols)
+explore_num(pengu, cols, method='distribution')
 # outlier_dict, outlier_df = explore_num(pengu, cols, method='outliers_zscore')
