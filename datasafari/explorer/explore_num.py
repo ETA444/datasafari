@@ -14,6 +14,13 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     # (3) method 'outliers_iqr' only, returns these to the user
     outliers_iqr_dict = {}
     outliers_iqr_df = pd.DataFrame()
+    if method.lower() in ['outliers_iqr', 'all']:
+
+        # appends #
+        # (1) title of method section
+        result.append(f"<<______OUTLIERS - IQR METHOD______>>\n")
+        # (2) suitability tip
+        result.append(f"Tip: The IQR method is robust against extreme values, ideal for identifying outliers in skewed distributions by focusing on the data's middle 50%.")
 
     if method.lower() in ['outliers_zscore', 'all']:
 
@@ -24,6 +31,8 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         # appends #
         # (1) title of method section
         result.append(f"<<______OUTLIERS - Z-SCORE METHOD______>>\n")
+        # (2) suitability tip
+        result.append(f"Tip: The Z-Score method excels at identifying outliers in data with a distribution close to normal, highlighting values far from the mean.\n")
         # (2) outlier df info
         result.append(f"✎ Overview of Results*\n")
 
