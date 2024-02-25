@@ -20,7 +20,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         # (1) title of method section
         result.append(f"<<______OUTLIERS - IQR METHOD______>>\n")
         # (2) suitability tip
-        result.append(f"Tip: The IQR method is robust against extreme values, ideal for identifying outliers in skewed distributions by focusing on the data's middle 50%.")
+        result.append(f"Tip: The IQR method is robust against extreme values, ideal for identifying outliers\nin skewed distributions by focusing on the data's middle 50%.\n")
         # (3) subtitle
         result.append(f"✎ Overview of Results*\n")
 
@@ -63,6 +63,13 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
                 result.append(stats)
                 result.append(row_indices)
 
+        # appends (continued) #
+        # (6-9) method='outliers_iqr' info
+        result.append(f"✎ * NOTE: If method='outliers_iqr', aside from the overview above, the function RETURNS:")
+        result.append(f"■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
+        result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
+        result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_iqr')")
+
     if method.lower() in ['outliers_zscore', 'all']:
 
         # definitions #
@@ -73,7 +80,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         # (1) title of method section
         result.append(f"<<______OUTLIERS - Z-SCORE METHOD______>>\n")
         # (2) suitability tip
-        result.append(f"Tip: The Z-Score method excels at identifying outliers in data with a distribution close to normal, highlighting values far from the mean.\n")
+        result.append(f"Tip: The Z-Score method excels at identifying outliers in data with a distribution\nclose to normal, highlighting values far from the mean.\n")
         # (3) subtitle
         result.append(f"✎ Overview of Results*\n")
 
@@ -120,7 +127,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
                 result.append(row_indices)
 
         # appends (continued) #
-        # (6-9) method='outlier_z' info
+        # (6-9) method='outliers_zscore' info
         result.append(f"✎ * NOTE: If method='outliers_zscore', aside from the overview above, the function RETURNS:")
         result.append(f"■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
         result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
@@ -151,4 +158,4 @@ cols = [
     'flipper_length_mm', 'body_mass_g'
 ]
 explore_num(pengu, cols)
-outlier_dict, outlier_df = explore_num(pengu, cols, method='outlier_z')
+# outlier_dict, outlier_df = explore_num(pengu, cols, method='outliers_zscore')
