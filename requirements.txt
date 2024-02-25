@@ -28,9 +28,9 @@ mccabe==0.7.0
 mdurl==0.1.2
 more-itertools==10.2.0
 nh3==0.2.15
-numpy==1.26.2
+numpy~=1.21.5
 packaging==23.2
-pandas==2.1.4
+pandas~=1.4.2
 Pillow==10.1.0
 pkginfo==1.9.6
 platformdirs==4.2.0
@@ -63,3 +63,6 @@ urllib3==2.2.0
 virtualenv==20.25.0
 wordcloud==1.9.3
 zipp==3.17.0
+
+setuptools~=61.2.0
+scipy~=1.7.3

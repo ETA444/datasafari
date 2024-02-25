@@ -1,6 +1,5 @@
 import pandas as pd
 from scipy.stats import shapiro, skew, kurtosis, anderson
-import numpy as np
 
 
 # main function: explore_num
@@ -18,7 +17,8 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     outliers_iqr_df = pd.DataFrame()
 
     if method.lower() in ['distribution', 'all']:
-
+        # TODO: Add interpretation tips
+        # TODO: Dataframe output for users who want to retain info
         # appends #
         # (1) title of method section
         result.append(f"<<______DISTRIBUTION ANALYSIS______>>")
@@ -35,7 +35,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             mean = data.mean()
             median = data.median()
             mode = data.mode().tolist()
-            min, max = data.min(), data.max()
+            var_min, var_max = data.min(), data.max()
             variance = data.var()
             std_dev = data.std()
 
@@ -47,7 +47,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
             # construct console output
             result.append(f"< Distribution Summary for: ['{variable_name}'] >\n")
-            result.append(f"➡ Min: {min:.2f}\n➡ Max: {max:.2f}\n➡ Mean: {mean:.2f}\n➡ Median: {median:.2f}\n➡ Mode(s): {mode}")
+            result.append(f"➡ Min: {var_min:.2f}\n➡ Max: {var_max:.2f}\n➡ Mean: {mean:.2f}\n➡ Median: {median:.2f}\n➡ Mode(s): {mode}")
             result.append(f"➡ Variance: {variance:.2f}\n➡ Standard Deviation: {std_dev:.2f}")
             result.append(f"➡ Skewness: {skewness:.2f}\n➡ Kurtosis: {kurt:.2f}")
             result.append(f"\n★ Shapiro-Wilk Test for Normality:\n   ➡ p-value = {shapiro_p:.4f} (Normal distribution suggested if p > 0.05)")
