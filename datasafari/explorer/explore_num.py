@@ -137,15 +137,27 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     combined_result = "\n".join(result)
 
     if output.lower() == 'print':
+        # print by default/unconditionally
         print(combined_result)
 
+        # extended functionality of output: return (method-specific)
         if method.lower() == 'outliers_zscore':
             return outliers_z_dict, outliers_z_df
+
+        if method.lower() == 'outliers_iqr':
+            return outliers_iqr_dict, outliers_iqr_df
 
     elif output.lower() == 'return':
+        # normal functionality of output: return
+        if method.lower() == 'all':
+            return combined_result
 
+        # extended functionality of output: return (method-specific)
         if method.lower() == 'outliers_zscore':
             return outliers_z_dict, outliers_z_df
+
+        if method.lower() == 'outliers_iqr':
+            return outliers_iqr_dict, outliers_iqr_df
 
     else:
         raise ValueError("Invalid output method. Choose 'print' or 'return'.")
