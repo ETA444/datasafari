@@ -90,10 +90,31 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     # (4) method 'distribution_analysis' only, returns this df to the user
     distribution_df = pd.DataFrame(columns=numerical_variables)
 
-    # TODO: New method: 'correlations' Add correlations
     # TODO: New method: 'assumptions' - Add general model assumption tests
     # # # TODO: Migrate Normality tests to assumptions.
     # TODO: New method: 'outliers_mahalanobis' - Add additional more robust outlier check: mahalanobis
+    if method.lower() in ['correlation_analysis', 'all']:
+
+        # calculate correlations per method
+        pearson_df = df[numerical_variables].corr(method='pearson')
+        spearman_df = df[numerical_variables].corr(method='spearman')
+        kendall_df = df[numerical_variables].corr(method='kendall')
+
+        # define dictionary for for-loop
+        correlation_analysis = {
+            'pearson': pearson_df,
+            'spearman': spearman_df,
+            'kendall': kendall_df
+        }
+
+        # construct console output per method
+        for correlation_method, correlation_df in correlation_analysis.items():
+            result.append(f"\n<<______CORRELATIONS ({correlation_method.upper()})______>>\n")
+            result.append(f"Overview of {correlation_method.title()} Correlation Coefficients*\n")
+            result.append(correlation_df.to_string())
+
+        # save dataframes for extended functionality (method='correlation_analysis')
+        correlation_dfs = [pearson_df, spearman_df, kendall_df]
 
     if method.lower() in ['distribution_analysis', 'all']:
 
