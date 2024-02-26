@@ -4,7 +4,79 @@ from scipy.stats import shapiro, skew, kurtosis, anderson
 
 # main function: explore_num
 def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all', output: str = 'print'):
-    """..."""
+    """
+    Analyze numerical variables in a DataFrame for distribution characteristics, outliers based on Z-score and IQR methods, and normality tests.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing the numerical data to analyze.
+    numerical_variables : list
+        A list of strings representing the column names in `df` to be analyzed.
+    method : str, optional
+        Specifies the analysis method to apply. Options include:
+        - 'distribution_analysis' for distribution characteristics and normality tests.
+        - 'outliers_zscore' for outlier detection using the Z-score method.
+        - 'outliers_iqr' for outlier detection using the Interquartile Range method.
+        - 'all' to perform all analyses. Default is 'all'.
+    output : str, optional
+        Determines the output format. Options include:
+        - 'print' to print the analysis results to the console.
+        - 'return' to return the analysis results as a DataFrame or dictionaries. Default is 'print'.
+
+    Returns
+    -------
+    Depending on the method chosen:
+    - For 'distribution_analysis', returns a DataFrame with each row representing a statistic (min, max, mean, etc.) and columns for each variable.
+    - For 'outliers_zscore' and 'outliers_iqr', returns two objects: a dictionary mapping variables to their outlier values, and a DataFrame of rows in `df` considered outliers.
+    - If 'output' is set to 'return' and 'method' is 'all', returns a textual summary of all analyses.
+
+    Raises
+    ------
+    ValueError
+        If an invalid 'method' or 'output' option is provided.
+
+    Notes
+    -----
+    - The function enhances interpretability by providing tips and conclusions based on the statistical tests conducted.
+    - For normality tests:
+        * Shapiro-Wilk Test: H0 (null hypothesis) suggests that the data is normally distributed. A p-value > 0.05 supports H0.
+        * Anderson-Darling Test: Compares the test statistic to critical values to assess normality.
+    - Skewness indicates the symmetry of the distribution. Kurtosis indicates the tailedness of the distribution.
+
+    Examples
+    --------
+    # Example 1: Exploring distribution characteristics and printing to console
+    >>> df = pd.read_csv('path/to/dataset.csv')
+    >>> cols = ['variable1', 'variable2']
+    >>> explore_num(df, cols, method='distribution_analysis', output='print')
+
+    # Example 2: Detecting outliers using the Z-score method and returning the results
+    >>> outliers_z_dict, outliers_z_df = explore_num(df, ['variable3', 'variable4'], method='outliers_zscore', output='return')
+    >>> print(outliers_z_dict)
+    >>> print(outliers_z_df.head())
+
+    # Example 3: Identifying outliers with the IQR method and printing the summary
+    >>> explore_num(df, ['variable5', 'variable6'], method='outliers_iqr', output='print')
+
+    # Example 4: Performing all analyses on specified variables and printing summaries
+    >>> explore_num(df, ['variable1', 'variable2', 'variable3'], method='all', output='print')
+
+    # Example 5: Using 'return' with 'all' method to get a comprehensive textual summary
+    >>> analysis_summary = explore_num(df, ['variable7', 'variable8'], method='all', output='return')
+    >>> print(analysis_summary)
+
+    # Example 6: Exploring distribution for a single variable and capturing the DataFrame for further analysis
+    >>> distribution_df = explore_num(df, ['variable9'], method='distribution_analysis', output='return')
+    >>> print(distribution_df)
+
+    # Example 7: Comprehensive analysis for multiple variables, focusing on outlier detection and distribution, and returning data for IQR outliers
+    >>> outliers_iqr_dict, outliers_iqr_df = explore_num(df, cols, method='outliers_iqr', output='return')
+    >>> distribution_analysis_df = explore_num(df, cols, method='distribution_analysis', output='return')
+    >>> print(outliers_iqr_df.head())
+    >>> print(distribution_analysis_df)
+
+    """
 
     # initialize variables #
     # (1) each method appends to: result
@@ -62,7 +134,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             # anderson-darling
             anderson_tip = f"   ☻ Tip: Compare the statistic to critical values. Data is likely not normally distributed if the statistic > critical value."
 
-# construct console output
+            # construct console output
             result.append(f"< Distribution Analysis Summary for: ['{variable_name}'] >\n")
             result.append(f"➡ Min: {var_min:.2f}\n➡ Max: {var_max:.2f}\n➡ Mean: {mean:.2f}\n➡ Median: {median:.2f}\n➡ Mode(s): {mode}")
             result.append(f"➡ Variance: {variance:.2f}\n➡ Standard Deviation: {std_dev:.2f}")
