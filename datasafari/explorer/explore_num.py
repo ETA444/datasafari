@@ -19,8 +19,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     distribution_df = pd.DataFrame(columns=numerical_variables)
 
     if method.lower() in ['distribution_analysis', 'all']:
-        # TODO: Add interpretation tips
-        # TODO: Dataframe output for users who want to retain info
+
         # appends #
         # (1) title of method section
         result.append(f"<<______DISTRIBUTION ANALYSIS______>>\n")
@@ -53,7 +52,17 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             shapiro_stat, shapiro_p = shapiro(data)
             anderson_stat = anderson(data)
 
-            # construct console output
+            # interpretation tips #
+            # skewness and kurtosis
+            skewness_tip = f"   ☻ Tip: Symmetric if ~0, left-skewed if <0, right-skewed if >0"
+            kurt_tip = f"   ☻ Tip: Mesokurtic if ~0, Platykurtic if <0, Leptokurtic if >0)"
+            # shapiro-wilk interpretation and conclusion based on p
+            shapiro_tip = f"  • H0: Data is normally distributed.\n  • H1: Data is not normally distributed."
+            shapiro_conclusion = f"✘ Conclusion: ['{variable_name}'] is likely not normally distributed." if shapiro_p < 0.05 else "\n✔ Conclusion: ['{variable_name}'] is likely normally distributed."
+            # anderson-darling
+            anderson_tip = f"   ☻ Tip: Compare the statistic to critical values. Data is likely not normally distributed if the statistic > critical value."
+
+# construct console output
             result.append(f"< Distribution Analysis Summary for: ['{variable_name}'] >\n")
             result.append(f"➡ Min: {var_min:.2f}\n➡ Max: {var_max:.2f}\n➡ Mean: {mean:.2f}\n➡ Median: {median:.2f}\n➡ Mode(s): {mode}")
             result.append(f"➡ Variance: {variance:.2f}\n➡ Standard Deviation: {std_dev:.2f}")
