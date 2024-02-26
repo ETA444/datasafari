@@ -48,7 +48,7 @@ def calculate_mahalanobis(x, mean, inv_cov_matrix):
     >>> observation = np.array([1, 1])
     >>> cov_matrix = np.array([[1, 0.5], [0.5, 1]])
     >>> inv_cov_matrix = np.linalg.inv(cov_matrix)
-    >>> mahalanobis_distance(observation, mean_vector, inv_cov_matrix)
+    >>> calculate_mahalanobis(observation, mean_vector, inv_cov_matrix)
     2.0
 
     Notes
