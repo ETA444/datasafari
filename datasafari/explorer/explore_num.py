@@ -94,6 +94,13 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         distribution_df.columns = stats_functions
         distribution_df.index.name = 'Variable/Statistic'
 
+        # appends (continued) #
+        # method='distribution_analysis' info if method is all
+        if method.lower() == 'all':
+            result.append(f"✎ * NOTE: If method='distribution_analysis', aside from the overview above, the function RETURNS:")
+            result.append(f"■ 1 - Dataframe: where index are your variables, columns are all the calculated statistic (wide format for readability)")
+            result.append(f"☻ HOW TO: df = explore_num(yourdf, yourlist, method='distribution_analysis')")
+
     if method.lower() in ['outliers_iqr', 'all']:
 
         # appends #
@@ -145,10 +152,11 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
         # appends (continued) #
         # (6-9) method='outliers_iqr' info
-        result.append(f"✎ * NOTE: If method='outliers_iqr', aside from the overview above, the function RETURNS:")
-        result.append(f"■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
-        result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
-        result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_iqr')")
+        if method.lower() == 'all':
+            result.append(f"✎ * NOTE: If method='outliers_iqr', aside from the overview above, the function RETURNS:")
+            result.append(f"■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
+            result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
+            result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_iqr')")
 
     if method.lower() in ['outliers_zscore', 'all']:
 
@@ -208,10 +216,11 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
         # appends (continued) #
         # (6-9) method='outliers_zscore' info
-        result.append(f"✎ * NOTE: If method='outliers_zscore', aside from the overview above, the function RETURNS:")
-        result.append(f"■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
-        result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
-        result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_zscore')")
+        if method.lower() == 'all':
+            result.append(f"✎ * NOTE: If method='outliers_zscore', aside from the overview above, the function RETURNS:")
+            result.append(f"■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
+            result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
+            result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_zscore')")
 
     # Combine all results
     combined_result = "\n".join(result)
