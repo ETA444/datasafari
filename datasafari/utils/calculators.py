@@ -1,8 +1,71 @@
 """Module for any sort of calculators used throughout the main subpackages of DataSafari."""
 
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+from numpy.linalg import inv, LinAlgError
+
+
+# calculate_mahalanobis() used in: explore_num()
+def calculate_mahalanobis(x, mean, inv_cov_matrix):
+    """
+    Calculate the Mahalanobis distance for an observation from a distribution.
+
+    The Mahalanobis distance is a measure of the distance between a point and a distribution.
+    It is an effective way to determine how many standard deviations an observation is from
+    the mean of a distribution, considering the covariance among variables. This function
+    computes the Mahalanobis distance of a single observation from the mean of a distribution,
+    given the inverse of the covariance matrix of the distribution.
+
+    Parameters
+    ----------
+    x : numpy.ndarray or pandas.Series
+        A 1D array of the observation or a single row from a DataFrame.
+    mean : numpy.ndarray
+        The mean vector of the distribution from which distances are calculated.
+        Must be 1D and of the same length as `x`.
+    inv_cov_matrix : numpy.ndarray
+        The inverse of the covariance matrix of the distribution. This matrix
+        must be square and its size should match the number of elements in `x`.
+
+    Returns
+    -------
+    float
+        The Mahalanobis distance of the observation `x` from the distribution
+        defined by `mean` and `inv_cov_matrix`.
+
+    Raises
+    ------
+    ValueError
+        If `x` and `mean` do not have the same length.
+    LinAlgError
+        If the inverse covariance matrix is singular and cannot be used for
+        distance calculation.
+
+    Examples
+    --------
+    >>> mean_vector = np.array([0, 0])
+    >>> observation = np.array([1, 1])
+    >>> cov_matrix = np.array([[1, 0.5], [0.5, 1]])
+    >>> inv_cov_matrix = np.linalg.inv(cov_matrix)
+    >>> mahalanobis_distance(observation, mean_vector, inv_cov_matrix)
+    2.0
+
+    Notes
+    -----
+    The Mahalanobis distance is widely used in outlier detection and cluster analysis.
+    It is scale-invariant and takes into account the correlations of the data set.
+    """
+    if len(x) != len(mean):
+        raise ValueError("The observation and mean must have the same length.")
+
+    x_minus_mu = x - mean
+    try:
+        distance = np.dot(np.dot(x_minus_mu, inv_cov_matrix), x_minus_mu.T)
+    except np.linalg.LinAlgError:
+        raise np.linalg.LinAlgError("Singular matrix provided as inverse covariance matrix.")
+
+    return distance
 
 
 # calculate_entropy() used in: explore_cat()
