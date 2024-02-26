@@ -89,6 +89,8 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     outliers_iqr_df = pd.DataFrame()
     # (4) method 'distribution_analysis' only, returns this df to the user
     distribution_df = pd.DataFrame(columns=numerical_variables)
+    # (5) method 'correlation_analysis' only, returns df to the user
+    correlation_dfs = []
 
     # TODO: New method: 'assumptions' - Add general model assumption tests
     # # # TODO: Migrate Normality tests to assumptions.
@@ -340,6 +342,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         if method.lower() == 'distribution_analysis':
             return distribution_df
 
+        if method.lower() == 'correlation_analysis':
+            return correlation_dfs
+
     elif output.lower() == 'return':
         # normal functionality of output: return
         if method.lower() == 'all':
@@ -355,6 +360,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         if method.lower() == 'distribution_analysis':
             return distribution_df
 
+        if method.lower() == 'correlation_analysis':
+            return correlation_dfs
+
     else:
         raise ValueError("Invalid output method. Choose 'print' or 'return'.")
 
@@ -366,5 +374,5 @@ cols = [
     'flipper_length_mm', 'body_mass_g'
 ]
 
-distribution_analysis_df = explore_num(pengu, cols, method='distribution_analysis')
+pearson_df, spearman_df, kendall_df = explore_num(pengu, cols, method='correlation_analysis')
 # outlier_dict, outlier_df = explore_num(pengu, cols, method='outliers_zscore')
