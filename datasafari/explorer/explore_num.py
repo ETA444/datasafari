@@ -66,9 +66,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             result.append(f"< Distribution Analysis Summary for: ['{variable_name}'] >\n")
             result.append(f"➡ Min: {var_min:.2f}\n➡ Max: {var_max:.2f}\n➡ Mean: {mean:.2f}\n➡ Median: {median:.2f}\n➡ Mode(s): {mode}")
             result.append(f"➡ Variance: {variance:.2f}\n➡ Standard Deviation: {std_dev:.2f}")
-            result.append(f"➡ Skewness: {skewness:.2f}\n➡ Kurtosis: {kurt:.2f}")
-            result.append(f"\n★ Shapiro-Wilk Test for Normality:\n   ➡ p-value = {shapiro_p:.4f} (Normal distribution suggested if p > 0.05)")
-            result.append(f"\n★ Anderson-Darling Test for Normality:\n   ➡ statistic = {anderson_stat.statistic:.4f}\n   ➡ significance levels = {anderson_stat.significance_level}\n   ➡ critical values = {anderson_stat.critical_values}\n")
+            result.append(f"\n➡ Skewness: {skewness:.2f}\n{skewness_tip}\n\n➡ Kurtosis: {kurt:.2f}\n{kurt_tip}")
+            result.append(f"\n★ Shapiro-Wilk Test for Normality:\n{shapiro_tip}\n     ➡ p-value = {shapiro_p:.4f}\n     {shapiro_conclusion}\n")
+            result.append(f"\n★ Anderson-Darling Test for Normality:\n   ➡ statistic = {anderson_stat.statistic:.4f}\n   ➡ significance levels = {anderson_stat.significance_level}\n   ➡ critical values = {anderson_stat.critical_values}\n{anderson_tip}\n")
 
             # save calculation results to stats_dict
             stats_dict['min'].append(var_min)
