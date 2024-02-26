@@ -1,8 +1,9 @@
 import numpy as np
+from numpy.linalg import inv
 import pandas as pd
 from scipy.stats import (
-    shapiro, skew, kurtosis, anderson, # used in 'distribution_analysis'
-    chi2 # used in 'outliers_mahalanobis'
+    shapiro, skew, kurtosis, anderson,  # used in 'distribution_analysis'
+    chi2  # used in 'outliers_mahalanobis'
 )
 from datasafari.utils import calculate_mahalanobis
 
@@ -92,14 +93,18 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     # (3) method 'outliers_iqr' only, returns these to the user
     outliers_iqr_dict = {}
     outliers_iqr_df = pd.DataFrame()
-    # (4) method 'distribution_analysis' only, returns this df to the user
+    # (4) method 'outliers_mahalanobis', returns these to the user
+    outliers_mahalanobis_df = pd.DataFrame()
+    # (5) method 'distribution_analysis' only, returns this df to the user
     distribution_df = pd.DataFrame(columns=numerical_variables)
-    # (5) method 'correlation_analysis' only, returns df to the user
+    # (6) method 'correlation_analysis' only, returns df to the user
     correlation_dfs = []
 
-    # TODO: New method: 'assumptions' - Add general model assumption tests
+    # TODO: New method: 'model_assumptions' - Add general model assumption tests
     # # # TODO: Migrate Normality tests to assumptions.
     # TODO: New method: 'outliers_mahalanobis' - Add additional more robust outlier check: mahalanobis
+    # TODO: Update docstring to reflect new methods: correlation_analysis, outliers_mahalanobis, 'model_assumptions'
+
     if method.lower() in ['correlation_analysis', 'all']:
 
         # calculate correlations per method
@@ -330,6 +335,44 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
             result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_zscore')")
 
+    if method.lower() in ['outliers_mahalanobis', 'all']:
+
+        # use non-na df: data
+        data = df[numerical_variables].dropna()
+
+        try:
+            # calculate the mean and inverse of the covariance matrix
+            mean_vector = data.mean().values
+            inv_cov_matrix = inv(np.cov(data, rowvar=False))
+
+            # apply the utility function to calculate Mahalanobis distance for each observation
+            data['mahalanobis'] = data.apply(lambda row: calculate_mahalanobis(row.values, mean_vector, inv_cov_matrix), axis=1)
+
+            # determine outliers based on the chi-square distribution
+            p_value_threshold = 0.05
+            critical_value = chi2.ppf((1 - p_value_threshold), df=len(numerical_variables))
+
+            # classify outliers based on mahalanobis distance relative to critical value
+            outliers_mahalanobis_df = data[data['mahalanobis'] > critical_value]
+
+            # clean up df
+            data.drop(columns=['mahalanobis'], inplace=True)
+
+            # construct console output
+            result.append(f"\n<<______OUTLIERS - MAHALANOBIS METHOD*______>>\n")
+            result.append(f"Identified outliers based on Mahalanobis distance exceeding the critical value ({critical_value:.2f}) from the chi-square distribution (p-val < {p_value_threshold}.\n")
+            result.append(outliers_mahalanobis_df.to_string())
+
+            # appends (continued) #
+            # (6-9) method='outliers_mahalanobis' info
+            if method.lower() == 'all':
+                result.append(f"✎ * NOTE: If method='outliers_mahalanobis', aside from the overview above, the function RETURNS:")
+                result.append(f"■ 1 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
+                result.append(f"☻ HOW TO: df = explore_num(yourdf, yourlist, method='outliers_mahalanobis')")
+
+        except np.linalg.LinAlgError as error:
+            result.append(f"Error calculating Mahalanobis distance: {error}")
+
     # Combine all results
     combined_result = "\n".join(result)
 
@@ -343,6 +386,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
         if method.lower() == 'outliers_iqr':
             return outliers_iqr_dict, outliers_iqr_df
+
+        if method.lower() == 'outliers_mahalanobis':
+            return outliers_mahalanobis_df
 
         if method.lower() == 'distribution_analysis':
             return distribution_df
@@ -362,6 +408,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         if method.lower() == 'outliers_iqr':
             return outliers_iqr_dict, outliers_iqr_df
 
+        if method.lower() == 'outliers_mahalanobis':
+            return outliers_mahalanobis_df
+
         if method.lower() == 'distribution_analysis':
             return distribution_df
 
@@ -379,5 +428,5 @@ cols = [
     'flipper_length_mm', 'body_mass_g'
 ]
 
-pearson_df, spearman_df, kendall_df = explore_num(pengu, cols, method='correlation_analysis')
+df = explore_num(pengu, cols, method='outliers_mahalanobis')
 # outlier_dict, outlier_df = explore_num(pengu, cols, method='outliers_zscore')
