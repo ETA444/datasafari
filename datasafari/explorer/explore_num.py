@@ -1,5 +1,10 @@
+import numpy as np
 import pandas as pd
-from scipy.stats import shapiro, skew, kurtosis, anderson
+from scipy.stats import (
+    shapiro, skew, kurtosis, anderson, # used in 'distribution_analysis'
+    chi2 # used in 'outliers_mahalanobis'
+)
+from datasafari.utils import calculate_mahalanobis
 
 
 # main function: explore_num
