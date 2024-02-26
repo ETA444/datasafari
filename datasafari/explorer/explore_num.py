@@ -15,15 +15,23 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     # (3) method 'outliers_iqr' only, returns these to the user
     outliers_iqr_dict = {}
     outliers_iqr_df = pd.DataFrame()
+    # (4) method 'distribution_analysis' only, returns this df to the user
+    distribution_df = pd.DataFrame(columns=numerical_variables)
 
-    if method.lower() in ['distribution', 'all']:
+    if method.lower() in ['distribution_analysis', 'all']:
         # TODO: Add interpretation tips
         # TODO: Dataframe output for users who want to retain info
         # appends #
         # (1) title of method section
-        result.append(f"<<______DISTRIBUTION ANALYSIS______>>")
+        result.append(f"<<______DISTRIBUTION ANALYSIS______>>\n")
         # (2) subtitle
         result.append(f"✎ Overview of Results*\n")
+
+        # define #
+        # define dist stats for dictionary
+        stats_functions = ['min', 'max', 'mean', 'median', 'mode', 'variance', 'std_dev', 'skewness', 'kurtosis', 'shapiro_p', 'anderson_stat']
+        # initialize dictionary to be used in the creation of distribution_df
+        stats_dict = {stat: [] for stat in stats_functions}
 
         # main operation: descriptive stats, skewness, kurtosis, normality testing
         for variable_name in numerical_variables:
@@ -32,10 +40,10 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             data = df[variable_name].dropna()
 
             # calculate descriptive stats
+            var_min, var_max = data.min(), data.max()
             mean = data.mean()
             median = data.median()
             mode = data.mode().tolist()
-            var_min, var_max = data.min(), data.max()
             variance = data.var()
             std_dev = data.std()
 
@@ -46,12 +54,36 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             anderson_stat = anderson(data)
 
             # construct console output
-            result.append(f"< Distribution Summary for: ['{variable_name}'] >\n")
+            result.append(f"< Distribution Analysis Summary for: ['{variable_name}'] >\n")
             result.append(f"➡ Min: {var_min:.2f}\n➡ Max: {var_max:.2f}\n➡ Mean: {mean:.2f}\n➡ Median: {median:.2f}\n➡ Mode(s): {mode}")
             result.append(f"➡ Variance: {variance:.2f}\n➡ Standard Deviation: {std_dev:.2f}")
             result.append(f"➡ Skewness: {skewness:.2f}\n➡ Kurtosis: {kurt:.2f}")
             result.append(f"\n★ Shapiro-Wilk Test for Normality:\n   ➡ p-value = {shapiro_p:.4f} (Normal distribution suggested if p > 0.05)")
             result.append(f"\n★ Anderson-Darling Test for Normality:\n   ➡ statistic = {anderson_stat.statistic:.4f}\n   ➡ significance levels = {anderson_stat.significance_level}\n   ➡ critical values = {anderson_stat.critical_values}\n")
+
+            # save calculation results to stats_dict
+            stats_dict['min'].append(var_min)
+            stats_dict['max'].append(var_max)
+            stats_dict['mean'].append(mean)
+            stats_dict['median'].append(median)
+            stats_dict['mode'].append(mode[0] if len(mode) != 0 else pd.NA) # handle special case of multiple modes
+            stats_dict['variance'].append(variance)
+            stats_dict['std_dev'].append(std_dev)
+            stats_dict['skewness'].append(skewness)
+            stats_dict['kurtosis'].append(kurt)
+            stats_dict['shapiro_p'].append(shapiro_p)
+            stats_dict['anderson_stat'].append(anderson_stat.statistic)
+
+        # construct df from stats_dict: distribution_df
+        for stat, values in stats_dict.items():
+            distribution_df = pd.concat(
+                [distribution_df, pd.DataFrame({numerical_variables[i]: [values[i]] for i in range(len(values))}, index=[stat])]
+            )
+
+        # transpose df for easier readability (wide): index is variable name, column is statistic
+        distribution_df = distribution_df.T
+        distribution_df.columns = stats_functions
+        distribution_df.index.name = 'Variable/Statistic'
 
     if method.lower() in ['outliers_iqr', 'all']:
 
@@ -186,6 +218,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         if method.lower() == 'outliers_iqr':
             return outliers_iqr_dict, outliers_iqr_df
 
+        if method.lower() == 'distribution_analysis':
+            return distribution_df
+
     elif output.lower() == 'return':
         # normal functionality of output: return
         if method.lower() == 'all':
@@ -198,6 +233,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         if method.lower() == 'outliers_iqr':
             return outliers_iqr_dict, outliers_iqr_df
 
+        if method.lower() == 'distribution_analysis':
+            return distribution_df
+
     else:
         raise ValueError("Invalid output method. Choose 'print' or 'return'.")
 
@@ -208,5 +246,5 @@ cols = [
     'culmen_length_mm', 'culmen_depth_mm',
     'flipper_length_mm', 'body_mass_g'
 ]
-explore_num(pengu, cols, method='distribution')
+distribution_analysis_df = explore_num(pengu, cols, method='distribution_analysis')
 # outlier_dict, outlier_df = explore_num(pengu, cols, method='outliers_zscore')
