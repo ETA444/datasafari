@@ -90,6 +90,10 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     # (4) method 'distribution_analysis' only, returns this df to the user
     distribution_df = pd.DataFrame(columns=numerical_variables)
 
+    # TODO: New method: 'correlations' Add correlations
+    # TODO: New method: 'assumptions' - Add general model assumption tests
+    # TODO: New method: 'outliers_mahalanobis' - Add additional more robust outlier check: mahalanobis
+
     if method.lower() in ['distribution_analysis', 'all']:
 
         # appends #
@@ -336,5 +340,6 @@ cols = [
     'culmen_length_mm', 'culmen_depth_mm',
     'flipper_length_mm', 'body_mass_g'
 ]
+
 distribution_analysis_df = explore_num(pengu, cols, method='distribution_analysis')
 # outlier_dict, outlier_df = explore_num(pengu, cols, method='outliers_zscore')
