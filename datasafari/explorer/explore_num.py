@@ -11,7 +11,7 @@ from datasafari.utils import calculate_mahalanobis, calculate_vif
 # main function: explore_num
 def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all', output: str = 'print'):
     """
-    Analyze numerical variables in a DataFrame for distribution characteristics, outliers based on Z-score and IQR methods, and normality tests.
+    Analyze numerical variables in a DataFrame for distribution characteristics, outlier detection using multiple methods (Z-score, IQR, Mahalanobis), normality tests, skewness, kurtosis, correlation analysis, and multicollinearity detection.
 
     Parameters
     ----------
@@ -21,21 +21,26 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         A list of strings representing the column names in `df` to be analyzed.
     method : str, optional
         Specifies the analysis method to apply. Options include:
-        - 'distribution_analysis' for distribution characteristics and normality tests.
+        - 'distribution_analysis' for distribution characteristics, including skewness and kurtosis, and normality tests (Shapiro-Wilk, Anderson-Darling).
         - 'outliers_zscore' for outlier detection using the Z-score method.
         - 'outliers_iqr' for outlier detection using the Interquartile Range method.
-        - 'all' to perform all analyses. Default is 'all'.
+        - 'outliers_mahalanobis' for outlier detection using the Mahalanobis distance.
+        - 'correlation_analysis' for analyzing the correlation between numerical variables.
+        - 'multicollinearity' for detecting multicollinearity among the numerical variables.
+        - 'all' to perform all available analyses. Default is 'all'.
     output : str, optional
         Determines the output format. Options include:
         - 'print' to print the analysis results to the console.
-        - 'return' to return the analysis results as a DataFrame or dictionaries. Default is 'print'.
+        - 'return' to return the analysis results as a DataFrame or dictionaries, depending on the analysis type. Default is 'print'.
 
     Returns
     -------
-    Depending on the method chosen:
-    - For 'distribution_analysis', returns a DataFrame with each row representing a statistic (min, max, mean, etc.) and columns for each variable.
-    - For 'outliers_zscore' and 'outliers_iqr', returns two objects: a dictionary mapping variables to their outlier values, and a DataFrame of rows in `df` considered outliers.
-    - If 'output' is set to 'return' and 'method' is 'all', returns a textual summary of all analyses.
+    Depending on the method and output chosen:
+    - For 'distribution_analysis', returns a DataFrame with distribution statistics if output is 'return'.
+    - For outlier detection methods ('outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis'), returns a dictionary mapping variables to their outlier values and a DataFrame of rows considered outliers if output is 'return'.
+    - For 'correlation_analysis', returns a DataFrame showing the correlation coefficients between variables if output is 'return'.
+    - For 'multicollinearity', returns a DataFrame or a Series indicating the presence of multicollinearity, such as VIF scores, if output is 'return'.
+    - If 'output' is set to 'return' and 'method' is 'all', returns a comprehensive summary of all analyses as text or a combination of DataFrames and dictionaries.
 
     Raises
     ------
@@ -44,11 +49,10 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
     Notes
     -----
-    - The function enhances interpretability by providing tips and conclusions based on the statistical tests conducted.
-    - For normality tests:
-        * Shapiro-Wilk Test: H0 (null hypothesis) suggests that the data is normally distributed. A p-value > 0.05 supports H0.
-        * Anderson-Darling Test: Compares the test statistic to critical values to assess normality.
-    - Skewness indicates the symmetry of the distribution. Kurtosis indicates the tailedness of the distribution.
+    - Enhances interpretability by providing insights and conclusions based on the statistical tests and analyses conducted.
+    - Normality tests assess whether data distribution departs from a normal distribution, which is crucial for certain statistical analyses.
+    - Correlation analysis examines the strength and direction of relationships between numerical variables.
+    - Multicollinearity detection is essential for regression analysis, as high multicollinearity can invalidate the model.
 
     Examples
     --------
@@ -82,6 +86,11 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     >>> print(outliers_iqr_df.head())
     >>> print(distribution_analysis_df)
 
+    # Example 8: Comprehensive analysis for multiple variables focusing on outliers, correlations and multicollinearity
+    >>> outliers_mahalanobis_df = explore_num(df, cols, method='outliers_mahalanobis', output='print')
+    >>> pearson_corr, spearman_corr, kendall_corr = explore_num(df, cols, method='correlation_analysis', output='print')
+    # Note: by using method 'print' in this case we both get the return and a print directly
+    # This is because by default specifying 1 method assures that a return is passed to the user, regardless of output setting
     """
 
     # initialize variables #
