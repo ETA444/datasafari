@@ -14,42 +14,37 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str = '
     # TODO: one hot encoding
 
     if method.lower() == 'encode_onehot':
+        print(f"< ONE-HOT ENCODING: {categorical_variables} >\n✎ Note: Please make sure your data is cleaned.\n☻ Tip: You can use explore_cat() to check your data!\n")
+
+        # initialize df to work with
+        transformed_df = df
 
         # create an instance of OneHotEncoder
-        onehot_encoder = OneHotEncoder()
+        onehot_encoder = OneHotEncoder(sparse=False)
 
-        # encode the selected variables
-        for variable in categorical_variables:
-            print(f"< ONE-HOT ENCODING: ['{variable}'] >\n✎ Note: Please make sure your data is cleaned.\n☻ Tip: You can use explore_cat() to check your data!\n")
-            transformed_df = df
+        # encode all variables at once for efficiency
+        encoded_data = onehot_encoder.fit_transform(df[categorical_variables])
 
-            # fit and transform the data
-            encoded_values = onehot_encoder.fit_transform(transformed_df[[variable]])
+        # convert the encoded data to a DataFrame
+        encoded_columns = pd.DataFrame(
+            encoded_data,
+            columns=onehot_encoder.get_feature_names_out(categorical_variables)
+        )
 
-            # convert the sparse matrix to a DataFrame and append to ci
-            encoded_columns = pd.DataFrame(
-                encoded_values.toarray(),
-                columns=onehot_encoder.get_feature_names_out([variable])
-            )
+        # reset indices of both DataFrames to ensure they align when concatenating
+        transformed_df.reset_index(drop=True, inplace=True)
+        encoded_columns.reset_index(drop=True, inplace=True)
 
-            # Reset indices of both DataFrames
-            transformed_df.reset_index(drop=True, inplace=True)
-            encoded_columns.reset_index(drop=True, inplace=True)
+        # concatenate the original DataFrame (without the categorical columns) with the encoded columns
+        transformed_df = pd.concat([transformed_df.drop(columns=categorical_variables), encoded_columns], axis=1)
 
-            # append the new columns to df
-            transformed_df = pd.concat([transformed_df, encoded_columns], axis=1)
+        # inform user
+        print(f"✔ Created a transformed dataframe:\n{transformed_df.head()}\n\n✔ Created a dataframe with only the encoded columns:\n{encoded_columns.head()}\n\n☻ HOW TO: transformed_df, encoded_columns = transform_cat(yourdf, yourcolumns, method='encode_onehot'\n")
 
-            # drop the original column
-            transformed_df.drop(columns=[variable], inplace=True)
+        # sanity check
+        print(f"< SANITY CHECK >\n  ➡ Shape of original df: {df.shape}\n  ➡ Shape of transformed df: {transformed_df.shape}\n")
 
-            # inform user
-            print(f"✔ Created a transformed dataframe:\n{transformed_df.head()}\n\n✔ Created a dataframe with only the encoded columns:\n{encoded_columns.head()}\n\n☻ HOW TO: transformed_df, encoded_columns = transform_cat(yourdf, yourcolumns, method='encode_onehot'\n")
-
-            # sanity check
-            print(f"< SANITY CHECK >\n  ➡ Shape of original df: {df.shape}\n  ➡ Shape of transformed df: {transformed_df.shape}\n")
-
-            # return transformed_df to user
-            return transformed_df, encoded_columns
+        return transformed_df, encoded_columns
 
 
 # smoke tests
