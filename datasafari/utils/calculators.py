@@ -4,6 +4,19 @@
 import numpy as np
 import pandas as pd
 from numpy.linalg import inv, LinAlgError
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+from statsmodels.tools.tools import add_constant
+
+
+# calculate_vif() used in: explore_num()
+def calculate_vif(df, numerical_variables):
+    # Add constant for intercept
+    X = add_constant(df[numerical_variables])
+    vifs = pd.Series(
+        [variance_inflation_factor(X.values, i) for i in range(X.shape[1])],
+        index=X.columns
+    )
+    return vifs
 
 
 # calculate_mahalanobis() used in: explore_num()
