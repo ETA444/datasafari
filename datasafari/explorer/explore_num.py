@@ -5,7 +5,7 @@ from scipy.stats import (
     shapiro, skew, kurtosis, anderson,  # used in 'distribution_analysis'
     chi2  # used in 'outliers_mahalanobis'
 )
-from datasafari.utils import calculate_mahalanobis
+from datasafari.utils import calculate_mahalanobis, calculate_vif
 
 
 # main function: explore_num
