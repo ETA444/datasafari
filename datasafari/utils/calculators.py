@@ -10,7 +10,43 @@ from statsmodels.tools.tools import add_constant
 
 # calculate_vif() used in: explore_num()
 def calculate_vif(df, numerical_variables):
-    # Add constant for intercept
+    """
+    Calculates the Variance Inflation Factor (VIF) for each numerical variable in a DataFrame to assess multicollinearity.
+
+    The VIF quantifies the extent of correlation between one predictor and the other predictors in a model. It is used to identify the strength and presence of multicollinearity, where a VIF of 1 indicates no correlation between a given variable and any others, VIFs between 1 and 5 suggest moderate correlation, and VIFs above 5 may indicate a problematic amount of correlation that could affect regression analyses.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing the numerical data for which VIFs are to be calculated.
+    numerical_variables : list
+        A list of strings representing the column names in `df` for which the VIF should be calculated. These columns should contain numerical data.
+
+    Returns
+    -------
+    pd.Series
+        A pandas Series where each index corresponds to the column names provided in `numerical_variables` (including a constant term "const" that accounts for the intercept), and each value is the VIF for that column.
+
+    Raises
+    ------
+    ValueError
+        If `numerical_variables` does not contain valid column names of `df`.
+
+    Notes
+    -----
+    - It is crucial to include a constant term in the model for intercept when calculating VIFs. This function automatically adds a constant to the set of variables.
+    - High VIFs can indicate a high multicollinearity among independent variables, which can affect the stability and interpretability of regression coefficients in linear regression models.
+
+    Examples
+    --------
+    # Example usage to calculate VIF values for numerical variables in a DataFrame
+    >>> df = pd.read_csv('path/to/dataset.csv')
+    >>> numerical_variables = ['Age', 'BMI', 'BloodPressure']
+    >>> vifs = calculate_vif(df, numerical_variables)
+    >>> print(vifs)
+
+    This will output the VIF for each variable, helping to diagnose multicollinearity issues in your dataset.
+    """
     X = add_constant(df[numerical_variables])
     vifs = pd.Series(
         [variance_inflation_factor(X.values, i) for i in range(X.shape[1])],
