@@ -100,12 +100,6 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     # (6) method 'correlation_analysis' only, returns df to the user
     correlation_dfs = []
 
-    # ---> TODO: New method: 'model_assumptions' - Add general model assumption tests
-    # DONE TODO: New method: 'correlation_analysis'
-    # # # TODO: Migrate Normality tests to assumptions.
-    # DONE TODO: New method: 'outliers_mahalanobis' - Add additional more robust outlier check: mahalanobis
-    # ---> TODO: Update docstring to reflect new methods: correlation_analysis, outliers_mahalanobis, 'model_assumptions'
-
     if method.lower() in ['correlation_analysis', 'all']:
 
         # calculate correlations per method
@@ -374,6 +368,16 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         except np.linalg.LinAlgError as error:
             result.append(f"Error calculating Mahalanobis distance: {error}")
 
+    if method.lower() in ['multicollinearity', 'all']:
+
+        # use non-na df: data
+        data = df[numerical_variables].dropna()
+
+        vifs = calculate_vif(data, numerical_variables)
+        result.append(f"\n<<______MULTICOLLINEARITY CHECK - VIF______>>\n")
+        result.append(f"Variance Inflation Factors:\n{vifs.to_string()}\n")
+        result.append("☻ Tip: VIF > 10 indicates potential multicollinearity concerns.")
+
     # Combine all results
     combined_result = "\n".join(result)
 
@@ -429,5 +433,5 @@ cols = [
     'flipper_length_mm', 'body_mass_g'
 ]
 
-explore_num(pengu, cols)
+explore_num(pengu, cols, method='multicollinearity')
 # outlier_dict, outlier_df = explore_num(pengu, cols, method='outliers_zscore')
