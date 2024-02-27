@@ -433,14 +433,3 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
     else:
         raise ValueError("Invalid output method. Choose 'print' or 'return'.")
-
-
-# smoke tests
-pengu = pd.read_csv('./datasets/penguins.csv')
-cols = [
-    'culmen_length_mm', 'culmen_depth_mm',
-    'flipper_length_mm', 'body_mass_g'
-]
-
-explore_num(pengu, cols, method='multicollinearity')
-# outlier_dict, outlier_df = explore_num(pengu, cols, method='outliers_zscore')
