@@ -100,10 +100,11 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     # (6) method 'correlation_analysis' only, returns df to the user
     correlation_dfs = []
 
-    # TODO: New method: 'model_assumptions' - Add general model assumption tests
+    # ---> TODO: New method: 'model_assumptions' - Add general model assumption tests
+    # DONE TODO: New method: 'correlation_analysis'
     # # # TODO: Migrate Normality tests to assumptions.
-    # TODO: New method: 'outliers_mahalanobis' - Add additional more robust outlier check: mahalanobis
-    # TODO: Update docstring to reflect new methods: correlation_analysis, outliers_mahalanobis, 'model_assumptions'
+    # DONE TODO: New method: 'outliers_mahalanobis' - Add additional more robust outlier check: mahalanobis
+    # ---> TODO: Update docstring to reflect new methods: correlation_analysis, outliers_mahalanobis, 'model_assumptions'
 
     if method.lower() in ['correlation_analysis', 'all']:
 
@@ -132,9 +133,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
         # appends #
         # (1) title of method section
-        result.append(f"<<______DISTRIBUTION ANALYSIS______>>\n")
+        result.append(f"\n<<______DISTRIBUTION ANALYSIS______>>\n")
         # (2) subtitle
-        result.append(f"✎ Overview of Results*\n")
+        result.append(f"✎ Overview of Results*")
 
         # define #
         # define dist stats for dictionary
@@ -173,7 +174,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             anderson_tip = f"   ☻ Tip: Compare the statistic to critical values. Data is likely not normally distributed if the statistic > critical value."
 
             # construct console output
-            result.append(f"< Distribution Analysis Summary for: ['{variable_name}'] >\n")
+            result.append(f"\n< Distribution Analysis Summary for: ['{variable_name}'] >\n")
             result.append(f"➡ Min: {var_min:.2f}\n➡ Max: {var_max:.2f}\n➡ Mean: {mean:.2f}\n➡ Median: {median:.2f}\n➡ Mode(s): {mode}")
             result.append(f"➡ Variance: {variance:.2f}\n➡ Standard Deviation: {std_dev:.2f}")
             result.append(f"\n➡ Skewness: {skewness:.2f}\n{skewness_tip}\n\n➡ Kurtosis: {kurt:.2f}\n{kurt_tip}")
@@ -210,7 +211,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         # appends (continued) #
         # method='distribution_analysis' info if method is all
         if method.lower() == 'all':
-            result.append(f"✎ * NOTE: If method='distribution_analysis', aside from the overview above, the function RETURNS:")
+            result.append(f"\n✎ * NOTE: If method='distribution_analysis', aside from the overview above, the function RETURNS:")
             result.append(f"■ 1 - Dataframe: where index are your variables, columns are all the calculated statistic (wide format for readability)")
             result.append(f"☻ HOW TO: df = explore_num(yourdf, yourlist, method='distribution_analysis')")
 
@@ -218,9 +219,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
         # appends #
         # (1) title of method section
-        result.append(f"<<______OUTLIERS - IQR METHOD______>>\n")
+        result.append(f"\n<<______OUTLIERS - IQR METHOD______>>\n")
         # (2) suitability tip
-        result.append(f"Tip: The IQR method is robust against extreme values, ideal for identifying outliers\nin skewed distributions by focusing on the data's middle 50%.\n")
+        result.append(f"☻ Tip: The IQR method is robust against extreme values, ideal for identifying outliers\nin skewed distributions by focusing on the data's middle 50%.\n")
         # (3) subtitle
         result.append(f"✎ Overview of Results*\n")
 
@@ -266,7 +267,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         # appends (continued) #
         # (6-9) method='outliers_iqr' info
         if method.lower() == 'all':
-            result.append(f"✎ * NOTE: If method='outliers_iqr', aside from the overview above, the function RETURNS:")
+            result.append(f"\n✎ * NOTE: If method='outliers_iqr', aside from the overview above, the function RETURNS:")
             result.append(f"■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
             result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
             result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_iqr')")
@@ -279,9 +280,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
         # appends #
         # (1) title of method section
-        result.append(f"<<______OUTLIERS - Z-SCORE METHOD______>>\n")
+        result.append(f"\n<<______OUTLIERS - Z-SCORE METHOD______>>\n")
         # (2) suitability tip
-        result.append(f"Tip: The Z-Score method excels at identifying outliers in data with a distribution\nclose to normal, highlighting values far from the mean.\n")
+        result.append(f"☻ Tip: The Z-Score method excels at identifying outliers in data with a distribution\nclose to normal, highlighting values far from the mean.\n")
         # (3) subtitle
         result.append(f"✎ Overview of Results*\n")
 
@@ -330,7 +331,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         # appends (continued) #
         # (6-9) method='outliers_zscore' info
         if method.lower() == 'all':
-            result.append(f"✎ * NOTE: If method='outliers_zscore', aside from the overview above, the function RETURNS:")
+            result.append(f"\n✎ * NOTE: If method='outliers_zscore', aside from the overview above, the function RETURNS:")
             result.append(f"■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
             result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
             result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_zscore')")
@@ -366,7 +367,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             # appends (continued) #
             # (6-9) method='outliers_mahalanobis' info
             if method.lower() == 'all':
-                result.append(f"✎ * NOTE: If method='outliers_mahalanobis', aside from the overview above, the function RETURNS:")
+                result.append(f"\n✎ * NOTE: If method='outliers_mahalanobis', aside from the overview above, the function RETURNS:")
                 result.append(f"■ 1 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
                 result.append(f"☻ HOW TO: df = explore_num(yourdf, yourlist, method='outliers_mahalanobis')")
 
@@ -428,5 +429,5 @@ cols = [
     'flipper_length_mm', 'body_mass_g'
 ]
 
-df = explore_num(pengu, cols, method='outliers_mahalanobis')
+explore_num(pengu, cols)
 # outlier_dict, outlier_df = explore_num(pengu, cols, method='outliers_zscore')
