@@ -123,11 +123,29 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
 
         return transformed_df, uniform_columns
 
-    if method.lower() == 'encode_onehot':
-        print(f"< ONE-HOT ENCODING: {categorical_variables} >\n✎ Note: Please make sure your data is cleaned.\n☻ Tip: You can use explore_cat() to check your data!\n")
+    if method.lower() == 'uniform_mapping' and abbreviation_map:
+        print(f"< MANUAL CATEGORY MAPPING >")
+        print(" This method allows for manual mapping of categories to address specific cases:")
+        print("  ✔ Maps categories based on user-defined rules.")
+        print("  ✔ Useful for stubborn categories that automated methods can't uniformly transform.")
+        print("✎ Note: Ensure your mapping dictionary is comprehensive for the best results.\n")
 
-        # initialize df to work with
         transformed_df = df.copy()
+        uniform_columns = pd.DataFrame()
+
+        for variable in categorical_variables:
+            if variable in abbreviation_map:
+                # apply mapping
+                transformed_df[variable] = transformed_df[variable].map(lambda x: abbreviation_map[variable].get(x, x))
+                uniform_columns = pd.concat([uniform_columns, transformed_df[[variable]]], axis=1)
+
+                print(f"\n['{variable}'] Category Mapping\n")
+                print(f"Categories BEFORE mapping ({len(df[variable].unique())}): {df[variable].unique()}\n")
+                print(f"Categories AFTER mapping ({len(transformed_df[variable].unique())}): {transformed_df[variable].unique()}\n")
+
+        print("< SANITY CHECK >")
+        print(f"  ➡ Original dataframe shape: {df.shape}")
+        print(f"  ➡ Transformed dataframe shape: {transformed_df.shape}\n")
 
         # create an instance of OneHotEncoder
         onehot_encoder = OneHotEncoder(sparse=False)
@@ -156,6 +174,7 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
 
         return transformed_df, encoded_columns
 
+# smoke tests #
 
 
 # create simple test dataset for smoke tests: nonuniform_df #
