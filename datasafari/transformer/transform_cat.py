@@ -34,14 +34,31 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
         uniform_columns = pd.DataFrame()
 
         for variable in categorical_variables:
-            transformed_df = transformed_df[variable].str.lower().str.strip()
-            uniform_columns = pd.concat([uniform_columns, transformed_df[variable]], axis=1)
-            print(f"\n['{variable}']\n")
-            print(f"Categories BEFORE: {df[variable].unique()}\n")
-            print(f"Categories AFTER: {transformed_df[variable].unique()}\n")
+            # Convert to handle missing values, lowercase, strip, and remove special characters
+            transformed_column = (
+                transformed_df[variable]
+                .astype(str)
+                .fillna(na_placeholder)  # Customize this placeholder as needed
+                .str.lower()
+                .str.strip()
+                .str.replace('[^a-zA-Z0-9\s]', '', regex=True)
+            )
+            transformed_df[variable] = transformed_column
+            uniform_columns = pd.concat([uniform_columns, transformed_column], axis=1)
 
-        # inform user
-        print(f"✔ Created a transformed dataframe:\n{transformed_df.head()}\n\n✔ Created a dataframe with only the uniform columns:\n{uniform_columns.head()}\n\n☻ HOW TO: transformed_df, uniform_columns = transform_cat(yourdf, yourcolumns, method='clean_uniform'\n")
+            print(f"\n['{variable}'] Category Transformation\n")
+            print(f"Categories BEFORE transformation ({len(df[variable].unique())}): {df[variable].unique()}\n")
+            print(f"Categories AFTER transformation ({len(transformed_df[variable].unique())}): {transformed_df[variable].unique()}\n")
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the uniform columns:\n{uniform_columns.head()}\n")
+        print("☻ HOW TO: To catch the df's use - `transformed_df, uniform_columns = transform_cat(your_df, your_columns, method='uniform_simple')`.\n")
+        print("< SANITY CHECK >")
+        print(f"  ➡ Shape of original df: {df.shape}")
+        print(f"  ➡ Shape of transformed df: {transformed_df.shape}\n")
+        print("* For more advanced and nuanced data cleaning, consider using `uniform_smart`.")
+
+        return transformed_df, uniform_columns
 
         # sanity check
         print(f"< SANITY CHECK >\n  ➡ Shape of original df: {df.shape}\n  ➡ Shape of transformed df: {transformed_df.shape}\n")
