@@ -63,7 +63,8 @@ urllib3==2.2.0
 virtualenv==20.25.0
 wordcloud==1.9.3
 zipp==3.17.0
-
 setuptools~=61.2.0
 scipy~=1.7.3
 statsmodels~=0.13.2
+scikit-learn~=1.0.2
+Levenshtein==0.25.0
