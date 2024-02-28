@@ -60,8 +60,66 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
 
         return transformed_df, uniform_columns
 
-        # sanity check
-        print(f"< SANITY CHECK >\n  ➡ Shape of original df: {df.shape}\n  ➡ Shape of transformed df: {transformed_df.shape}\n")
+    if method.lower() == 'uniform_smart':
+        print(f"< UNIFORM SMART TRANSFORMATION* >")
+        print(f" This method leverages advanced data cleaning techniques for categorical variables, enhancing uniformity across your dataset:")
+        print(f"  ✔ Utilizes the `uniform_simple` method for initial preprocessing steps.")
+        print(f"  ✔ Employs Levenshtein distance to evaluate textual similarity among categories.")
+        print(f"  ✔ Applies hierarchical clustering to group similar categories together.")
+        print(f"  ✔ Selects the most representative category within each cluster to ensure data consistency.")
+        print(f"  ✔ Fills missing values with a placeholder to maintain data integrity. (default 'Unknown', customize with na_placeholder = '...')\n")
+
+        transformed_df = df.copy()
+        uniform_columns = pd.DataFrame()
+
+        for variable in categorical_variables:
+            # preprocess categories using uniform_simple method
+            categories = (
+                transformed_df[variable]
+                .astype(str)
+                .fillna(na_placeholder)  # Customize this placeholder as needed
+                .str.lower()
+                .str.strip()
+                .str.replace('[^a-zA-Z0-9\s]', '', regex=True)
+            )
+            unique_categories = categories.unique()
+
+            # calculate the similarity matrix using Levenshtein distance
+            dist_matrix = np.array([[lev.distance(w1, w2) for w1 in unique_categories] for w2 in unique_categories])
+            max_dist = np.max(dist_matrix)
+            sim_matrix = 1 - dist_matrix / max_dist if max_dist != 0 else np.zeros_like(dist_matrix)
+
+            # perform hierarchical clustering on the similarity matrix
+            Z = linkage(sim_matrix, method='complete')
+            cluster_labels = fcluster(Z, t=0.5, criterion='distance')
+
+            # assign each category to a cluster representative
+            representatives = {}
+            for cluster in np.unique(cluster_labels):
+                index = np.where(cluster_labels == cluster)[0]
+                cluster_categories = unique_categories[index]
+                # select the most frequent category within each cluster as the representative
+                representative = max(cluster_categories, key=lambda x: (categories == x).sum())
+                representatives[cluster] = representative
+
+            # map each category in the original dataframe to its cluster representative
+            category_to_representative = {cat: representatives[cluster_labels[i]] for i, cat in enumerate(unique_categories)}
+            transformed_df[variable] = categories.map(category_to_representative)
+
+            # add transformed column to uniform_columns DataFrame
+            uniform_columns = pd.concat([uniform_columns, transformed_df[[variable]]], axis=1)
+
+            print(f"\n['{variable}'] Category Transformation\n")
+            print(f"Categories BEFORE transformation ({len(df[variable].unique())}): {df[variable].unique()}\n")
+            print(f"Categories AFTER transformation ({len(transformed_df[variable].unique())}): {transformed_df[variable].unique()}\n")
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the uniform columns:\n{uniform_columns.head()}\n")
+        print("☻ HOW TO: To catch the df's use - `transformed_df, uniform_columns = transform_cat(your_df, your_columns, method='uniform_smart')`.\n")
+        print("< SANITY CHECK >")
+        print(f"  ➡ Shape of original df: {df.shape}")
+        print(f"  ➡ Shape of transformed df: {transformed_df.shape}\n")
+        print("* Consider `uniform_simple` for basic data cleaning needs or when processing large datasets where computational efficiency is a concern.")
 
         return transformed_df, uniform_columns
 
