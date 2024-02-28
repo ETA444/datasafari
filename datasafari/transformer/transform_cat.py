@@ -4,27 +4,35 @@ from sklearn.preprocessing import (
     OneHotEncoder,
     StandardScaler
 )
+from scipy.cluster.hierarchy import linkage, fcluster
+import Levenshtein as lev
+from collections import Counter
 from datasafari import explore_cat
 
 
 # main function: transform_cat
-def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, abbreviation_map: dict = None):
-    # TODO: preprocess categorical data to make: uniform (e.g. Education column has University and university, etc.)
-    # TODO: easily create ordinal categorical variables
-    # TODO: easily create nominal categorical variables
-    # TODO: ordinal encoding with overwrite or no overwrite
-    # TODO: one hot encoding
+def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na_placeholder: str = 'Unknown', abbreviation_map: dict = None):
+    # TODO: encode_ordinal
+    # TODO: encode_frequency
+    # TODO: encode_target
+    # TODO: encode_binary
+    # TODO: hashing
+    # TODO: Add ValueError capture for method on transform_cat (if method.lower() in [all methods..]
+    # TODO: Add ValueError capture for method on explore_df (if method.lower() in [all methods..]
+    # TODO: Add ValueError capture for method on explore_cat (if method.lower() in [all methods..]
+    # TODO: Add ValueError capture for method on explore_num (if method.lower() in [all methods..]
 
-    if method.lower() == 'uniform_format':
-        print(f"< MAKING CATEGORIES UNIFORM: {categorical_variables} >")
-        print(f"  ✔ Fix capitalization: e.g. ['Student', 'STUDENT', 'stUdent'] => ['student']")
-        print(f"  ✔ Fix whitespace: e.g. ['high   school', 'high school  ', '  high school'] => ['high school']")
+    if method.lower() == 'uniform_simple':
+        print(f"< UNIFORM SIMPLE TRANSFORMATION* >")
+        print(f" This method applies basic but effective transformations to make categorical data uniform:")
+        print(f"  ✔ Lowercases all text to fix capitalization inconsistencies.")
+        print(f"  ✔ Trims leading and trailing whitespaces for cleanliness.")
+        print(f"  ✔ Removes special characters to standardize text.")
+        print(f"  ✔ Fills missing values with a placeholder to maintain data integrity. (use na_placeholder = '...', default 'Unknown')")
 
-        # initialize dfs to work with
         transformed_df = df.copy()
         uniform_columns = pd.DataFrame()
 
-        # main functionality
         for variable in categorical_variables:
             transformed_df = transformed_df[variable].str.lower().str.strip()
             uniform_columns = pd.concat([uniform_columns, transformed_df[variable]], axis=1)
@@ -74,24 +82,39 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, ab
         return transformed_df, encoded_columns
 
 
-# smoke tests
-pengu = pd.read_csv('./datasets/penguins.csv')
 
-transformed_df1, encoded_columns1 = transform_cat(pengu, ['sex'], method='encode_onehot')
-
-# uniform_ tests
-# Correcting the sample DataFrame to match the sizes
+# create simple test dataset for smoke tests: nonuniform_df #
 nonuniform_data = {
     'Category': [
-        'Student', 'student', 'STUDENT', 'StUdEnT',  # Variations of "student"
+        'Student', 'student', 'STUDENT', 'St!UdE$nT',  # Variations of "student"
         'high school', 'High School', 'high   school', 'highschool', 'hgh schl',  # Variations of "high school"
         'university', 'University', 'UNIVERSITY', 'universty',  # Variations of "university"
         'college', 'College', 'COLLEGE', 'collg'  # Variations of "college"
     ]
 }
-
 nonuniform_data['Value'] = np.random.randint(1, 100, size=len(nonuniform_data['Category']))
+nonuniform_df = pd.DataFrame(nonuniform_data)
 
-nu_df = pd.DataFrame(nonuniform_data)
+
+# 'uniform_...' tests #
+
+# uniform_simple
+simple_transformed_df, simple_transformed_cols = transform_cat(nu_df, ['Category'], method='uniform_simple')
+
+# uniform_smart
+smart_transformed_df, smart_transformed_cols = transform_cat(nonuniform_df, ['Category'], method='uniform_smart')
+
+# uniform_mapping
+abbreviation_map = {
+    'Category': {
+        'high   school': 'high school',
+        'hgh schl': 'high school'
+    }
+}
+final_transformed_df, final_transformed_cols = transform_cat(smart_transformed_df, ['Category'], method='uniform_mapping', abbreviation_map=abbreviation_map)
 
 
+# 'encode_...' tests #
+
+# encode_onehot
+onehot_encoded_df, onehot_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_onehot')
