@@ -150,7 +150,8 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         for variable_name in numerical_variables:
 
             # modify data for this analysis: no NAs
-            data = df[variable_name].dropna()
+            data = df[variable_name].copy()
+            data = data.dropna()
 
             # calculate descriptive stats
             var_min, var_max = data.min(), data.max()
@@ -342,7 +343,8 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     if method.lower() in ['outliers_mahalanobis', 'all']:
 
         # use non-na df: data
-        data = df[numerical_variables].dropna()
+        data = df.copy()
+        data = data[numerical_variables].dropna()
 
         try:
             # calculate the mean and inverse of the covariance matrix
@@ -380,7 +382,8 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     if method.lower() in ['multicollinearity', 'all']:
 
         # use non-na df: data
-        data = df[numerical_variables].dropna()
+        data = df.copy()
+        data = data[numerical_variables].dropna()
 
         vifs = calculate_vif(data, numerical_variables)
         result.append(f"\n<<______MULTICOLLINEARITY CHECK - VIF______>>\n")
