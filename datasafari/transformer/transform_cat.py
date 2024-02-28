@@ -147,30 +147,46 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
         print(f"  ➡ Original dataframe shape: {df.shape}")
         print(f"  ➡ Transformed dataframe shape: {transformed_df.shape}\n")
 
-        # create an instance of OneHotEncoder
+        return transformed_df, uniform_columns
+
+    if method.lower() == 'encode_onehot':
+        print(f"< ONE-HOT ENCODING TRANSFORMATION >")
+        print(f" This method converts categorical variables into a form that could be provided to ML algorithms to do a better job in prediction:")
+        print(f"  ✔ Converts each category value into a new column and assigns a 1 or 0 (notation for true/false).")
+        print(f"  ✔ Ensures the data is ready for machine learning models without assuming any ordinal relationship.")
+        print(f"  ✔ Helps to tackle the issue of 'curse of dimensionality' in a controlled manner.")
+        print(f"✎ Note: Before encoding, ensure data uniformity and cleanliness.\n☻ Tip: Use `uniform_simple` or `uniform_smart` from `transform_cat()` for advanced categorical data cleaning.\n")
+
+        # initialize dataframe to work with
+        transformed_df = df.copy()
+
+        # create an instance of one hot encoder
         onehot_encoder = OneHotEncoder(sparse=False)
 
         # encode all variables at once for efficiency
         encoded_data = onehot_encoder.fit_transform(df[categorical_variables])
 
-        # convert the encoded data to a DataFrame
+        # convert the encoded data to a dataframe
         encoded_columns = pd.DataFrame(
             encoded_data,
             columns=onehot_encoder.get_feature_names_out(categorical_variables)
         )
 
-        # reset indices of both DataFrames to ensure they align when concatenating
+        # reset indices of both dataframes to ensure they align when concatenating
         transformed_df.reset_index(drop=True, inplace=True)
         encoded_columns.reset_index(drop=True, inplace=True)
 
-        # concatenate the original DataFrame (without the categorical columns) with the encoded columns
+        # concatenate the original dataframe (minus the categorical columns) with the encoded columns
         transformed_df = pd.concat([transformed_df.drop(columns=categorical_variables), encoded_columns], axis=1)
 
-        # inform user
-        print(f"✔ Created a transformed dataframe:\n{transformed_df.head()}\n\n✔ Created a dataframe with only the encoded columns:\n{encoded_columns.head()}\n\n☻ HOW TO: transformed_df, encoded_columns = transform_cat(yourdf, yourcolumns, method='encode_onehot'\n")
+        print(f"✔ New transformed dataframe with one-hot encoded variables:\n{transformed_df.head()}\n")
+        print(f"✔ Separate dataframe with only the one-hot encoded columns:\n{encoded_columns.head()}\n")
+        print("☻ HOW TO: To catch the df's use - `transformed_df, encoded_columns = transform_cat(your_df, your_columns, method='encode_onehot')`.\n")
 
         # sanity check
-        print(f"< SANITY CHECK >\n  ➡ Shape of original df: {df.shape}\n  ➡ Shape of transformed df: {transformed_df.shape}\n")
+        print("< SANITY CHECK >")
+        print(f"  ➡ Original dataframe shape: {df.shape}")
+        print(f"  ➡ Transformed dataframe shape: {transformed_df.shape}\n")
 
         return transformed_df, encoded_columns
 
