@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from sklearn.preprocessing import (
     OneHotEncoder,
@@ -7,14 +8,14 @@ from datasafari import explore_cat
 
 
 # main function: transform_cat
-def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str):
+def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, abbreviation_map: dict = None):
     # TODO: preprocess categorical data to make: uniform (e.g. Education column has University and university, etc.)
     # TODO: easily create ordinal categorical variables
     # TODO: easily create nominal categorical variables
     # TODO: ordinal encoding with overwrite or no overwrite
     # TODO: one hot encoding
 
-    if method.lower() == 'clean_uniform':
+    if method.lower() == 'uniform_format':
         print(f"< MAKING CATEGORIES UNIFORM: {categorical_variables} >")
         print(f"  ✔ Fix capitalization: e.g. ['Student', 'STUDENT', 'stUdent'] => ['student']")
         print(f"  ✔ Fix whitespace: e.g. ['high   school', 'high school  ', '  high school'] => ['high school']")
@@ -25,7 +26,8 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str):
 
         # main functionality
         for variable in categorical_variables:
-
+            transformed_df = transformed_df[variable].str.lower().str.strip()
+            uniform_columns = pd.concat([uniform_columns, transformed_df[variable]], axis=1)
             print(f"\n['{variable}']\n")
             print(f"Categories BEFORE: {df[variable].unique()}\n")
             print(f"Categories AFTER: {transformed_df[variable].unique()}\n")
