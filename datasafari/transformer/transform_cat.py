@@ -78,3 +78,20 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, ab
 pengu = pd.read_csv('./datasets/penguins.csv')
 
 transformed_df1, encoded_columns1 = transform_cat(pengu, ['sex'], method='encode_onehot')
+
+# uniform_ tests
+# Correcting the sample DataFrame to match the sizes
+nonuniform_data = {
+    'Category': [
+        'Student', 'student', 'STUDENT', 'StUdEnT',  # Variations of "student"
+        'high school', 'High School', 'high   school', 'highschool', 'hgh schl',  # Variations of "high school"
+        'university', 'University', 'UNIVERSITY', 'universty',  # Variations of "university"
+        'college', 'College', 'COLLEGE', 'collg'  # Variations of "college"
+    ]
+}
+
+nonuniform_data['Value'] = np.random.randint(1, 100, size=len(nonuniform_data['Category']))
+
+nu_df = pd.DataFrame(nonuniform_data)
+
+
