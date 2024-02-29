@@ -12,16 +12,27 @@ from datasafari import explore_cat
 
 
 # main function: transform_cat
-def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na_placeholder: str = 'Unknown', abbreviation_map: dict = None, ordinal_map: dict = None):
+def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na_placeholder: str = 'Unknown', abbreviation_map: dict = None, ordinal_map: dict = None, target_variable: str = None):
+
+    # Methods for transform_cat
     # DONE! TODO: encode_ordinal
-    # TODO: encode_frequency
+    # DONE! TODO: encode_frequency
     # TODO: encode_target
     # TODO: encode_binary
     # TODO: hashing
+
+    # Error Handling
     # TODO: Add ValueError capture for method on transform_cat (if method.lower() in [all methods..]
     # TODO: Add ValueError capture for method on explore_df (if method.lower() in [all methods..]
     # TODO: Add ValueError capture for method on explore_cat (if method.lower() in [all methods..]
     # TODO: Add ValueError capture for method on explore_num (if method.lower() in [all methods..]
+    # TODO: Add ValueError capture for other components <- for each module
+
+    # Testing
+    # TODO: Create tests/  for all
+
+    # Documentation
+    # TODO: Create official documentation
 
     if method.lower() == 'uniform_simple':
         print(f"< UNIFORM SIMPLE TRANSFORMATION* >")
@@ -256,6 +267,37 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
 
         return transformed_df, encoded_columns
 
+    if method.lower() == 'encode_target' and target_variable:
+        print(f"< TARGET ENCODING TRANSFORMATION* >")
+        print(f" This method encodes categorical variables based on the mean of the target variable for each category.")
+        print(f"✎ Note: Target encoding captures the 'effect' of each category on the target variable.")
+        print(f"☻ Tip: To prevent data leakage and overfitting, apply target encoding within a cross-validation loop, ensuring it's computed separately for each fold.\n")
+
+        # initialize dataframe to work with
+        transformed_df = df.copy()
+        encoded_columns = pd.DataFrame()
+
+        for variable in categorical_variables:
+            # calculate the mean of the target variable for each category
+            target_means = transformed_df.groupby(variable)[target_variable].mean()
+
+            # map the computed means to the original categories
+            transformed_df[variable] = transformed_df[variable].map(target_means)
+            encoded_columns = pd.concat([encoded_columns, transformed_df[[variable]]], axis=1)
+
+            print(f"✔ '{variable}' has been target encoded with respect to '{target_variable}'.\n")
+
+        print(f"✔ New transformed dataframe with target encoded variables:\n{transformed_df.head()}\n")
+        print(f"✔ Separate dataframe with only the target encoded columns:\n{encoded_columns.head()}\n")
+        print("☻ HOW TO - to catch the df's: `transformed_df, encoded_columns = transform_cat(your_df, your_columns, method='encode_target', target_variable='your_target_variable')`.\n")
+
+        # Sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Original dataframe shape: {df.shape}")
+        print(f"  ➡ Transformed dataframe shape: {transformed_df.shape}\n")
+        print("* It's highly recommended to apply this encoding method within a cross-validation loop to avoid data leakage and overfitting.")
+
+        return transformed_df, encoded_columns
 
 # smoke tests #
 
@@ -305,3 +347,6 @@ ordinal_encoded_df, ordinal_encoded_cols = transform_cat(final_transformed_df, [
 
 # encode_freq
 freq_encoded_df, freq_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_freq')
+
+# encode_target
+target_encoded_df, target_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_target', target_variable='Value')
