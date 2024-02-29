@@ -13,7 +13,7 @@ from datasafari import explore_cat
 
 # main function: transform_cat
 def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na_placeholder: str = 'Unknown', abbreviation_map: dict = None, ordinal_map: dict = None):
-    # TODO: encode_ordinal
+    # DONE! TODO: encode_ordinal
     # TODO: encode_frequency
     # TODO: encode_target
     # TODO: encode_binary
@@ -227,6 +227,35 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
 
         return transformed_df, encoded_columns
 
+    if method.lower() == 'encode_freq':
+        print(f"< FREQUENCY ENCODING TRANSFORMATION >")
+        print(f" This method transforms categorical variables based on the frequency of each category.")
+        print(f"✎ Note: Frequency encoding helps to retain the information about the category's prevalence.")
+        print(f"☻ Tip: Useful for models where the frequency significance of categories impacts the prediction.\n")
+
+        # initialize dataframe to work with
+        transformed_df = df.copy()
+        encoded_columns = pd.DataFrame()
+
+        for variable in categorical_variables:
+            # calculate the frequency of each category
+            frequency_map = transformed_df[variable].value_counts().to_dict()
+
+            # map the frequencies to the original dataframe
+            transformed_df[variable] = transformed_df[variable].map(frequency_map)
+            encoded_columns = pd.concat([encoded_columns, transformed_df[[variable]]], axis=1)
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only frequency encoded columns:\n{encoded_columns.head()}\n")
+        print("☻ HOW TO - to catch the df's: `transformed_df, encoded_columns = transform_cat(your_df, your_columns, method='encode_freq')`.\n")
+
+        # sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Original dataframe shape: {df.shape}")
+        print(f"  ➡ Transformed dataframe shape: {transformed_df.shape}\n")
+
+        return transformed_df, encoded_columns
+
 
 # smoke tests #
 
@@ -273,3 +302,6 @@ ordinal_map = {
 }
 
 ordinal_encoded_df, ordinal_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_ordinal', ordinal_map=ordinal_map)
+
+# encode_freq
+freq_encoded_df, freq_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_freq')
