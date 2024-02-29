@@ -13,25 +13,6 @@ from category_encoders import BinaryEncoder
 # main function: transform_cat
 def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na_placeholder: str = 'Unknown', abbreviation_map: dict = None, ordinal_map: dict = None, target_variable: str = None):
 
-    # Methods for transform_cat
-    # DONE! TODO: encode_ordinal
-    # DONE! TODO: encode_frequency
-    # DONE! TODO: encode_target
-    # DONE! TODO: encode_binary
-
-    # Error Handling
-    # TODO: Add ValueError capture for method on transform_cat (if method.lower() in [all methods..]
-    # TODO: Add ValueError capture for method on explore_df (if method.lower() in [all methods..]
-    # TODO: Add ValueError capture for method on explore_cat (if method.lower() in [all methods..]
-    # TODO: Add ValueError capture for method on explore_num (if method.lower() in [all methods..]
-    # TODO: Add ValueError capture for other components <- for each module
-
-    # Testing
-    # TODO: Create tests/  for all
-
-    # Documentation
-    # TODO: Create official documentation
-
     if method.lower() == 'uniform_simple':
         print(f"< UNIFORM SIMPLE TRANSFORMATION* >")
         print(f" This method applies basic but effective transformations to make categorical data uniform:")
@@ -342,6 +323,27 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
     ]
     if method.lower() not in valid_methods:
         raise ValueError(f"Invalid method. You can choose from: {valid_methods}")
+
+    # Methods for transform_cat
+    # DONE! TODO: encode_ordinal
+    # DONE! TODO: encode_frequency
+    # DONE! TODO: encode_target
+    # DONE! TODO: encode_binary
+
+    # TODO: Docstring for transform_cat
+
+    # Error Handling
+    # DONE! TODO: Add ValueError capture for method on transform_cat (if method.lower() in [all methods..]
+    # TODO: Add ValueError capture for method on explore_df (if method.lower() in [all methods..]
+    # TODO: Add ValueError capture for method on explore_cat (if method.lower() in [all methods..]
+    # TODO: Add ValueError capture for method on explore_num (if method.lower() in [all methods..]
+    # TODO: Add ValueError capture for other components <- for each module
+
+    # Testing
+    # TODO: Create tests/  for all
+
+    # Documentation
+    # TODO: Create official documentation
 
 
 # smoke tests #
