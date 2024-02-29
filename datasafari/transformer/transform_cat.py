@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import (
     OneHotEncoder,
-    StandardScaler
+    OrdinalEncoder,
+    LabelEncoder
 )
 from scipy.cluster.hierarchy import linkage, fcluster
 import Levenshtein as lev
@@ -11,7 +12,7 @@ from datasafari import explore_cat
 
 
 # main function: transform_cat
-def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na_placeholder: str = 'Unknown', abbreviation_map: dict = None):
+def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na_placeholder: str = 'Unknown', abbreviation_map: dict = None, ordinal_map: dict = None):
     # TODO: encode_ordinal
     # TODO: encode_frequency
     # TODO: encode_target
@@ -30,6 +31,7 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
         print(f"  ✔ Removes special characters to standardize text.")
         print(f"  ✔ Fills missing values with a placeholder to maintain data integrity. (use na_placeholder = '...', default 'Unknown')")
 
+        # initialize dataframe to work with
         transformed_df = df.copy()
         uniform_columns = pd.DataFrame()
 
@@ -69,6 +71,7 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
         print(f"  ✔ Selects the most representative category within each cluster to ensure data consistency.")
         print(f"  ✔ Fills missing values with a placeholder to maintain data integrity. (default 'Unknown', customize with na_placeholder = '...')\n")
 
+        # initialize dataframe to work with
         transformed_df = df.copy()
         uniform_columns = pd.DataFrame()
 
@@ -130,6 +133,7 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
         print("  ✔ Useful for stubborn categories that automated methods can't uniformly transform.")
         print("✎ Note: Ensure your mapping dictionary is comprehensive for the best results.\n")
 
+        # initialize dataframe to work with
         transformed_df = df.copy()
         uniform_columns = pd.DataFrame()
 
@@ -190,6 +194,40 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
 
         return transformed_df, encoded_columns
 
+    if method.lower() == 'encode_ordinal' and ordinal_map:
+        print(f"< ORDINAL ENCODING TRANSFORMATION >")
+        print(f" This method assigns an integer to each category value based on the provided ordinal order.")
+        print(f"✎ Note: Ensure the provided ordinal map correctly reflects the desired order of categories for each variable.")
+        print("☻ Tip: An ordinal map dictionary looks like this: {'your_variable': ['level1', 'level2', 'level3'], ...}\n")
+
+        # initialize dataframe to work with
+        transformed_df = df.copy()
+        encoded_columns = pd.DataFrame()
+
+        # encode each variable according to the provided ordinal map
+        for variable, order in ordinal_map.items():
+            if variable in categorical_variables:
+                # Prepare data for OrdinalEncoder
+                data = transformed_df[[variable]].apply(lambda x: pd.Categorical(x, categories=order, ordered=True))
+                transformed_df[variable] = data.apply(lambda x: x.cat.codes)
+
+                # Keep track of the newly encoded columns
+                encoded_columns = pd.concat([encoded_columns, transformed_df[[variable]]], axis=1)
+
+                print(f"✔ '{variable}' encoded based on the specified order: {order}\n")
+            else:
+                print(f"⚠️ '{variable}' specified in `ordinal_map` was not found in `categorical_variables` and has been skipped.\n")
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the ordinal encoded columns:\n{encoded_columns.head()}\n")
+        print("☻ HOW TO - To catch the df's use: `transformed_df, encoded_columns = transform_cat(your_df, your_columns, method='encode_ordinal', ordinal_map=your_ordinal_map)`.\n")
+        print("< SANITY CHECK >")
+        print(f"  ➡ Original dataframe shape: {df.shape}")
+        print(f"  ➡ Transformed dataframe shape: {transformed_df.shape}\n")
+
+        return transformed_df, encoded_columns
+
+
 # smoke tests #
 
 
@@ -209,7 +247,7 @@ nonuniform_df = pd.DataFrame(nonuniform_data)
 # 'uniform_...' tests #
 
 # uniform_simple
-simple_transformed_df, simple_transformed_cols = transform_cat(nu_df, ['Category'], method='uniform_simple')
+simple_transformed_df, simple_transformed_cols = transform_cat(nonuniform_df, ['Category'], method='uniform_simple')
 
 # uniform_smart
 smart_transformed_df, smart_transformed_cols = transform_cat(nonuniform_df, ['Category'], method='uniform_smart')
@@ -228,3 +266,10 @@ final_transformed_df, final_transformed_cols = transform_cat(smart_transformed_d
 
 # encode_onehot
 onehot_encoded_df, onehot_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_onehot')
+
+# encode_ordinal
+ordinal_map = {
+    'Category': ['student', 'high school', 'college', 'university']
+}
+
+ordinal_encoded_df, ordinal_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_ordinal', ordinal_map=ordinal_map)
