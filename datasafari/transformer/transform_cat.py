@@ -17,8 +17,7 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
     # DONE! TODO: encode_ordinal
     # DONE! TODO: encode_frequency
     # DONE! TODO: encode_target
-    # TODO: encode_binary
-    # TODO: hashing
+    # DONE! TODO: encode_binary
 
     # Error Handling
     # TODO: Add ValueError capture for method on transform_cat (if method.lower() in [all methods..]
@@ -334,6 +333,15 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
         print(f"  ➡ Transformed dataframe shape: {transformed_df.shape}\n")
 
         return transformed_df, encoded_columns
+
+    # Error Handling #
+    # ValueError if method not in valid_methods
+    valid_methods = [
+        'uniform_simple', 'uniform_smart', 'uniform_mapping',  # uniform family
+        'encode_onehot', 'encode_ordinal', 'encode_freq', 'encode_target', 'encode_binary'  # encode family
+    ]
+    if method.lower() not in valid_methods:
+        raise ValueError(f"Invalid method. You can choose from: {valid_methods}")
 
 
 # smoke tests #
