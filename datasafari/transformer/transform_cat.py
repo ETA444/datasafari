@@ -7,8 +7,7 @@ from sklearn.preprocessing import (
 )
 from scipy.cluster.hierarchy import linkage, fcluster
 import Levenshtein as lev
-from collections import Counter
-from datasafari import explore_cat
+from category_encoders import BinaryEncoder
 
 
 # main function: transform_cat
@@ -17,7 +16,7 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
     # Methods for transform_cat
     # DONE! TODO: encode_ordinal
     # DONE! TODO: encode_frequency
-    # TODO: encode_target
+    # DONE! TODO: encode_target
     # TODO: encode_binary
     # TODO: hashing
 
@@ -255,6 +254,7 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
             # map the frequencies to the original dataframe
             transformed_df[variable] = transformed_df[variable].map(frequency_map)
             encoded_columns = pd.concat([encoded_columns, transformed_df[[variable]]], axis=1)
+            print(f"✔ '{variable}' has been frequency encoded.\n")
 
         print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
         print(f"✔ Dataframe with only frequency encoded columns:\n{encoded_columns.head()}\n")
@@ -295,9 +295,46 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
         print("< SANITY CHECK >")
         print(f"  ➡ Original dataframe shape: {df.shape}")
         print(f"  ➡ Transformed dataframe shape: {transformed_df.shape}\n")
-        print("* It's highly recommended to apply this encoding method within a cross-validation loop to avoid data leakage and overfitting.")
 
         return transformed_df, encoded_columns
+
+    if method.lower() == 'encode_binary':
+        print(f"< BINARY ENCODING TRANSFORMATION >")
+        print(f" This method transforms categorical variables into binary columns, significantly reducing dimensionality for high cardinality features.")
+        print(f"  ✔ Efficiently handles categories by representing them with binary codes.")
+        print(f"  ✔ Reduces dataset size and model complexity compared to one-hot encoding.")
+        print(f"✎ Note: Ideal for categorical variables with many unique categories.\n☻ Tip: For categories with limited unique values, consider if binary encoding aligns with your data strategy.\n")
+
+        # initialize dataframe to work with
+        transformed_df = df.copy()
+
+        # create an instance of BinaryEncoder
+        binary_encoder = BinaryEncoder(cols=categorical_variables)
+
+        # keep a copy of the original columns, including the categorical ones that will be encoded
+        original_columns = transformed_df.columns.tolist()
+
+        # fit and transform the data
+        transformed_df = binary_encoder.fit_transform(transformed_df)
+
+        # determine the new columns by excluding the original columns
+        new_columns = [col for col in transformed_df.columns if col not in original_columns]
+        # note: this assumes the BinaryEncoder removes the original categorical columns
+
+        # extract the newly created binary encoded columns for user reference
+        encoded_columns = transformed_df[new_columns]
+
+        print(f"✔ New transformed dataframe with binary encoded variables:\n{transformed_df.head()}\n")
+        print(f"✔ Separate dataframe with only the binary encoded columns:\n{encoded_columns.head()}\n")
+        print("☻ HOW TO - to catch the new dfs: `transformed_df, encoded_columns = transform_cat(your_df, your_columns, method='encode_binary')`.\n")
+
+        # sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Original dataframe shape: {df.shape}")
+        print(f"  ➡ Transformed dataframe shape: {transformed_df.shape}\n")
+
+        return transformed_df, encoded_columns
+
 
 # smoke tests #
 
@@ -350,3 +387,6 @@ freq_encoded_df, freq_encoded_cols = transform_cat(final_transformed_df, ['Categ
 
 # encode_target
 target_encoded_df, target_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_target', target_variable='Value')
+
+# encode_binary
+binary_encoded_df, binary_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_binary')
