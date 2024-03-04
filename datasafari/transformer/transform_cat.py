@@ -12,6 +12,60 @@ from category_encoders import BinaryEncoder
 
 # main function: transform_cat
 def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na_placeholder: str = 'Unknown', abbreviation_map: dict = None, ordinal_map: dict = None, target_variable: str = None):
+    """
+    Transforms categorical variables in a DataFrame using various encoding and cleaning methods.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing the categorical data to transform.
+    categorical_variables : list
+        A list of strings representing the names of the categorical columns to be transformed.
+    method : str
+        The method to use for transforming the categorical variables. Valid options include:
+        'uniform_simple', 'uniform_smart', 'uniform_mapping', 'encode_onehot', 'encode_ordinal',
+        'encode_freq', 'encode_target', 'encode_binary'.
+    na_placeholder : str, optional
+        The placeholder value to use for missing values during transformations. Default is 'Unknown'.
+    abbreviation_map : dict, optional
+        A dictionary specifying manual mappings for categories. Used with the 'uniform_mapping' method.
+    ordinal_map : dict, optional
+        A dictionary specifying the order of categories for ordinal encoding. Used with the 'encode_ordinal' method.
+    target_variable : str, optional
+        The name of the target variable for target encoding. Used with the 'encode_target' method.
+
+    Returns
+    -------
+    transformed_df : pd.DataFrame
+        The DataFrame with transformed categorical variables.
+    uniform_columns/encoded_columns : pd.DataFrame
+        A DataFrame containing only the transformed (uniform or encoded) columns.
+
+    Raises
+    ------
+    ValueError
+        If an invalid transformation method is provided.
+
+    Examples
+    --------
+    >>> df = pd.DataFrame({'Category': ['A', 'B', 'A', 'C']})
+    >>> transformed_df, encoded_columns = transform_cat(df, ['Category'], method='encode_onehot')
+    >>> transformed_df
+       Category_A  Category_B  Category_C
+    0         1.0         0.0         0.0
+    1         0.0         1.0         0.0
+    2         1.0         0.0         0.0
+    3         0.0         0.0         1.0
+
+    Notes
+    -----
+    The 'uniform_smart' method uses advanced techniques, including Levenshtein distance and hierarchical clustering,
+    to group and normalize similar categories. It's particularly useful for datasets with slight variations in
+    categorical data entries.
+
+    The 'encode_target' method should ideally be applied within a cross-validation loop to avoid data leakage and
+    ensure that the mean target encoding is calculated separately for each fold of the data.
+    """
 
     if method.lower() == 'uniform_simple':
         print(f"< UNIFORM SIMPLE TRANSFORMATION* >")
@@ -324,27 +378,6 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
     if method.lower() not in valid_methods:
         raise ValueError(f"Invalid method. You can choose from: {valid_methods}")
 
-    # Methods for transform_cat
-    # DONE! TODO: encode_ordinal
-    # DONE! TODO: encode_frequency
-    # DONE! TODO: encode_target
-    # DONE! TODO: encode_binary
-
-    # TODO: Docstring for transform_cat
-
-    # Error Handling
-    # DONE! TODO: Add ValueError capture for method on transform_cat (if method.lower() in [all methods..]
-    # TODO: Add ValueError capture for method on explore_df (if method.lower() in [all methods..]
-    # TODO: Add ValueError capture for method on explore_cat (if method.lower() in [all methods..]
-    # TODO: Add ValueError capture for method on explore_num (if method.lower() in [all methods..]
-    # TODO: Add ValueError capture for other components <- for each module
-
-    # Testing
-    # TODO: Create tests/  for all
-
-    # Documentation
-    # TODO: Create official documentation
-
 
 # smoke tests #
 
@@ -400,3 +433,25 @@ target_encoded_df, target_encoded_cols = transform_cat(final_transformed_df, ['C
 
 # encode_binary
 binary_encoded_df, binary_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_binary')
+
+
+# Methods for transform_cat
+# DONE! TODO: encode_ordinal
+# DONE! TODO: encode_frequency
+# DONE! TODO: encode_target
+# DONE! TODO: encode_binary
+
+# TODO: Docstring for transform_cat
+
+# Error Handling
+# DONE! TODO: Add ValueError capture for method on transform_cat (if method.lower() in [all methods..]
+# TODO: Add ValueError capture for method on explore_df (if method.lower() in [all methods..]
+# TODO: Add ValueError capture for method on explore_cat (if method.lower() in [all methods..]
+# TODO: Add ValueError capture for method on explore_num (if method.lower() in [all methods..]
+# TODO: Add ValueError capture for other components <- for each module
+
+# Testing
+# TODO: Create tests/  for all
+
+# Documentation
+# TODO: Create official documentation
