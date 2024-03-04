@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import (
-    OneHotEncoder,
-    OrdinalEncoder,
-    LabelEncoder
+    OneHotEncoder
 )
 from scipy.cluster.hierarchy import linkage, fcluster
 import Levenshtein as lev
@@ -456,81 +454,3 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
     ]
     if method.lower() not in valid_methods:
         raise ValueError(f"Invalid method. You can choose from: {valid_methods}")
-
-
-# smoke tests #
-
-
-# create simple test dataset for smoke tests: nonuniform_df #
-nonuniform_data = {
-    'Category': [
-        'Student', 'student', 'STUDENT', 'St!UdE$nT',  # Variations of "student"
-        'high school', 'High School', 'high   school', 'highschool', 'hgh schl',  # Variations of "high school"
-        'university', 'University', 'UNIVERSITY', 'universty',  # Variations of "university"
-        'college', 'College', 'COLLEGE', 'collg'  # Variations of "college"
-    ]
-}
-nonuniform_data['Value'] = np.random.randint(1, 100, size=len(nonuniform_data['Category']))
-nonuniform_df = pd.DataFrame(nonuniform_data)
-
-
-# 'uniform_...' tests #
-
-# uniform_simple
-simple_transformed_df, simple_transformed_cols = transform_cat(nonuniform_df, ['Category'], method='uniform_simple')
-
-# uniform_smart
-smart_transformed_df, smart_transformed_cols = transform_cat(nonuniform_df, ['Category'], method='uniform_smart')
-
-# uniform_mapping
-abbreviation_map = {
-    'Category': {
-        'high   school': 'high school',
-        'hgh schl': 'high school'
-    }
-}
-final_transformed_df, final_transformed_cols = transform_cat(smart_transformed_df, ['Category'], method='uniform_mapping', abbreviation_map=abbreviation_map)
-
-
-# 'encode_...' tests #
-
-# encode_onehot
-onehot_encoded_df, onehot_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_onehot')
-
-# encode_ordinal
-ordinal_map = {
-    'Category': ['student', 'high school', 'college', 'university']
-}
-
-ordinal_encoded_df, ordinal_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_ordinal', ordinal_map=ordinal_map)
-
-# encode_freq
-freq_encoded_df, freq_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_freq')
-
-# encode_target
-target_encoded_df, target_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_target', target_variable='Value')
-
-# encode_binary
-binary_encoded_df, binary_encoded_cols = transform_cat(final_transformed_df, ['Category'], method='encode_binary')
-
-
-# Methods for transform_cat
-# DONE! TODO: encode_ordinal
-# DONE! TODO: encode_frequency
-# DONE! TODO: encode_target
-# DONE! TODO: encode_binary
-
-# TODO: Docstring for transform_cat
-
-# Error Handling
-# DONE! TODO: Add ValueError capture for method on transform_cat (if method.lower() in [all methods..]
-# TODO: Add ValueError capture for method on explore_df (if method.lower() in [all methods..]
-# TODO: Add ValueError capture for method on explore_cat (if method.lower() in [all methods..]
-# TODO: Add ValueError capture for method on explore_num (if method.lower() in [all methods..]
-# TODO: Add ValueError capture for other components <- for each module
-
-# Testing
-# TODO: Create tests/  for all
-
-# Documentation
-# TODO: Create official documentation
