@@ -54,6 +54,37 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
 
     Examples
     --------
+    # Example for uniform_simple
+    >>> df = pd.DataFrame({'Category': ['Student', 'student', 'STUDENT', 'StUdEnT']})
+    >>> transformed_df, uniform_columns = transform_cat(df, ['Category'], method='uniform_simple')
+    >>> transformed_df
+       Category
+    0   student
+    1   student
+    2   student
+    3   student
+
+    # Example for uniform_smart
+    >>> df = pd.DataFrame({'Category': ['high school', 'High School', 'high   school', 'hgh schl']})
+    >>> transformed_df, uniform_columns = transform_cat(df, ['Category'], method='uniform_smart')
+    >>> transformed_df
+       Category
+    0  high school
+    1  high school
+    2  high school
+    3  high school
+
+    # Example for uniform_mapping
+    >>> abbreviation_map = {'Category': {'hgh schl': 'high school'}}
+    >>> transformed_df, uniform_columns = transform_cat(df, ['Category'], method='uniform_mapping', abbreviation_map=abbreviation_map)
+    >>> transformed_df
+       Category
+    0  high school
+    1  High School
+    2  high   school
+    3  high school
+
+    # Example for encode_onehot
     >>> df = pd.DataFrame({'Category': ['A', 'B', 'A', 'C']})
     >>> transformed_df, encoded_columns = transform_cat(df, ['Category'], method='encode_onehot')
     >>> transformed_df
@@ -62,6 +93,48 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
     1         0.0         1.0         0.0
     2         1.0         0.0         0.0
     3         0.0         0.0         1.0
+
+    # Example for encode_ordinal
+    >>> ordinal_map = {'Category': ['A', 'B', 'C']}
+    >>> transformed_df, encoded_columns = transform_cat(df, ['Category'], method='encode_ordinal', ordinal_map=ordinal_map)
+    >>> transformed_df
+       Category
+    0         0
+    1         1
+    2         0
+    3         2
+
+    # Example for encode_freq
+    >>> df = pd.DataFrame({'Category': ['A', 'B', 'A', 'C', 'A', 'B']})
+    >>> transformed_df, encoded_columns = transform_cat(df, ['Category'], method='encode_freq')
+    >>> transformed_df
+       Category
+    0         3
+    1         2
+    2         3
+    3         1
+    4         3
+    5         2
+
+    # Example for encode_target
+    >>> df = pd.DataFrame({'Category': ['A', 'B', 'A', 'C'], 'Target': [1, 0, 1, 0]})
+    >>> transformed_df, encoded_columns = transform_cat(df, ['Category'], method='encode_target', target_variable='Target')
+    >>> transformed_df
+       Category
+    0       1.0
+    1       0.0
+    2       1.0
+    3       0.0
+
+    # Example for encode_binary
+    >>> df = pd.DataFrame({'Category': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']})
+    >>> transformed_df, encoded_columns = transform_cat(df, ['Category'], method='encode_binary')
+    >>> transformed_df.head()
+       Category_0  Category_1  Category_2
+    0           0           0           0
+    1           0           0           1
+    2           0           1           0
+    3           0           1           1
 
     Notes
     -----
