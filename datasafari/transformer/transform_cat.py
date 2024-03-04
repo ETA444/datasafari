@@ -22,15 +22,21 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
     categorical_variables : list
         A list of strings representing the names of the categorical columns to be transformed.
     method : str
-        The method to use for transforming the categorical variables. Valid options include:
-        'uniform_simple', 'uniform_smart', 'uniform_mapping', 'encode_onehot', 'encode_ordinal',
-        'encode_freq', 'encode_target', 'encode_binary'.
+        The method to use for transforming the categorical variables. Valid options and their descriptions include:
+            - 'uniform_simple': Basic cleaning transformations to standardize text, such as lowercase conversion, whitespace trimming, and special character removal. Also fills missing values with a specified placeholder.
+            - 'uniform_smart': Advanced cleaning that leverages Levenshtein distance for textual similarity and hierarchical clustering to group and normalize similar categories. Builds on 'uniform_simple' preprocessing steps.
+            - 'uniform_mapping': Allows for manual mapping of categories based on user-defined rules to handle specific cases that automated methods might not cover.
+            - 'encode_onehot': Converts categories into binary columns for each category. Suitable for nominal data where no ordinal relationship exists.
+            - 'encode_ordinal': Maps categories to an integer array based on the order defined in `ordinal_map`. Suitable for ordinal data where the order of categories is important.
+            - 'encode_freq': Transforms categories based on the frequency of each category, replacing the category name with its frequency count.
+            - 'encode_target': Encodes categories based on the mean of the target variable for each category. This method should be used cautiously to avoid data leakage and is recommended to be applied within a cross-validation loop.
+            - 'encode_binary': Utilizes binary encoding to transform categories into binary columns, reducing dimensionality and dataset size compared to one-hot encoding. Ideal for high cardinality features.
     na_placeholder : str, optional
         The placeholder value to use for missing values during transformations. Default is 'Unknown'.
     abbreviation_map : dict, optional
-        A dictionary specifying manual mappings for categories. Used with the 'uniform_mapping' method.
+        A dictionary specifying manual mappings for categories, used with the 'uniform_mapping' method. Each key should be the name of a categorical variable, and its value should be another dictionary mapping original category values to their new values. This is useful for correcting typos, consolidating similar categories, or applying any specific transformations that automated methods cannot handle.
     ordinal_map : dict, optional
-        A dictionary specifying the order of categories for ordinal encoding. Used with the 'encode_ordinal' method.
+        A dictionary specifying the order of categories for ordinal encoding, used with the 'encode_ordinal' method. Each key should be the name of a categorical variable, and its value should be a list of categories in the desired order. This method treats the order of categories as meaningful and encodes them as integers based on the provided order.
     target_variable : str, optional
         The name of the target variable for target encoding. Used with the 'encode_target' method.
 
