@@ -92,6 +92,8 @@ def transform_num(df, numerical_variables, method, **kwargs):
         if skipped_columns:
             print(f"Skipped columns due to non-positive values: {skipped_columns}\n")
 
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the scaled columns:\n{log_transformed_columns.head()}\n")
         print("☻ HOW TO: Apply this transformation using `transformed_df, log_transformed_columns = transform_num(your_df, your_numerical_variables, method='log')`.\n")
 
         # sanity check
