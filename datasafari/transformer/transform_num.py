@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 
 def transform_num(df, numerical_variables, method, **kwargs):
@@ -102,6 +102,35 @@ def transform_num(df, numerical_variables, method, **kwargs):
 
         return transformed_df, log_transformed_columns
 
+    if method.lower() == 'normalize':
+        print(f"< NORMALIZATION TRANSFORMATION >")
+        print(f" This method scales numerical variables to a [0, 1] range, making them suitable for models sensitive to variable scales.")
+        print(f"  ✔ Adjusts each feature to a [0, 1] scale based on its minimum and maximum values.")
+        print(f"  ✔ Enhances model performance by ensuring numerical variables are on a similar scale.")
+        print(f"✎ Note: Ensure data is clean and outliers are handled for optimal results.\n")
+        print(f"☻ Tip: Use `explore_num()` for data inspection and outlier detection before applying normalization.\n")
+
+        # initialize essentials
+        transformed_df = df.copy()
+        min_max_scaler = MinMaxScaler()
+
+        # apply minmax scaling
+        transformed_df[numerical_variables] = min_max_scaler.fit_transform(df[numerical_variables])
+
+        # isolate transformed columns to provide as part of output
+        normalized_columns = transformed_df[numerical_variables]
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the scaled columns:\n{normalized_columns.head()}\n")
+        print("☻ HOW TO: Apply this transformation using `transformed_df, normalized_columns = transform_num(your_df, your_numerical_variables, method='normalize')`.\n")
+
+        # sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Shape of original dataframe: {df.shape}")
+        print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
+
+        return transformed_df, normalized_columns
+
 
 # smoke testing #
 
@@ -121,3 +150,6 @@ standardized_data, standardized_cols = transform_num(df, num_cols, method='stand
 
 # log
 log_data, log_cols = transform_num(df, num_cols, method='log')
+
+# normalize
+normalized_data, normalized_cols = transform_num(df, num_cols, method='normalize')
