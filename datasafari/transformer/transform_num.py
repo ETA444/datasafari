@@ -34,6 +34,18 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
     >>> print(transformed_df)
     """
 
+    # transform_num todos #
+
+    # POSSIBLE NEW METHODS
+    # TODO: Implement new method: 'boxcox'
+    # TODO: Implement new method: 'power'
+    # TODO: Implement new method: 'winsorization'
+    # TODO: Implement new method: 'interaction_terms'
+    # TODO: Implement new method: 'polynomial_features'
+
+    # MISC
+    # TODO: Write a better docstring
+
     if method == 'standardize':
         print(f"< STANDARDIZING DATA >")
         print(f" This method centers the data around mean 0 with a standard deviation of 1, enhancing model performance and stability.")
