@@ -105,6 +105,19 @@ def transform_num(df, numerical_variables, method, **kwargs):
 
 # smoke testing #
 
+# example data to run tests on
+data = {
+    'Feature1': np.random.normal(0, 1, 100),  # Normally distributed data
+    'Feature2': np.random.exponential(1, 100),  # Exponentially distributed data (positively skewed)
+    'Feature3': np.random.randint(1, 100, 100)  # Uniformly distributed data between 1 and 100
+}
 
+df = pd.DataFrame(data)
+
+num_cols = ['Feature1', 'Feature2', 'Feature3']
 
 # standardize
+standardized_data, standardized_cols = transform_num(df, num_cols, method='standardize')
+
+# log
+log_data, log_cols = transform_num(df, num_cols, method='log')
