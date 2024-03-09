@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer, RobustScaler
 
 
-def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, **kwargs):
+def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), **kwargs):
     """
     Apply various transformations to numerical variables in a DataFrame.
 
@@ -144,20 +144,50 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         quantile_transformer = QuantileTransformer(output_distribution=output_distribution, n_quantiles=n_quantiles, random_state=random_state)
         transformed_df[numerical_variables] = quantile_transformer.fit_transform(df[numerical_variables])
 
-        # Isolate transformed columns to give as part of output
+        # isolate transformed columns to give as part of output
         quantile_transformed_columns = transformed_df[numerical_variables]
 
         print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
         print(f"✔ Dataframe with only the transformed columns:\n{quantile_transformed_columns.head()}\n")
         print("☻ HOW TO: Apply this transformation using `transformed_df, quantile_transformed_columns = transform_num(your_df, your_numerical_variables, method='quantile', output_distribution='normal', n_quantiles=1000, random_state=444)`.\n")
 
-        # Sanity check
+        # sanity check
         print("< SANITY CHECK >")
         print(f"  ➡ Shape of original dataframe: {df.shape}")
         print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
         print("* After transformation, evaluate your data's distribution and consider its impact on your analysis or modeling approach.\n")
 
         return transformed_df, quantile_transformed_columns
+
+    if method.lower() == 'robust':
+        print(f"< ROBUST SCALING TRANSFORMATION >")
+        print(f" This method scales your data by removing the median and scaling according to the quantile range.")
+        print(f"  ✔ Targets data with outliers by using median and quantiles, reducing the influence of extreme values.")
+        print(f"  ✔ Centers and scales data to be robust against outliers, improving model performance on skewed data.")
+        print(f"✎ Note: With centering is {'enabled' if with_centering else 'disabled'}. Adjust `with_centering` as needed (provide bool).\n")
+        print(f"☻ Tip: The quantile range is set to {quantile_range}. You can adjust it based on your data's distribution.\n")
+
+        # initialize essentials
+        transformed_df = df.copy()
+        scaler = RobustScaler(with_centering=with_centering, quantile_range=quantile_range)
+
+        # apply the defined robust scaler
+        transformed_df[numerical_variables] = scaler.fit_transform(transformed_df[numerical_variables])
+
+        # Isolate transformed columns to give as part of output
+        robust_scaled_columns = transformed_df[numerical_variables]
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the transformed columns:\n{robust_scaled_columns.head()}\n")
+        print("☻ HOW TO: Apply this transformation using `transformed_df, robust_scaled_columns = transform_num(your_df, your_numerical_variables, method='robust', with_centering=True, quantile_range=(25.0, 75.0))`.\n")
+
+        # Sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Shape of original dataframe: {df.shape}")
+        print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
+        print("* After transformation, evaluate the robustness of your data against outliers and consider the effect on your analysis or modeling.\n")
+
+        return transformed_df, robust_scaled_columns
 
 
 # smoke testing #
@@ -184,3 +214,6 @@ normalized_data, normalized_cols = transform_num(df, num_cols, method='normalize
 
 # quantile
 quant_transformed_data, quant_transformed_cols = transform_num(df, num_cols, method='quantile', output_distribution='normal', n_quantiles=1000, random_state=444)
+
+# robust
+robust_transformed_df, robust_transformed_columns = transform_num(df, num_cols, method='robust', with_centering=True, quantile_range=(25.0, 75.0))
