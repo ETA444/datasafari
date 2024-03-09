@@ -52,7 +52,7 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         standardized_columns = transformed_df[numerical_variables]
 
         print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
-        print(f"✔ Dataframe with only the scaled columns:\n{standardized_columns.head()}\n")
+        print(f"✔ Dataframe with only the transformed columns:\n{standardized_columns.head()}\n")
         print("☻ HOW TO - Apply this transformation using `transformed_df, standardized_columns = transform_num(your_df, your_numerical_variables, method='standardize')`.\n")
 
         # sanity check
@@ -90,7 +90,7 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
             print(f"Skipped columns due to non-positive values: {skipped_columns}\n")
 
         print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
-        print(f"✔ Dataframe with only the scaled columns:\n{log_transformed_columns.head()}\n")
+        print(f"✔ Dataframe with only the transformed columns:\n{log_transformed_columns.head()}\n")
         print("☻ HOW TO: Apply this transformation using `transformed_df, log_transformed_columns = transform_num(your_df, your_numerical_variables, method='log')`.\n")
 
         # sanity check
@@ -120,7 +120,7 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         normalized_columns = transformed_df[numerical_variables]
 
         print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
-        print(f"✔ Dataframe with only the scaled columns:\n{normalized_columns.head()}\n")
+        print(f"✔ Dataframe with only the transformed columns:\n{normalized_columns.head()}\n")
         print("☻ HOW TO: Apply this transformation using `transformed_df, normalized_columns = transform_num(your_df, your_numerical_variables, method='normalize')`.\n")
 
         # sanity check
