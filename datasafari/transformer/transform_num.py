@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer
 
 
-def transform_num(df, numerical_variables, method, **kwargs):
+def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, **kwargs):
     """
     Apply various transformations to numerical variables in a DataFrame.
 
@@ -33,9 +33,6 @@ def transform_num(df, numerical_variables, method, **kwargs):
     >>> transformed_df = transform_num(df, ['Feature1', 'Feature2'], method='standardize')
     >>> print(transformed_df)
     """
-
-    # transform_num TO DO #
-    # DONE! TODO: Add console output for standardize
 
     if method == 'standardize':
         print(f"< STANDARDIZING DATA >")
@@ -133,6 +130,35 @@ def transform_num(df, numerical_variables, method, **kwargs):
 
         return transformed_df, normalized_columns
 
+    if method.lower() == 'quantile':
+        print(f"< QUANTILE TRANSFORMATION >")
+        print(f" This method maps the data to a '{output_distribution}' distribution and n_quantiles = {n_quantiles}. Random state set to {random_state}")
+        print(f"  ✔ Transforms skewed or outlier-affected data to follow a standard {'normal' if output_distribution == 'normal' else 'uniform'} distribution, improving statistical analysis and ML model accuracy.")
+        print(f"  ✔ Utilizes {n_quantiles} quantiles to finely approximate the empirical distribution, capturing the detailed data structure while balancing computational efficiency.\n")
+        print(f"☻ Tip: The choice of 1000 quantiles as a default provides a good compromise between detailed distribution mapping and practical computational demands. Adjust as needed based on dataset size and specificity.\n")
+
+        # initialize the DataFrame to work with
+        transformed_df = df.copy()
+
+        # define and apply Quantile Transformer
+        quantile_transformer = QuantileTransformer(output_distribution=output_distribution, n_quantiles=n_quantiles, random_state=random_state)
+        transformed_df[numerical_variables] = quantile_transformer.fit_transform(df[numerical_variables])
+
+        # Isolate transformed columns to give as part of output
+        quantile_transformed_columns = transformed_df[numerical_variables]
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the transformed columns:\n{quantile_transformed_columns.head()}\n")
+        print("☻ HOW TO: Apply this transformation using `transformed_df, quantile_transformed_columns = transform_num(your_df, your_numerical_variables, method='quantile', output_distribution='normal', n_quantiles=1000, random_state=444)`.\n")
+
+        # Sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Shape of original dataframe: {df.shape}")
+        print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
+        print("* After transformation, evaluate your data's distribution and consider its impact on your analysis or modeling approach.\n")
+
+        return transformed_df, quantile_transformed_columns
+
 
 # smoke testing #
 
@@ -155,3 +181,6 @@ log_data, log_cols = transform_num(df, num_cols, method='log')
 
 # normalize
 normalized_data, normalized_cols = transform_num(df, num_cols, method='normalize')
+
+# quantile
+quant_transformed_data, quant_transformed_cols = transform_num(df, num_cols, method='quantile', output_distribution='normal', n_quantiles=1000, random_state=444)
