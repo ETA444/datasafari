@@ -2,9 +2,10 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer, RobustScaler
 from scipy.stats import boxcox, yeojohnson
+from scipy.stats.mstats_basic import winsorize
 
 
-def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: int = None, power_map: dict = None, **kwargs):
+def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: float = None, power_map: dict = None, lower_percentile: float = 0.01, upper_percentile: float = 0.99, winsorization_map: dict = None):
     """
     Apply various transformations to numerical variables in a DataFrame.
 
@@ -39,7 +40,7 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
 
     # POSSIBLE NEW METHODS
     # DONE! TODO: Implement new method: 'boxcox'
-    # TODO: Implement new method: 'power'
+    # DONE! TODO: Implement new method: 'power'
     # TODO: Implement new method: 'winsorization'
     # TODO: Implement new method: 'interaction_terms'
     # TODO: Implement new method: 'polynomial_features'
@@ -280,11 +281,11 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         print(f"  ✔ Facilitates skewness correction and distribution normalization to improve statistical analysis and ML model performance.\n")
         print(f"☻ Tip: A power of 0.5 (square root) often works well for right-skewed data, while a square (power of 2) can help with left-skewed data. Choose the power that best fits your data characteristics.\n")
 
-        # Initialize the DataFrame to work with
+        # initialize essential objects
         transformed_df = df.copy()
         power_transformed_columns = pd.DataFrame()
 
-        # Determine transformation approach
+        # determine transformation approach
         if power_map is not None:
             for variable, pwr in power_map.items():
                 if variable in numerical_variables:
@@ -303,13 +304,51 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         print(f"✔ Dataframe with only the power transformed columns:\n{power_transformed_columns.head()}\n")
         print(f"☻ HOW TO: Apply this transformation using `transformed_df, power_transformed_columns = transform_num(your_df, your_numerical_variables, method='power', power_map=your_power_map)`.\n")
 
-        # Sanity check
+        # sanity check
         print("< SANITY CHECK >")
         print(f"  ➡ Shape of original dataframe: {df.shape}")
         print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
         print("* Evaluate the distribution post-transformation to ensure it aligns with your analytical or modeling goals.\n")
 
         return transformed_df, power_transformed_columns
+
+    if method.lower() == 'winsorization' and (lower_percentile is not None and upper_percentile is not None) or winsorization_map is not None:
+        print(f"< WINSORIZATION TRANSFORMATION >")
+        print(f" This method caps extreme values in the data to reduce the impact of outliers.")
+        print(f"✎ Note: Specify `lower_percentile` and `upper_percentile` for all variables, or use `winsorization_map` for variable-specific thresholds.\n")
+
+        # initialize objects
+        transformed_df = df.copy()
+        winsorized_columns = pd.DataFrame()
+
+        # determine transformation approach
+        if winsorization_map is not None:
+            for variable, bounds in winsorization_map.items():
+                if variable in numerical_variables:
+                    transformed_column = winsorize(transformed_df[variable], limits=(bounds[0], 1 - bounds[1]))
+                    transformed_df[variable] = transformed_column
+                    winsorized_columns[variable] = transformed_column
+                    print(f"✔ '{variable}' has been winsorized with bounds {bounds}.\n")
+                else:
+                    print(f"⚠️ Warning: '{variable}' specified in `winsorization_map` was not found in `numerical_variables` and has been skipped.\n")
+        else:
+            for variable in numerical_variables:
+                transformed_column = winsorize(transformed_df[variable], limits=(lower_percentile, 1 - upper_percentile))
+                transformed_df[variable] = transformed_column
+                winsorized_columns[variable] = transformed_column
+                print(f"✔ '{variable}' has been winsorized with lower percentile = {lower_percentile*100}% and upper percentile = {upper_percentile*100}%.\n")
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the power transformed columns:\n{winsorized_columns.head()}\n")
+        print("☻ HOW TO: Apply this transformation using `transformed_df, winsorized_columns = transform_num(your_df, your_numerical_variables, method='winsorization', lower_percentile=0.01, upper_percentile=0.99)` for global thresholds, or provide `winsorization_map` for variable-specific thresholds.\n")
+
+        # sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Shape of original dataframe: {df.shape}")
+        print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
+        print("* After transformation, review the distribution of your numerical variables to ensure outliers have been appropriately capped.\n")
+
+        return transformed_df, winsorized_columns
 
 
 # smoke testing #
@@ -359,3 +398,19 @@ power_map234 = {
     'Feature3': 4
 }
 power_transformed_df2, power_transformed_columns2 = transform_num(df, num_cols, method='power', power_map=power_map234)
+
+
+# winsorization
+
+# lower_quantile and upper_quantile usage
+lower_bound = 0.01
+upper_bound = 0.99
+wins_transformed_df1, wins_transformed_columns1 = transform_num(df, num_cols, method='winsorization', lower_percentile=lower_bound, upper_percentile=upper_bound)
+
+# winsorization_map usage
+win_map = {
+    'Feature1': (0.01, 0.99),
+    'Feature2': (0.05, 0.95), # tuples work
+    'Feature3': [0.10, 0.90] # lists work too
+}
+wins_transformed_df2, wins_transformed_columns2 = transform_num(df, num_cols, method='power', winsorization_map=win_map)
