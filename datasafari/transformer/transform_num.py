@@ -91,6 +91,7 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         for variable in numerical_variables:
             if (transformed_df[variable] <= 0).any():
                 print(f"⚠️ Warning: '{variable}' contains zero or negative values and was skipped to avoid log(0) and negative log issues.\n")
+                print("☻ Note: The log transformation requires strictly positive values. For data with zero or negative values, consider using the 'yeojohnson' method as an alternative.")
                 skipped_columns.append(variable)
             else:
                 transformed_column = np.log(transformed_df[variable])
@@ -218,6 +219,7 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         for variable in numerical_variables:
             if (transformed_df[variable] <= 0).any():
                 print(f"⚠️ Warning: '{variable}' contains zero or negative values and was skipped to avoid issues with Box-Cox transformation.\n")
+                print("☻ Tip: The Box-Cox transformation requires strictly positive values. For data including zero or negative values, the 'yeojohnson' method provides a flexible alternative.")
                 skipped_columns.append(variable)
             else:
                 transformed_column, _ = boxcox(transformed_df[variable])
