@@ -36,12 +36,17 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
     >>> print(transformed_df)
     """
 
+    # explore_num todos #
+    # TODO: Implement new method: 'outlier_dbscan' (density-based spatial clustering outlier detection)
+    # TODO: Implement new method: 'outlier_isoforest' (isolation forest outlier detection)
+    # TODO: Implement new method: 'outlier_lof'(local outlier factor outlier detection)
     # transform_num todos #
 
     # POSSIBLE NEW METHODS
     # DONE! TODO: Implement new method: 'boxcox'
     # DONE! TODO: Implement new method: 'power'
-    # TODO: Implement new method: 'winsorization'
+    # DONE! TODO: Implement new method: 'yeojohnson'
+    # DONE! TODO: Implement new method: 'winsorization'
     # TODO: Implement new method: 'interaction_terms'
     # TODO: Implement new method: 'polynomial_features'
 
