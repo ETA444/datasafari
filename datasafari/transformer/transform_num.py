@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransfor
 from scipy.stats import boxcox, yeojohnson
 
 
-def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), **kwargs):
+def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: int = None, power_map: dict = None, **kwargs):
     """
     Apply various transformations to numerical variables in a DataFrame.
 
@@ -38,7 +38,7 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
     # transform_num todos #
 
     # POSSIBLE NEW METHODS
-    # TODO: Implement new method: 'boxcox'
+    # DONE! TODO: Implement new method: 'boxcox'
     # TODO: Implement new method: 'power'
     # TODO: Implement new method: 'winsorization'
     # TODO: Implement new method: 'interaction_terms'
@@ -207,7 +207,7 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         print(f"< BOX-COX TRANSFORMATION >")
         print(f" This method applies the Box-Cox transformation to numerical variables to normalize their distribution.")
         print(f"  ✔ Transforms skewed data to closely approximate a normal distribution.")
-        print(f"  ✔ Automatically finds and applies the optimal transformation parameter (lambda) for each variable.")
+        print(f"  ✔ Automatically finds and applies the optimal transformation parameter (lambda) for each variable.\n")
         print(f"✎ Note: Box-Cox transformation requires all data to be positive. Columns with zero or negative values will be skipped.\n")
 
         # initialize essential objects
@@ -272,6 +272,45 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
 
         return transformed_df, yeojohnson_transformed_columns
 
+    if method.lower() == 'power' and (power is not None or power_map is not None):
+        print(f"< POWER TRANSFORMATION >")
+        print(f" This method raises numerical variables to specified powers, allowing for precise data distribution adjustments.")
+        print(f"  ✔ Individual powers can be set per variable using a 'power_map' for targeted transformations.")
+        print(f"  ✔ Alternatively, a single 'power' value applies uniformly to all specified numerical variables.")
+        print(f"  ✔ Facilitates skewness correction and distribution normalization to improve statistical analysis and ML model performance.\n")
+        print(f"☻ Tip: A power of 0.5 (square root) often works well for right-skewed data, while a square (power of 2) can help with left-skewed data. Choose the power that best fits your data characteristics.\n")
+
+        # Initialize the DataFrame to work with
+        transformed_df = df.copy()
+        power_transformed_columns = pd.DataFrame()
+
+        # Determine transformation approach
+        if power_map is not None:
+            for variable, pwr in power_map.items():
+                if variable in numerical_variables:
+                    transformed_column = np.power(transformed_df[variable], pwr)
+                    transformed_df[variable] = transformed_column
+                    power_transformed_columns = pd.concat([power_transformed_columns, transformed_column], axis=1)
+                    print(f"✔ '{variable}' has been transformed with a power of {pwr}.\n")
+        else:
+            for variable in numerical_variables:
+                transformed_column = np.power(transformed_df[variable], power)
+                transformed_df[variable] = transformed_column
+                power_transformed_columns = pd.concat([power_transformed_columns, transformed_column], axis=1)
+                print(f"✔ '{variable}' uniformly transformed with a power of {power}.\n")
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the power transformed columns:\n{power_transformed_columns.head()}\n")
+        print(f"☻ HOW TO: Apply this transformation using `transformed_df, power_transformed_columns = transform_num(your_df, your_numerical_variables, method='power', power_map=your_power_map)`.\n")
+
+        # Sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Shape of original dataframe: {df.shape}")
+        print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
+        print("* Evaluate the distribution post-transformation to ensure it aligns with your analytical or modeling goals.\n")
+
+        return transformed_df, power_transformed_columns
+
 
 # smoke testing #
 
@@ -306,3 +345,17 @@ boxcox_transformed_df, boxcox_transformed_columns = transform_num(df, num_cols, 
 
 # yeojohnson
 yeojohnson_transformed_df, yeojohnson_transformed_columns = transform_num(df, num_cols, method='yeojohnson')
+
+# power
+
+# power usage
+power2 = 2
+power_transformed_df1, power_transformed_columns1 = transform_num(df, num_cols, method='power', power=power2)
+
+# power_map usage
+power_map234 = {
+    'Feature1': 2,
+    'Feature2': 3,
+    'Feature3': 4
+}
+power_transformed_df2, power_transformed_columns2 = transform_num(df, num_cols, method='power', power_map=power_map234)
