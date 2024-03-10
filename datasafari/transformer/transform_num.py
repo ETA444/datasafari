@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer, RobustScaler
-from scipy.stats import boxcox
+from scipy.stats import boxcox, yeojohnson
 
 
 def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), **kwargs):
@@ -243,6 +243,35 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
 
         return transformed_df, boxcox_transformed_columns
 
+    if method.lower() == 'yeojohnson':
+        print(f"< YEO-JOHNSON TRANSFORMATION >")
+        print(f" This method transforms data to closely approximate a normal distribution, applicable to both positive and negative values.")
+        print(f"  ✔ Stabilizes variance and normalizes distribution.")
+        print(f"  ✔ Suitable for a wide range of data, including zero and negative values.\n")
+
+        # initialize the DataFrame to work with
+        transformed_df = df.copy()
+        yeojohnson_transformed_columns = pd.DataFrame()
+
+        # Apply Yeo-Johnson transformation
+        for variable in numerical_variables:
+            transformed_column, lambda_value = yeojohnson(transformed_df[variable])
+            transformed_df[variable] = transformed_column
+            yeojohnson_transformed_columns[variable] = transformed_column
+            print(f"✔ '{variable}' has been transformed using Yeo-Johnson. Lambda value: {lambda_value:.4f}\n")
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the Yeo-Johnson transformed columns:\n{yeojohnson_transformed_columns.head()}\n")
+        print("☻ HOW TO: Apply this transformation using `transformed_df, yeojohnson_transformed_columns = transform_num(your_df, your_numerical_variables, method='yeojohnson')`.\n")
+
+        # sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Shape of original dataframe: {df.shape}")
+        print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
+        print("* Review the transformed data and consider its implications for your analysis or modeling strategy.\n")
+
+        return transformed_df, yeojohnson_transformed_columns
+
 
 # smoke testing #
 
@@ -274,3 +303,6 @@ robust_transformed_df, robust_transformed_columns = transform_num(df, num_cols, 
 
 # boxcox
 boxcox_transformed_df, boxcox_transformed_columns = transform_num(df, num_cols, method='boxcox')
+
+# yeojohnson
+yeojohnson_transformed_df, yeojohnson_transformed_columns = transform_num(df, num_cols, method='yeojohnson')
