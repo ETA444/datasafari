@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer, RobustScaler
+from scipy.stats import boxcox
 
 
 def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), **kwargs):
@@ -99,7 +100,7 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
 
         # inform user if a column was skipped
         if skipped_columns:
-            print(f"Skipped columns due to non-positive values: {skipped_columns}\n")
+            print(f"✘ Skipped columns due to non-positive values: {skipped_columns}\n")
 
         print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
         print(f"✔ Dataframe with only the transformed columns:\n{log_transformed_columns.head()}\n")
@@ -201,6 +202,45 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
 
         return transformed_df, robust_scaled_columns
 
+    if method.lower() == 'boxcox':
+        print(f"< BOX-COX TRANSFORMATION >")
+        print(f" This method applies the Box-Cox transformation to numerical variables to normalize their distribution.")
+        print(f"  ✔ Transforms skewed data to closely approximate a normal distribution.")
+        print(f"  ✔ Automatically finds and applies the optimal transformation parameter (lambda) for each variable.")
+        print(f"✎ Note: Box-Cox transformation requires all data to be positive. Columns with zero or negative values will be skipped.\n")
+
+        # initialize essential objects
+        transformed_df = df.copy()
+        boxcox_transformed_columns = pd.DataFrame()
+        skipped_columns = []
+
+        # check column values and apply boxcox only on appropriate data
+        for variable in numerical_variables:
+            if (transformed_df[variable] <= 0).any():
+                print(f"⚠️ Warning: '{variable}' contains zero or negative values and was skipped to avoid issues with Box-Cox transformation.\n")
+                skipped_columns.append(variable)
+            else:
+                transformed_column, _ = boxcox(transformed_df[variable])
+                transformed_df[variable] = transformed_column
+                boxcox_transformed_columns = pd.concat([boxcox_transformed_columns, pd.DataFrame(transformed_column, columns=[variable])], axis=1)
+                print(f"✔ '{variable}' has been Box-Cox transformed.\n")
+
+        # inform user of any columns that were skipped
+        if skipped_columns:
+            print(f"✘ Skipped columns due to non-positive values: {', '.join(skipped_columns)}\n")
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the Box-Cox transformed columns:\n{boxcox_transformed_columns.head()}\n")
+        print("☻ HOW TO: Apply this transformation using `transformed_df, boxcox_transformed_columns = transform_num(your_df, your_numerical_variables, method='boxcox')`.\n")
+
+        # sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Shape of original dataframe: {df.shape}")
+        print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
+        print("* After transformation, evaluate your data's distribution and consider its impact on your analysis or modeling approach.\n")
+
+        return transformed_df, boxcox_transformed_columns
+
 
 # smoke testing #
 
@@ -229,3 +269,6 @@ quant_transformed_data, quant_transformed_cols = transform_num(df, num_cols, met
 
 # robust
 robust_transformed_df, robust_transformed_columns = transform_num(df, num_cols, method='robust', with_centering=True, quantile_range=(25.0, 75.0))
+
+# boxcox
+boxcox_transformed_df, boxcox_transformed_columns = transform_num(df, num_cols, method='boxcox')
