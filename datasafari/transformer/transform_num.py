@@ -5,7 +5,7 @@ from scipy.stats import boxcox, yeojohnson
 from scipy.stats.mstats_basic import winsorize
 
 
-def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: float = None, power_map: dict = None, lower_percentile: float = 0.01, upper_percentile: float = 0.99, winsorization_map: dict = None):
+def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: float = None, power_map: dict = None, lower_percentile: float = 0.01, upper_percentile: float = 0.99, winsorization_map: dict = None, interaction_pairs: list = None):
     """
     Apply various transformations to numerical variables in a DataFrame.
 
@@ -355,6 +355,42 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
 
         return transformed_df, winsorized_columns
 
+    if method.lower() == 'interaction':
+        print(f"< INTERACTION TERMS TRANSFORMATION >")
+        print(f" This method creates new features by multiplying together pairs of numerical variables.")
+        print(f"  ✔ Captures the synergistic effects between variables that may impact the target variable.")
+        print(f"  ✔ Can unveil complex relationships not observable through individual variables alone.\n")
+        print(f"✎ Note: Specify pairs of variables using 'interaction_pairs', which is a list of tuples, where tuples are variable pairs.\n")
+
+        # initialize essential objects
+        transformed_df = df.copy()
+        interaction_columns = pd.DataFrame()
+
+        # check if interaction_pairs is provided
+        if not interaction_pairs:
+            print("⚠️ No 'interaction_pairs' provided. Please specify pairs of variables for interaction terms. Where the object is a list of tuples, and each tuple is a pair of variables.")
+            return transformed_df, pd.DataFrame()
+
+        # create interaction terms
+        for pair in interaction_pairs:
+            new_column_name = f"interaction_{pair[0]}_x_{pair[1]}"
+            interaction_columns[new_column_name] = transformed_df[pair[0]] * transformed_df[pair[1]]
+            print(f"✔ Created interaction term '{new_column_name}' based on variables '{pair[0]}' and '{pair[1]}'.\n")
+
+        # Add interaction columns to the transformed DataFrame
+        transformed_df = pd.concat([transformed_df, interaction_columns], axis=1)
+
+        print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the interaction columns:\n{interaction_columns.head()}\n")
+        print("☻ HOW TO: Apply this transformation using `transformed_df, interaction_columns = transform_num(your_df, your_numerical_variables, method='interaction', interaction_pairs=[('var1', 'var2'), ('var3', 'var4')])`.\n")
+
+        # Sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Original dataframe shape: {df.shape}")
+        print(f"  ➡ Transformed dataframe shape: {transformed_df.shape}\n")
+
+        return transformed_df, interaction_columns
+
 
 # smoke testing #
 
@@ -419,3 +455,10 @@ win_map = {
     'Feature3': [0.10, 0.90] # lists work too
 }
 wins_transformed_df2, wins_transformed_columns2 = transform_num(df, num_cols, method='power', winsorization_map=win_map)
+
+# interaction
+interactions = [
+    ('Feature1', 'Feature2'),
+    ('Feature2', 'Feature3')
+]
+inter_transformed_df, inter_columns = transform_num(df, num_cols, method='interaction', interaction_pairs=interactions)
