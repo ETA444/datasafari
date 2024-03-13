@@ -74,6 +74,22 @@ def explore_df(df: pd.DataFrame, method: str = 'all', output: str = 'print', **k
     >>> explore_df(df, 'all', n=5, percentiles=[0.1, 0.9], verbose=False)
     """
 
+    # Error Handling #
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("The df parameter must be a pandas DataFrame.")
+
+    valid_methods = ['na', 'desc', 'head', 'info', 'all']
+    if method.lower() not in valid_methods:
+        raise ValueError(f"Invalid method '{method}'. Valid options are: {', '.join(valid_methods)}")
+
+    if 'buf' in kwargs and method.lower() == 'info':
+        raise ValueError("'buf' parameter is not supported in the 'info' method within explore_df.")
+
+    # Additional error checking for output
+    if output.lower() not in ['print', 'return']:
+        raise ValueError("Invalid output method. Choose 'print' or 'return'.")
+
+    # Main Function Logic #
     result = []
 
     if method.lower() in ["desc", "all"]:
