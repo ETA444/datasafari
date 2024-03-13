@@ -51,12 +51,14 @@ def explore_df(df: pd.DataFrame, method: str = 'all', output: str = 'print', **k
     Raises
     ------
     TypeError
-        If the `df` parameter is not a pandas DataFrame. This ensures that the function is applied to the correct data type.
+        - If `df` is not a pandas DataFrame.
+        - If `method` is not a string.
+        - If `output` is not a string.
 
     ValueError
-        - If an invalid 'method' option is provided. This error informs users about the acceptable values for the 'method' parameter.
-        - If 'buf' parameter is used in the 'info' method. This error is specific to the limitation that 'buf' parameter cannot be used within the 'info' method in `explore_df`.
-        - If an invalid 'output' option is provided. This error guides users to choose only from the supported options for 'output'.
+        - If `method` is not one of the valid options: 'na', 'desc', 'head', 'info', or 'all'.
+        - If `output` is not either 'print' or 'return'.
+        - If 'buf' parameter is used in the 'info' method, as it is not supported within `explore_df`.
 
     Examples
     --------
