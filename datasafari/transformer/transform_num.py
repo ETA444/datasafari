@@ -5,7 +5,7 @@ from scipy.stats import boxcox, yeojohnson
 from scipy.stats.mstats_basic import winsorize
 
 
-def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: float = None, power_map: dict = None, lower_percentile: float = 0.01, upper_percentile: float = 0.99, winsorization_map: dict = None, interaction_pairs: list = None):
+def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: float = None, power_map: dict = None, lower_percentile: float = 0.01, upper_percentile: float = 0.99, winsorization_map: dict = None, interaction_pairs: list = None, degree: int = None, degree_map: dict = None):
     """
     Apply various transformations to numerical variables in a DataFrame.
 
@@ -391,6 +391,51 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
 
         return transformed_df, interaction_columns
 
+    if method.lower() == 'polynomial' and (degree is not None or degree_map is not None):
+        print(f"< POLYNOMIAL FEATURES TRANSFORMATION >")
+        print(f" This method generates polynomial features up to a specified degree for numerical variables.")
+        print(f"  ✔ Captures non-linear relationships between variables and the target.")
+        print(f"  ✔ Enhances model performance by adding complexity through feature engineering.")
+        print(f"✎ Note: Specify the 'degree' for a global application or 'degree_map' for variable-specific degrees.\n")
+
+        # initialize essential objects
+        transformed_df = df.copy()
+        poly_features = pd.DataFrame(index=df.index)
+
+        # function to apply either global degree or degree from degree_map
+        def apply_degree(variable, d):
+            for power in range(2, d + 1):  # Start from 2 as degree 1 is the original variable
+                new_column_name = f"{variable}_degree_{power}"
+                poly_features[new_column_name] = transformed_df[variable] ** power
+                print(f"✔ Created polynomial feature '{new_column_name}' from variable '{variable}' to the power of {power}.\n")
+
+        # check if degree_map is provided and apply
+        if degree_map:
+            for variable, var_degree in degree_map.items():
+                if variable in numerical_variables:
+                    apply_degree(variable, var_degree)
+                else:
+                    print(f"⚠️ Variable '{variable}' specified in `degree_map` was not found in `numerical_variables` and has been skipped.\n")
+        # if degree_map is not provided, use global degree for all variables
+        else:
+            for variable in numerical_variables:
+                apply_degree(variable, degree)
+
+        # Add polynomial features to the transformed DataFrame
+        transformed_df = pd.concat([transformed_df, poly_features], axis=1)
+
+        print(f"✔ New transformed dataframe with polynomial features:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the polynomial features:\n{poly_features.head()}\n")
+        print("☻ HOW TO: Apply this transformation using `transformed_df, poly_features = transform_num(your_df, your_numerical_variables, method='polynomial', degree=3)` or by specifying a `degree_map`.\n")
+
+        # Sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Original dataframe shape: {df.shape}")
+        print(f"  ➡ Transformed dataframe shape: {transformed_df.shape}\n")
+        print("* After applying polynomial features, evaluate the model's performance and watch out for overfitting, especially when using high degrees.\n")
+
+        return transformed_df, poly_features
+
 
 # smoke testing #
 
@@ -462,3 +507,7 @@ interactions = [
     ('Feature2', 'Feature3')
 ]
 inter_transformed_df, inter_columns = transform_num(df, num_cols, method='interaction', interaction_pairs=interactions)
+
+# polynomial
+degree_map = {'Feature1': 2, 'Feature2': 3}
+poly_transformed_df, poly_features = transform_num(df, ['Feature1', 'Feature2'], method='polynomial', degree_map=degree_map)
