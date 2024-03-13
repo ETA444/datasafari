@@ -47,14 +47,32 @@ def explore_cat(df: pd.DataFrame, categorical_variables: list, method: str = 'al
 
     Examples:
     --------
-    # Explore all specified methods for 'Category1' and 'Category2' in 'df'
-    >>> explore_cat(df, ['Category1', 'Category2'])
+    # Create a sample DataFrame to use in the examples:
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> data = {
+    ...     'Category1': np.random.choice(['Apple', 'Banana', 'Cherry'], size=100),
+    ...     'Category2': np.random.choice(['Yes', 'No'], size=100),
+    ...     'Category3': np.random.choice(['Low', 'Medium', 'High'], size=100)
+    ... }
+    >>> df = pd.DataFrame(data)
 
-    # Explore with a focus on unique value counts and percentages, then print the results
-    >>> explore_cat(df, ['Category1'], method='counts_percentage')
+    # Display unique values for 'Category1' and 'Category2'
+    >>> explore_cat(df, ['Category1', 'Category2'], method='unique_values', output='print')
 
-    # Calculate and return the entropy of 'Category1' and 'Category2'
-    >>> result1 = explore_cat(df, ['Category1', 'Category2'], method='entropy', output='return')
+    # Explore counts and percentages for 'Category1' and 'Category2', then print the results
+    >>> explore_cat(df, ['Category1', 'Category2'], method='counts_percentage', output='print')
+
+    # Calculate and return the entropy of 'Category1', 'Category2', and 'Category3'
+    >>> result = explore_cat(df, ['Category1', 'Category2', 'Category3'], method='entropy', output='return')
+    >>> print(result)
+
+    # Comprehensive exploration of all specified methods for 'Category1', 'Category2', and 'Category3', displaying to console
+    >>> explore_cat(df, ['Category1', 'Category2', 'Category3'], method='all', output='print')
+
+    # Using 'all' method to explore 'Category1' and 'Category2', returning the results as a string
+    >>> result_str = explore_cat(df, ['Category1', 'Category2'], method='all', output='return')
+    >>> print(result_str)
 
     Notes:
     -----
@@ -111,5 +129,3 @@ def explore_cat(df: pd.DataFrame, categorical_variables: list, method: str = 'al
         print(combined_result)
     elif output.lower() == 'return':
         return combined_result
-    else:
-        raise ValueError("Invalid output method. Choose 'print' or 'return'.")
