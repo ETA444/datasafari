@@ -7,51 +7,123 @@ from scipy.stats.mstats_basic import winsorize
 
 def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: float = None, power_map: dict = None, lower_percentile: float = 0.01, upper_percentile: float = 0.99, winsorization_map: dict = None, interaction_pairs: list = None, degree: int = None, degree_map: dict = None, bins: int = None, bin_map: dict = None):
     """
-    Apply various transformations to numerical variables in a DataFrame.
+    Applies various numerical data transformations to improve machine learning model performance or data analysis.
 
     Parameters
     ----------
     df : pd.DataFrame
-        DataFrame containing the numerical data to be transformed.
+        The DataFrame containing the numerical data to transform.
     numerical_variables : list
-        List of column names in `df` that are numerical and need transformation.
-    method : str, optional
-        The transformation method to apply. Default is 'standardize'.
-        Supported methods: ['standardize', 'other_methods_here']
-    **kwargs : dict
-        Additional keyword arguments for different transformation methods.
+        A list of column names in `df` that are numerical and will be transformed.
+    method : str
+        The transformation method to apply. Valid methods include:
+        - 'standardize': Mean=0, SD=1. Suitable for algorithms sensitive to variable scales.
+        - 'log': Natural logarithm transformation for positively skewed data.
+        - 'normalize': Scales data to a [0, 1] range. Useful for models sensitive to variable scales.
+        - 'quantile': Transforms data to follow a specified distribution, improving statistical analysis.
+        - 'robust': Scales data using the median and quantile range, reducing the influence of outliers.
+        - 'boxcox': Normalizes skewed data, requires positive values.
+        - 'yeojohnson': Similar to Box-Cox but suitable for both positive and negative values.
+        - 'power': Raises numerical variables to specified powers for distribution adjustment.
+        - 'winsorization': Caps extreme values to reduce impact of outliers.
+        - 'interaction': Creates new features by multiplying pairs of numerical variables.
+        - 'polynomial': Generates polynomial features up to a specified degree.
+        - 'bin': Groups numerical data into bins or intervals.
+    output_distribution : str, optional
+        Specifies the output distribution for 'quantile' method ('normal' or 'uniform'). Default is 'normal'.
+    n_quantiles : int, optional
+        Number of quantiles to use for 'quantile' method. Default is 1000.
+    random_state : int, optional
+        Random state for 'quantile' method. Default is 444.
+    with_centering : bool, optional
+        Whether to center data before scaling for 'robust' method. Default is True.
+    quantile_range : tuple, optional
+        Quantile range used for 'robust' method. Default is (25.0, 75.0).
+    power : float, optional
+        The power to raise each numerical variable for 'power' method. Default is None.
+    power_map : dict, optional
+        A dictionary mapping variables to their respective powers for 'power' method. Default is None.
+    lower_percentile : float, optional
+        Lower percentile for 'winsorization'. Default is 0.01.
+    upper_percentile : float, optional
+        Upper percentile for 'winsorization'. Default is 0.99.
+    winsorization_map : dict, optional
+        A dictionary specifying winsorization bounds per variable. Default is None.
+    interaction_pairs : list, optional
+        List of tuples specifying pairs of variables for creating interaction terms. Default is None.
+    degree : int, optional
+        The degree for polynomial features in 'polynomial' method. Default is None.
+    degree_map : dict, optional
+        A dictionary mapping variables to their respective degrees for 'polynomial' method. Default is None.
+    bins : int, optional
+        The number of equal-width bins to use for 'bin' method. Default is None.
+    bin_map : dict, optional
+        A dictionary specifying custom binning criteria per variable for 'bin' method. Default is None.
 
     Returns
     -------
-    pd.DataFrame
-        A DataFrame with transformed numerical variables.
+    transformed_df : pd.DataFrame
+        The DataFrame with transformed numerical variables.
+    transformed_columns : pd.DataFrame
+        A DataFrame containing only the transformed columns.
 
     Examples
     --------
-    >>> df = pd.DataFrame({
-            'Feature1': [1, 2, 3, 4, 5],
-            'Feature2': [10, 20, 30, 40, 50]
-        })
-    >>> transformed_df = transform_num(df, ['Feature1', 'Feature2'], method='standardize')
-    >>> print(transformed_df)
+    >>> df = pd.DataFrame({'Feature1': np.random.normal(0, 1, 100), 'Feature2': np.random.exponential(1, 100), 'Feature3': np.random.randint(1, 100, 100)})
+    >>> num_cols = ['Feature1', 'Feature2', 'Feature3']
+
+    # Standardize
+    >>> standardized_data, standardized_cols = transform_num(df, num_cols, method='standardize')
+
+    # Log transformation
+    >>> log_data, log_cols = transform_num(df, num_cols, method='log')
+
+    # Normalize
+    >>> normalized_data, normalized_cols = transform_num(df, num_cols, method='normalize')
+
+    # Quantile transformation
+    >>> quant_transformed_data, quant_transformed_cols = transform_num(df, num_cols, method='quantile', output_distribution='normal', n_quantiles=1000, random_state=444)
+
+    # Robust scaling
+    >>> robust_transformed_df, robust_transformed_columns = transform_num(df, num_cols, method='robust', with_centering=True, quantile_range=(25.0, 75.0))
+
+    # Box-Cox transformation
+    >>> boxcox_transformed_df, boxcox_transformed_columns = transform_num(df, num_cols, method='boxcox')
+
+    # Yeo-Johnson transformation
+    >>> yeojohnson_transformed_df, yeojohnson_transformed_columns = transform_num(df, num_cols, method='yeojohnson')
+
+    # Power transformation using a uniform power
+    >>> power_transformed_df1, power_transformed_columns1 = transform_num(df, num_cols, method='power', power=2)
+
+    # Power transformation using a power map
+    >>> power_map = {'Feature1': 2, 'Feature2': 3, 'Feature3': 4}
+    >>> power_transformed_df2, power_transformed_columns2 = transform_num(df, num_cols, method='power', power_map=power_map)
+
+    # Winsorization with global thresholds
+    >>> wins_transformed_df1, wins_transformed_columns1 = transform_num(df, num_cols, method='winsorization', lower_percentile=0.01, upper_percentile=0.99)
+
+    # Winsorization using a winsorization map
+    >>> win_map = {'Feature1': (0.01, 0.99), 'Feature2': (0.05, 0.95), 'Feature3': [0.10, 0.90]}
+    >>> wins_transformed_df2, wins_transformed_columns2 = transform_num(df, num_cols, method='winsorization', winsorization_map=win_map)
+
+    # Interaction terms
+    >>> interactions = [('Feature1', 'Feature2'), ('Feature2', 'Feature3')]
+    >>> inter_transformed_df, inter_columns = transform_num(df, num_cols, method='interaction', interaction_pairs=interactions)
+
+    # Polynomial features with a degree map
+    >>> degree_map = {'Feature1': 2, 'Feature2': 3}
+    >>> poly_transformed_df, poly_features = transform_num(df, ['Feature1', 'Feature2'], method='polynomial', degree_map=degree_map)
+
+    # Binning with a bin map
+    >>> bin_map = {'Feature2': {'bins': 5}, 'Feature3': {'edges': [1, 20, 40, 60, 80, 100]}}
+    >>> bin_transformed_df, binned_columns = transform_num(df, ['Feature2', 'Feature3'], method='bin', bin_map=bin_map)
     """
 
     # explore_num todos #
     # TODO: Implement new method: 'outlier_dbscan' (density-based spatial clustering outlier detection)
     # TODO: Implement new method: 'outlier_isoforest' (isolation forest outlier detection)
     # TODO: Implement new method: 'outlier_lof'(local outlier factor outlier detection)
-    # transform_num todos #
-
-    # POSSIBLE NEW METHODS
-    # DONE! TODO: Implement new method: 'boxcox'
-    # DONE! TODO: Implement new method: 'power'
-    # DONE! TODO: Implement new method: 'yeojohnson'
-    # DONE! TODO: Implement new method: 'winsorization'
-    # TODO: Implement new method: 'interaction_terms'
-    # TODO: Implement new method: 'polynomial_features'
-
-    # MISC
-    # TODO: Write a better docstring
 
     if method == 'standardize':
         print(f"< STANDARDIZING DATA >")
