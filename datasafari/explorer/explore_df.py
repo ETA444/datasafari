@@ -101,18 +101,28 @@ def explore_df(df: pd.DataFrame, method: str = 'all', output: str = 'print', **k
     """
 
     # Error Handling #
+    # TypeErrors for each parameter
     if not isinstance(df, pd.DataFrame):
         raise TypeError("The df parameter must be a pandas DataFrame.")
 
+    if not isinstance(method, str):
+        raise TypeError(f"The method parameter must be a string.\nExample: method = 'all'")
+
+    if not isinstance(output, str):
+        raise TypeError(f"The output parameter must be a string.\nExample: output = 'print'")
+
+    # ValueError checks for 'method'
     valid_methods = ['na', 'desc', 'head', 'info', 'all']
     if method.lower() not in valid_methods:
-        raise ValueError(f"Invalid method '{method}'. Valid options are: {', '.join(valid_methods)}")
+        raise ValueError(f"Invalid method '{method}'. Valid options are: {', '.join(valid_methods)}.")
 
-    if 'buf' in kwargs and method.lower() == 'info':
-        raise ValueError("'buf' parameter is not supported in the 'info' method within explore_df.")
-
+    # ValueError check for 'output'
     if output.lower() not in ['print', 'return']:
         raise ValueError("Invalid output method. Choose 'print' or 'return'.")
+
+    # ValueError check for unsupported 'info' kwargs
+    if 'buf' in kwargs and method.lower() == 'info':
+        raise ValueError("'buf' parameter is not supported in the 'info' method within explore_df.")
 
     # Main Function Logic #
     result = []
