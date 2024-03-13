@@ -5,7 +5,7 @@ from scipy.stats import boxcox, yeojohnson
 from scipy.stats.mstats_basic import winsorize
 
 
-def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: float = None, power_map: dict = None, lower_percentile: float = 0.01, upper_percentile: float = 0.99, winsorization_map: dict = None, interaction_pairs: list = None, degree: int = None, degree_map: dict = None):
+def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: float = None, power_map: dict = None, lower_percentile: float = 0.01, upper_percentile: float = 0.99, winsorization_map: dict = None, interaction_pairs: list = None, degree: int = None, degree_map: dict = None, bins: int = None, bin_map: dict = None):
     """
     Apply various transformations to numerical variables in a DataFrame.
 
@@ -436,6 +436,44 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
 
         return transformed_df, poly_features
 
+    if method.lower() == 'bin' and (bins is not None or bin_map is not None):
+        print(f"< BINNING TRANSFORMATION >")
+        print(f" This method groups numerical data into bins or intervals, simplifying relationships and reducing noise.")
+        print(f"  ✔ Users can specify a uniform number of bins for all variables or define custom binning criteria per variable.")
+        print(f"✎ Note: Binning can be specified globally with 'bins' or individually with 'bin_map'.\n")
+
+        transformed_df = df.copy()
+        binned_columns = pd.DataFrame()
+
+        if bins:
+            # Apply a uniform number of bins across all variables
+            for variable in numerical_variables:
+                transformed_df[variable], bin_edges = pd.cut(transformed_df[variable], bins, retbins=True, labels=range(bins))
+                binned_columns = pd.concat([binned_columns, transformed_df[variable]], axis=1)
+                print(f"✔ '{variable}' has been binned into {bins} intervals.\n")
+        elif bin_map:
+            # Apply custom binning based on the provided map
+            for variable, specs in bin_map.items():
+                if variable in numerical_variables:
+                    n_bins = specs.get('bins')
+                    bin_edges = specs.get('edges', None)
+                    if bin_edges:
+                        transformed_df[variable], _ = pd.cut(transformed_df[variable], bins=bin_edges, retbins=True, labels=range(len(bin_edges)-1))
+                    else:
+                        transformed_df[variable], _ = pd.cut(transformed_df[variable], bins=n_bins, retbins=True, labels=range(n_bins))
+                    binned_columns = pd.concat([binned_columns, transformed_df[variable]], axis=1)
+                    print(f"✔ '{variable}' has been custom binned based on provided specifications.\n")
+
+        print(f"✔ New transformed dataframe with binned variables:\n{transformed_df.head()}\n")
+        print(f"✔ Dataframe with only the binned columns:\n{binned_columns.head()}\n")
+        print("☻ HOW TO: Apply this transformation using `transformed_df, binned_columns = transform_num(your_df, your_numerical_variables, method='bin', bins=3)` or use bin_map.\n")
+
+        # Sanity check
+        print("< SANITY CHECK >")
+        print(f"  ➡ Shape of original dataframe: {df.shape}")
+        print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
+        print("* Review the binned data to ensure it aligns with your analysis or modeling strategy.\n")
+
 
 # smoke testing #
 
@@ -511,3 +549,15 @@ inter_transformed_df, inter_columns = transform_num(df, num_cols, method='intera
 # polynomial
 degree_map = {'Feature1': 2, 'Feature2': 3}
 poly_transformed_df, poly_features = transform_num(df, ['Feature1', 'Feature2'], method='polynomial', degree_map=degree_map)
+
+# bin
+bin_map = {
+    'Feature2': {'bins': 5},  # For simplicity, specifying only the number of bins for Feature2
+    'Feature3': {'edges': [1, 20, 40, 60, 80, 100]}  # Defining custom bin edges for Feature3
+}
+
+# Assuming transform_num is your function to apply binning based on bin_map or a uniform number of bins
+bin_transformed_df, binned_columns = transform_num(df, ['Feature2', 'Feature3'], method='bin', bin_map=bin_map)
+
+# This would bin Feature2 into 5 equal-width intervals based on its data range.
+# For Feature3, it creates bins based on the specified edges: [1-20), [20-40), [40-60), [60-80), [80-100].
