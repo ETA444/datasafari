@@ -81,6 +81,41 @@ def explore_cat(df: pd.DataFrame, categorical_variables: list, method: str = 'al
     documentation for 'calculate_entropy'. High entropy values indicate a more uniform
     distribution of categories, suggesting no single category overwhelmingly dominates.
     """
+
+    # Error Handling #
+    # TypeErrors
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("The df parameter must be a pandas DataFrame.")
+
+    if not isinstance(categorical_variables, list):
+        raise TypeError(f"The categorical_variables parameter must be a list of variable names.\n Example: var_list = ['var1', 'var2', 'var3']")
+    else:
+        if not all(isinstance(var, str) for var in categorical_variables):
+            raise TypeError("All items in the categorical_variables list must be strings representing column names.")
+
+    if not isinstance(method, str):
+        raise TypeError(f"The method parameter must be a string.\n Example: method = 'all'")
+
+    if not isinstance(output, str):
+        raise TypeError(f"The output parameter must be a string. \n Example: output = 'return'")
+
+    # ValueErrors
+
+    # Check if method is valid
+    valid_methods = ['unique_values', 'counts_percentage', 'entropy', 'all']
+    if method.lower() not in valid_methods:
+        raise ValueError(f"Invalid method '{method}'. Valid options are: {', '.join(valid_methods)}")
+
+    # Check if output is valid
+    if output.lower() not in ['print', 'return']:
+        raise ValueError("Invalid output method. Choose 'print' or 'return'.")
+
+    # Check if specified variables exist in the DataFrame
+    missing_vars = [var for var in categorical_variables if var not in df.columns]
+    if missing_vars:
+        raise ValueError(f"The following variables were not found in the DataFrame: {', '.join(missing_vars)}")
+
+    # Main Function #
     result = []
 
     if method.lower() in ['unique_values', 'all']:
