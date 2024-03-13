@@ -2,7 +2,6 @@ import pandas as pd
 from datasafari.utils import calculate_entropy
 
 
-# main function: explore_cat
 def explore_cat(df: pd.DataFrame, categorical_variables: list, method: str = 'all', output: str = 'print'):
     """
     Explores categorical variables within a DataFrame, providing insights through various methods. The exploration
@@ -33,6 +32,18 @@ def explore_cat(df: pd.DataFrame, categorical_variables: list, method: str = 'al
     str or None
         - If output='return', a string containing the formatted exploration results is returned.
         - If output='print', results are printed to the console, and the function returns None.
+
+    Raises
+    ------
+    TypeError
+        - If `df` is not a pandas DataFrame.
+        - If `categorical_variables` is not a list or contains non-string elements.
+        - If `method` or `output` is not a string.
+
+    ValueError
+        - If `method` is not one of the valid options ('unique_values', 'counts_percentage', 'entropy', 'all').
+        - If `output` is not one of the valid options ('print', 'return').
+        - If any of the specified categorical variables are not found in the DataFrame.
 
     Examples:
     --------
