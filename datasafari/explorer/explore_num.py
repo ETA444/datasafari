@@ -8,6 +8,12 @@ from scipy.stats import (
 from datasafari.utils import calculate_mahalanobis, calculate_vif
 
 
+# explore_num todos 2.0 #
+# TODO: Implement new method: 'outlier_dbscan' (density-based spatial clustering outlier detection)
+# TODO: Implement new method: 'outlier_isoforest' (isolation forest outlier detection)
+# TODO: Implement new method: 'outlier_lof'(local outlier factor outlier detection)
+
+
 # main function: explore_num
 def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all', output: str = 'print'):
     """
@@ -56,28 +62,35 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
     Examples
     --------
+    # Generating a dataframe for examples
+    >>> data = {
+    ...     'variable1': np.random.normal(0, 1, 100),
+    ...     'variable2': np.random.exponential(1, 100),
+    ...     'variable3': np.random.randint(1, 100, 100)
+    ... }
+    >>> df = pd.DataFrame(data)
+
     # Example 1: Exploring distribution characteristics and printing to console
-    >>> df = pd.read_csv('path/to/dataset.csv')
     >>> cols = ['variable1', 'variable2']
     >>> explore_num(df, cols, method='distribution_analysis', output='print')
 
     # Example 2: Detecting outliers using the Z-score method and returning the results
-    >>> outliers_z_dict, outliers_z_df = explore_num(df, ['variable3', 'variable4'], method='outliers_zscore', output='return')
+    >>> outliers_z_dict, outliers_z_df = explore_num(df, ['variable1', 'variable2'], method='outliers_zscore', output='return')
     >>> print(outliers_z_dict)
     >>> print(outliers_z_df.head())
 
     # Example 3: Identifying outliers with the IQR method and printing the summary
-    >>> explore_num(df, ['variable5', 'variable6'], method='outliers_iqr', output='print')
+    >>> explore_num(df, ['variable1', 'variable2'], method='outliers_iqr', output='print')
 
     # Example 4: Performing all analyses on specified variables and printing summaries
     >>> explore_num(df, ['variable1', 'variable2', 'variable3'], method='all', output='print')
 
     # Example 5: Using 'return' with 'all' method to get a comprehensive textual summary
-    >>> analysis_summary = explore_num(df, ['variable7', 'variable8'], method='all', output='return')
+    >>> analysis_summary = explore_num(df, ['variable1', 'variable2'], method='all', output='return')
     >>> print(analysis_summary)
 
     # Example 6: Exploring distribution for a single variable and capturing the DataFrame for further analysis
-    >>> distribution_df = explore_num(df, ['variable9'], method='distribution_analysis', output='return')
+    >>> distribution_df = explore_num(df, ['variable1'], method='distribution_analysis', output='return')
     >>> print(distribution_df)
 
     # Example 7: Comprehensive analysis for multiple variables, focusing on outlier detection and distribution, and returning data for IQR outliers
@@ -86,11 +99,14 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     >>> print(outliers_iqr_df.head())
     >>> print(distribution_analysis_df)
 
-    # Example 8: Comprehensive analysis for multiple variables focusing on outliers, correlations and multicollinearity
-    >>> outliers_mahalanobis_df = explore_num(df, cols, method='outliers_mahalanobis', output='print')
-    >>> pearson_corr, spearman_corr, kendall_corr = explore_num(df, cols, method='correlation_analysis', output='print')
-    # Note: by using method 'print' in this case we both get the return and a print directly
-    # This is because by default specifying 1 method assures that a return is passed to the user, regardless of output setting
+    # Example 8: Comprehensive analysis for multiple variables focusing on outliers, correlations, and multicollinearity
+    >>> outliers_mahalanobis_df = explore_num(df, cols, method='outliers_mahalanobis', output='return')
+    >>> correlation_analysis_df = explore_num(df, cols, method='correlation_analysis', output='return')
+    >>> multicollinearity_df = explore_num(df, cols, method='multicollinearity', output='return')
+    >>> print(outliers_mahalanobis_df.head())
+    >>> print(correlation_analysis_df)
+    >>> print(multicollinearity_df.head())
+
     """
 
     # initialize variables #
