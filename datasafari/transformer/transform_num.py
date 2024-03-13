@@ -120,11 +120,6 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
     >>> bin_transformed_df, binned_columns = transform_num(df, ['Feature2', 'Feature3'], method='bin', bin_map=bin_map)
     """
 
-    # explore_num todos #
-    # TODO: Implement new method: 'outlier_dbscan' (density-based spatial clustering outlier detection)
-    # TODO: Implement new method: 'outlier_isoforest' (isolation forest outlier detection)
-    # TODO: Implement new method: 'outlier_lof'(local outlier factor outlier detection)
-
     if method == 'standardize':
         print(f"< STANDARDIZING DATA >")
         print(f" This method centers the data around mean 0 with a standard deviation of 1, enhancing model performance and stability.")
