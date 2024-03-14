@@ -122,6 +122,82 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
     >>> bin_transformed_df, binned_columns = transform_num(df, ['Feature2', 'Feature3'], method='bin', bin_map=bin_map)
     """
 
+    # Error-handling #
+
+    # TypeErrors
+    # Check if 'df' is a pandas DataFrame
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("The 'df' parameter must be a pandas DataFrame.")
+
+    # Check if 'numerical_variables' is a list
+    if not isinstance(numerical_variables, list):
+        raise TypeError("The 'numerical_variables' parameter must be a list of column names.")
+    else:
+        if not all(isinstance(var, str) for var in numerical_variables):
+            raise TypeError("All elements in the 'numerical_variables' list must be strings representing column names.")
+
+    # Check if 'method' is a string
+    if not isinstance(method, str):
+        raise TypeError("The 'method' parameter must be a string.")
+
+    # Check if 'output_distribution' is a string
+    if not isinstance(output_distribution, str):
+        raise TypeError("The 'output_distribution' parameter must be a string.")
+
+    # Check if 'n_quantiles' is an integer
+    if not isinstance(n_quantiles, int):
+        raise TypeError("The 'n_quantiles' parameter must be an integer.")
+
+    # Check if 'random_state' is an integer
+    if not isinstance(random_state, int):
+        raise TypeError("The 'random_state' parameter must be an integer.")
+
+    # Check if 'with_centering' is a boolean
+    if not isinstance(with_centering, bool):
+        raise TypeError("The 'with_centering' parameter must be a boolean.")
+
+    # Check if 'quantile_range' is a tuple and contains two floats
+    if not (isinstance(quantile_range, tuple) and len(quantile_range) == 2 and all(isinstance(num, float) for num in quantile_range)):
+        raise TypeError("The 'quantile_range' parameter must be a tuple containing two float values.")
+
+    # Check if 'power' is None or a float
+    if power is not None and not isinstance(power, float):
+        raise TypeError("The 'power' parameter must be a float or None.")
+
+    # Check if 'power_map' is None or a dictionary
+    if power_map is not None and not isinstance(power_map, dict):
+        raise TypeError("The 'power_map' parameter must be a dictionary or None.")
+
+    # Check if 'lower_percentile' and 'upper_percentile' are floats
+    if not isinstance(lower_percentile, float) or not isinstance(upper_percentile, float):
+        raise TypeError("The 'lower_percentile' and 'upper_percentile' parameters must be floats.")
+
+    # Check if 'winsorization_map' is None or a dictionary
+    if winsorization_map is not None and not isinstance(winsorization_map, dict):
+        raise TypeError("The 'winsorization_map' parameter must be a dictionary or None.")
+
+    # Check if 'interaction_pairs' is None or a list of tuples
+    if interaction_pairs is not None:
+        if not (isinstance(interaction_pairs, list) and all(isinstance(pair, tuple) and len(pair) == 2 for pair in interaction_pairs)):
+            raise TypeError("The 'interaction_pairs' parameter must be a list of tuples or None.")
+
+    # Check if 'degree' is None or an integer
+    if degree is not None and not isinstance(degree, int):
+        raise TypeError("The 'degree' parameter must be an integer or None.")
+
+    # Check if 'degree_map' is None or a dictionary
+    if degree_map is not None and not isinstance(degree_map, dict):
+        raise TypeError("The 'degree_map' parameter must be a dictionary or None.")
+
+    # Check if 'bins' is None or an integer
+    if bins is not None and not isinstance(bins, int):
+        raise TypeError("The 'bins' parameter must be an integer or None.")
+
+    # Check if 'bin_map' is None or a dictionary
+    if bin_map is not None and not isinstance(bin_map, dict):
+        raise TypeError("The 'bin_map' parameter must be a dictionary or None.")
+
+    # Main Function #
     if method == 'standardize':
         print(f"< STANDARDIZING DATA >")
         print(f" This method centers the data around mean 0 with a standard deviation of 1, enhancing model performance and stability.")
