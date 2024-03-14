@@ -45,16 +45,24 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     Returns
     -------
     Depending on the method and output chosen:
+    - For 'correlation_analysis', returns a DataFrame showing the correlation coefficients between variables if output is 'return'.
     - For 'distribution_analysis', returns a DataFrame with distribution statistics if output is 'return'.
     - For outlier detection methods ('outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis'), returns a dictionary mapping variables to their outlier values and a DataFrame of rows considered outliers if output is 'return'.
-    - For 'correlation_analysis', returns a DataFrame showing the correlation coefficients between variables if output is 'return'.
     - For 'multicollinearity', returns a DataFrame or a Series indicating the presence of multicollinearity, such as VIF scores, if output is 'return'.
     - If 'output' is set to 'return' and 'method' is 'all', returns a comprehensive summary of all analyses as text or a combination of DataFrames and dictionaries.
 
     Raises
     ------
+    TypeError
+        - If `df` is not a pandas DataFrame.
+        - If `numerical_variables` is not a list of strings.
+        - If `method` is not a string.
+        - If `output` is not a string.
+        - If `threshold_z` is not a float or an int.
     ValueError
-        If an invalid 'method' or 'output' option is provided.
+        - If `method` is not one of the specified valid methods ('correlation_analysis', 'distribution_analysis', 'outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis', 'multicollinearity', 'all').
+        - If `output` is not 'print' or 'return'.
+        - If any specified variables in `numerical_variables` are not found in the DataFrame's columns.
 
     Notes
     -----
