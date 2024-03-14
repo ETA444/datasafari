@@ -8,7 +8,6 @@ import Levenshtein as lev
 from category_encoders import BinaryEncoder
 
 
-# main function: transform_cat
 def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na_placeholder: str = 'Unknown', abbreviation_map: dict = None, ordinal_map: dict = None, target_variable: str = None):
     """
     Transforms categorical variables in a DataFrame using various encoding and cleaning methods.
@@ -60,7 +59,6 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
         - If `method` is 'uniform_mapping' and `abbreviation_map` is not provided.
         - If `target_variable` is specified but not found in the DataFrame's columns.
         - If keys specified in `abbreviation_map` or `ordinal_map` are not found in the DataFrame's columns.
-
 
     Examples
     --------
