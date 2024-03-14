@@ -12,10 +12,11 @@ from datasafari.utils import calculate_mahalanobis, calculate_vif
 # TODO: Implement new method: 'outlier_dbscan' (density-based spatial clustering outlier detection)
 # TODO: Implement new method: 'outlier_isoforest' (isolation forest outlier detection)
 # TODO: Implement new method: 'outlier_lof'(local outlier factor outlier detection)
+# TODO: Overhaul explore_num output methodology to be more like transformer module one
 
 
 # main function: explore_num
-def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all', output: str = 'print', threshold_z: float = 3):
+def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all', output: str = 'print', threshold_z: int =3):
     """
     Analyze numerical variables in a DataFrame for distribution characteristics, outlier detection using multiple methods (Z-score, IQR, Mahalanobis), normality tests, skewness, kurtosis, correlation analysis, and multicollinearity detection.
 
@@ -27,18 +28,18 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         A list of strings representing the column names in `df` to be analyzed.
     method : str, optional, default 'all'
         Specifies the analysis method to apply. Options include:
+        - 'correlation_analysis' for analyzing the correlation between numerical variables.
         - 'distribution_analysis' for distribution characteristics, including skewness and kurtosis, and normality tests (Shapiro-Wilk, Anderson-Darling).
         - 'outliers_zscore' for outlier detection using the Z-score method.
         - 'outliers_iqr' for outlier detection using the Interquartile Range method.
         - 'outliers_mahalanobis' for outlier detection using the Mahalanobis distance.
-        - 'correlation_analysis' for analyzing the correlation between numerical variables.
         - 'multicollinearity' for detecting multicollinearity among the numerical variables.
         - 'all' to perform all available analyses. Default is 'all'.
     output : str, optional, default 'print'
         Determines the output format. Options include:
         - 'print' to print the analysis results to the console.
         - 'return' to return the analysis results as a DataFrame or dictionaries, depending on the analysis type. Default is 'print'.
-    threshold_z : float, optional, default 3
+    threshold_z : int, optional, default 3
         Used in method 'outliers_zscore', users can define their preferred z-score threshold, if the default value does not fit their needs.
 
     Returns
