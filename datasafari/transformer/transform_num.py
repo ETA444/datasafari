@@ -67,6 +67,36 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
     transformed_columns : pd.DataFrame
         A DataFrame containing only the transformed columns.
 
+    Raises
+    ------
+    TypeError
+        - If `df` is not a pandas DataFrame.
+        - If `numerical_variables` is not a list.
+        - If `method` is not a string.
+        - If `output_distribution` is provided but not a string.
+        - If `n_quantiles` is not an integer.
+        - If `random_state` is not an integer.
+        - If `with_centering` is not a boolean.
+        - If `quantile_range` is not a tuple of two floats.
+        - If `power` is provided but not a float.
+        - If `power_map`, `winsorization_map`, `degree_map`, or `bin_map` is provided but not a dictionary.
+        - If `lower_percentile` or `upper_percentile` is not a float.
+        - If `interaction_pairs` is not a list of tuples, or tuples are not of length 2.
+        - If `degree` is provided but not an integer.
+        - If `bins` is provided but not an integer.
+    ValueError
+        - If any of the specified `numerical_variables` are not found in the DataFrame's columns.
+        - If the `method` specified is not one of the valid methods: 'standardize', 'log', 'normalize', 'quantile', 'robust', 'boxcox', 'yeojohnson', 'power', 'winsorization', 'interaction', 'polynomial', 'bin'.
+        - If `output_distribution` is not 'normal' or 'uniform' for the 'quantile' method.
+        - If `n_quantiles` is not a positive integer for the 'quantile' method.
+        - If `quantile_range` does not consist of two float values in the range 0 to 1 for the 'robust' method.
+        - If `power` is not provided for the 'power' method when required.
+        - If `lower_percentile` or `upper_percentile` is not between 0 and 1, or if `lower_percentile` is greater than or equal to `upper_percentile` for the 'winsorization' method.
+        - If `degree` is not provided or is not a positive integer for the 'polynomial' method when required.
+        - If `bins` is not a positive integer for the 'bin' method when required.
+        - If specified keys in `power_map`, `winsorization_map`, `degree_map`, or `bin_map` do not match any column in the DataFrame.
+        - If the `interaction_pairs` specified do not consist of columns that exist in the DataFrame.
+
     Examples
     --------
     >>> import numpy as np
@@ -270,7 +300,6 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
                 invalid_keys = [key for key in mapping.keys() if key not in df.columns]
                 if invalid_keys:
                     raise ValueError(f"The following keys in '{map_name}' were not found in the DataFrame columns: {', '.join(invalid_keys)}")
-
 
     # Main Function #
     if method == 'standardize':
