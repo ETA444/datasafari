@@ -15,7 +15,7 @@ from datasafari.utils import calculate_mahalanobis, calculate_vif
 
 
 # main function: explore_num
-def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all', output: str = 'print'):
+def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all', output: str = 'print', threshold_z: float = 3):
     """
     Analyze numerical variables in a DataFrame for distribution characteristics, outlier detection using multiple methods (Z-score, IQR, Mahalanobis), normality tests, skewness, kurtosis, correlation analysis, and multicollinearity detection.
 
@@ -25,7 +25,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         The DataFrame containing the numerical data to analyze.
     numerical_variables : list
         A list of strings representing the column names in `df` to be analyzed.
-    method : str, optional
+    method : str, optional, default 'all'
         Specifies the analysis method to apply. Options include:
         - 'distribution_analysis' for distribution characteristics, including skewness and kurtosis, and normality tests (Shapiro-Wilk, Anderson-Darling).
         - 'outliers_zscore' for outlier detection using the Z-score method.
@@ -34,10 +34,12 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         - 'correlation_analysis' for analyzing the correlation between numerical variables.
         - 'multicollinearity' for detecting multicollinearity among the numerical variables.
         - 'all' to perform all available analyses. Default is 'all'.
-    output : str, optional
+    output : str, optional, default 'print'
         Determines the output format. Options include:
         - 'print' to print the analysis results to the console.
         - 'return' to return the analysis results as a DataFrame or dictionaries, depending on the analysis type. Default is 'print'.
+    threshold_z : float, optional, default 3
+        Used in method 'outliers_zscore', users can define their preferred z-score threshold, if the default value does not fit their needs.
 
     Returns
     -------
@@ -109,23 +111,11 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
     """
 
-    # initialize variables #
-    # (1) each method appends to: result
+    # Main Function #
     result = []
-    # (2) method 'outliers_zscore' only, returns these to the user
-    outliers_z_dict = {}
-    outliers_z_df = pd.DataFrame()
-    # (3) method 'outliers_iqr' only, returns these to the user
-    outliers_iqr_dict = {}
-    outliers_iqr_df = pd.DataFrame()
-    # (4) method 'outliers_mahalanobis', returns these to the user
-    outliers_mahalanobis_df = pd.DataFrame()
-    # (5) method 'distribution_analysis' only, returns this df to the user
-    distribution_df = pd.DataFrame(columns=numerical_variables)
-    # (6) method 'correlation_analysis' only, returns df to the user
-    correlation_dfs = []
 
     if method.lower() in ['correlation_analysis', 'all']:
+        correlation_dfs = []
 
         # calculate correlations per method
         pearson_df = df[numerical_variables].corr(method='pearson')
@@ -161,6 +151,8 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         stats_functions = ['min', 'max', 'mean', 'median', 'mode', 'variance', 'std_dev', 'skewness', 'kurtosis', 'shapiro_p', 'anderson_stat']
         # initialize dictionary to be used in the creation of distribution_df
         stats_dict = {stat: [] for stat in stats_functions}
+
+        distribution_df = pd.DataFrame(columns=numerical_variables)
 
         # main operation: descriptive stats, skewness, kurtosis, normality testing
         for variable_name in numerical_variables:
@@ -236,6 +228,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             result.append(f"☻ HOW TO: df = explore_num(yourdf, yourlist, method='distribution_analysis')")
 
     if method.lower() in ['outliers_iqr', 'all']:
+        # definitions #
+        outliers_iqr_dict = {}
+        outliers_iqr_df = pd.DataFrame()
 
         # appends #
         # (1) title of method section
@@ -295,8 +290,9 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     if method.lower() in ['outliers_zscore', 'all']:
 
         # definitions #
-        # (1) z-score threshold for outlier detection
-        threshold_z = 3
+        data = df.copy()
+        outliers_z_dict = {}
+        outliers_z_df = pd.DataFrame()
 
         # appends #
         # (1) title of method section
@@ -313,22 +309,19 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             z_col = variable_name + '_zscore'
 
             # calculate z-score for col
-            df[z_col] = (
-                    (df[variable_name] - df[variable_name].mean())
-                    / df[variable_name].std()
+            data[z_col] = (
+                    (data[variable_name] - data[variable_name].mean())
+                    / data[variable_name].std()
             )
 
             # outlier classification
-            outlier_rows = df[
-                df[z_col].abs() > threshold_z
+            outlier_rows = data[
+                data[z_col].abs() > threshold_z
             ]
 
             # save results: dictionary and df (objects)
             outliers_z_dict[variable_name] = outlier_rows[variable_name].tolist()
             outliers_z_df = pd.concat([outliers_z_df, outlier_rows], ignore_index=False)
-
-            # clean the original df
-            df.drop(z_col, axis=1, inplace=True)
 
             # conditional output string format and stats calculations
             title = f"< Results for ['{variable_name}'] >\n"
@@ -357,10 +350,11 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_zscore')")
 
     if method.lower() in ['outliers_mahalanobis', 'all']:
-
+        # definitions #
         # use non-na df: data
         data = df.copy()
         data = data[numerical_variables].dropna()
+        outliers_mahalanobis_df = pd.DataFrame()
 
         try:
             # calculate the mean and inverse of the covariance matrix
