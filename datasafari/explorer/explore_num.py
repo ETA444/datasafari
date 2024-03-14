@@ -148,10 +148,23 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         raise ValueError(f"The following variables were not found in the DataFrame: {', '.join(missing_vars)}")
 
     # Main Function #
+    # initialize variables #
+    # (1) each method appends to: result
     result = []
+    # (2) method 'outliers_zscore' only, returns these to the user
+    outliers_z_dict = {}
+    outliers_z_df = pd.DataFrame()
+    # (3) method 'outliers_iqr' only, returns these to the user
+    outliers_iqr_dict = {}
+    outliers_iqr_df = pd.DataFrame()
+    # (4) method 'outliers_mahalanobis', returns these to the user
+    outliers_mahalanobis_df = pd.DataFrame()
+    # (5) method 'distribution_analysis' only, returns this df to the user
+    distribution_df = pd.DataFrame(columns=numerical_variables)
+    # (6) method 'correlation_analysis' only, returns df to the user
+    correlation_dfs = []
 
     if method.lower() in ['correlation_analysis', 'all']:
-        correlation_dfs = []
 
         # calculate correlations per method
         pearson_df = df[numerical_variables].corr(method='pearson')
@@ -187,8 +200,6 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         stats_functions = ['min', 'max', 'mean', 'median', 'mode', 'variance', 'std_dev', 'skewness', 'kurtosis', 'shapiro_p', 'anderson_stat']
         # initialize dictionary to be used in the creation of distribution_df
         stats_dict = {stat: [] for stat in stats_functions}
-
-        distribution_df = pd.DataFrame(columns=numerical_variables)
 
         # main operation: descriptive stats, skewness, kurtosis, normality testing
         for variable_name in numerical_variables:
@@ -264,9 +275,6 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
             result.append(f"☻ HOW TO: df = explore_num(yourdf, yourlist, method='distribution_analysis')")
 
     if method.lower() in ['outliers_iqr', 'all']:
-        # definitions #
-        outliers_iqr_dict = {}
-        outliers_iqr_df = pd.DataFrame()
 
         # appends #
         # (1) title of method section
@@ -327,8 +335,6 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
         # definitions #
         data = df.copy()
-        outliers_z_dict = {}
-        outliers_z_df = pd.DataFrame()
 
         # appends #
         # (1) title of method section
@@ -390,7 +396,6 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         # use non-na df: data
         data = df.copy()
         data = data[numerical_variables].dropna()
-        outliers_mahalanobis_df = pd.DataFrame()
 
         try:
             # calculate the mean and inverse of the covariance matrix
