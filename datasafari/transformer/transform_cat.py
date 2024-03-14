@@ -144,6 +144,76 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
     ensure that the mean target encoding is calculated separately for each fold of the data.
     """
 
+    # Error-Handling #
+
+    # TypeErrors
+    # Check if 'df' is a pandas DataFrame
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("The 'df' parameter must be a pandas DataFrame.")
+
+    # Check if 'categorical_variables' is a list
+    if not isinstance(categorical_variables, list):
+        raise TypeError("The 'categorical_variables' parameter must be a list of column names.")
+    else:
+        if not all(isinstance(var, str) for var in categorical_variables):
+            raise TypeError("All elements in the 'categorical_variables' list must be strings representing column names.")
+
+    # Check if 'method' is a string
+    if not isinstance(method, str):
+        raise TypeError("The 'method' parameter must be a string.")
+
+    # Check if 'na_placeholder' is a string
+    if not isinstance(na_placeholder, str):
+        raise TypeError("The 'na_placeholder' parameter must be a string.")
+
+    # Check if 'abbreviation_map', if provided, is a dictionary
+    if abbreviation_map is not None and not isinstance(abbreviation_map, dict):
+        raise TypeError("The 'abbreviation_map' parameter must be a dictionary if provided.")
+
+    # Check if 'ordinal_map', if provided, is a dictionary
+    if ordinal_map is not None and not isinstance(ordinal_map, dict):
+        raise TypeError("The 'ordinal_map' parameter must be a dictionary if provided.")
+
+    # Check if 'target_variable', if provided, is a string
+    if target_variable is not None and not isinstance(target_variable, str):
+        raise TypeError("The 'target_variable' parameter must be a string if provided.")
+
+    # ValueErrors
+    # Check if specified variables exist in the DataFrame
+    missing_vars = [var for var in categorical_variables if var not in df.columns]
+    if missing_vars:
+        raise ValueError(f"The following variables were not found in the DataFrame: {', '.join(missing_vars)}")
+
+    # Check if method is valid
+    valid_methods = ['uniform_simple', 'uniform_smart', 'uniform_mapping', 'encode_onehot', 'encode_ordinal', 'encode_freq', 'encode_target', 'encode_binary']
+    if method.lower() not in valid_methods:
+        raise ValueError(f"Invalid method '{method}'. Valid options are: {', '.join(valid_methods)}")
+
+    # Additional checks for method-specific parameters
+    if method.lower() == 'encode_ordinal' and not ordinal_map:
+        raise ValueError("The 'ordinal_map' parameter must be provided when using the 'encode_ordinal' method.")
+
+    if method.lower() == 'encode_target' and not target_variable:
+        raise ValueError("The 'target_variable' parameter must be provided when using the 'encode_target' method.")
+
+    if method.lower() == 'uniform_mapping' and not abbreviation_map:
+        raise ValueError("The 'abbreviation_map' parameter must be provided when using the 'uniform_mapping' method.")
+
+    # Check if target_variable exists in the DataFrame for methods that require it
+    if target_variable and target_variable not in df.columns:
+        raise ValueError(f"The target variable '{target_variable}' was not found in the DataFrame.")
+
+    # Check if all keys in abbreviation_map are in the DataFrame columns
+    if abbreviation_map and not all(key in df.columns for key in abbreviation_map.keys()):
+        invalid_keys = [key for key in abbreviation_map.keys() if key not in df.columns]
+        raise ValueError(f"The following keys in 'abbreviation_map' were not found in the DataFrame columns: {', '.join(invalid_keys)}")
+
+    # Check if all keys in ordinal_map are in the DataFrame columns
+    if ordinal_map and not all(key in df.columns for key in ordinal_map.keys()):
+        invalid_keys = [key for key in ordinal_map.keys() if key not in df.columns]
+        raise ValueError(f"The following keys in 'ordinal_map' were not found in the DataFrame columns: {', '.join(invalid_keys)}")
+
+    # Main Function #
     if method.lower() == 'uniform_simple':
         print(f"< UNIFORM SIMPLE TRANSFORMATION* >")
         print(f" This method applies basic but effective transformations to make categorical data uniform:")
