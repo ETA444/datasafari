@@ -122,6 +122,157 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
     >>> bin_transformed_df, binned_columns = transform_num(df, ['Feature2', 'Feature3'], method='bin', bin_map=bin_map)
     """
 
+    # Error-handling #
+
+    # TypeErrors
+    # Check if 'df' is a pandas DataFrame
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("The 'df' parameter must be a pandas DataFrame.")
+
+    # Check if 'numerical_variables' is a list
+    if not isinstance(numerical_variables, list):
+        raise TypeError("The 'numerical_variables' parameter must be a list of column names.")
+    else:
+        if not all(isinstance(var, str) for var in numerical_variables):
+            raise TypeError("All elements in the 'numerical_variables' list must be strings representing column names.")
+
+    # Check if 'method' is a string
+    if not isinstance(method, str):
+        raise TypeError("The 'method' parameter must be a string.")
+
+    # Check if 'output_distribution' is a string
+    if not isinstance(output_distribution, str):
+        raise TypeError("The 'output_distribution' parameter must be a string.")
+
+    # Check if 'n_quantiles' is an integer
+    if not isinstance(n_quantiles, int):
+        raise TypeError("The 'n_quantiles' parameter must be an integer.")
+
+    # Check if 'random_state' is an integer
+    if not isinstance(random_state, int):
+        raise TypeError("The 'random_state' parameter must be an integer.")
+
+    # Check if 'with_centering' is a boolean
+    if not isinstance(with_centering, bool):
+        raise TypeError("The 'with_centering' parameter must be a boolean.")
+
+    # Check if 'quantile_range' is a tuple and contains two floats
+    if not (isinstance(quantile_range, tuple) and len(quantile_range) == 2 and all(isinstance(num, float) for num in quantile_range)):
+        raise TypeError("The 'quantile_range' parameter must be a tuple containing two float values.")
+
+    # Check if 'power' is None or a float
+    if power is not None and not isinstance(power, float):
+        raise TypeError("The 'power' parameter must be a float or None.")
+
+    # Check if 'power_map' is None or a dictionary
+    if power_map is not None and not isinstance(power_map, dict):
+        raise TypeError("The 'power_map' parameter must be a dictionary or None.")
+
+    # Check if 'lower_percentile' and 'upper_percentile' are floats
+    if not isinstance(lower_percentile, float) or not isinstance(upper_percentile, float):
+        raise TypeError("The 'lower_percentile' and 'upper_percentile' parameters must be floats.")
+
+    # Check if 'winsorization_map' is None or a dictionary
+    if winsorization_map is not None and not isinstance(winsorization_map, dict):
+        raise TypeError("The 'winsorization_map' parameter must be a dictionary or None.")
+
+    # Check if 'interaction_pairs' is None or a list of tuples
+    if interaction_pairs is not None:
+        if not (isinstance(interaction_pairs, list) and all(isinstance(pair, tuple) and len(pair) == 2 for pair in interaction_pairs)):
+            raise TypeError("The 'interaction_pairs' parameter must be a list of tuples or None.")
+
+    # Check if 'degree' is None or an integer
+    if degree is not None and not isinstance(degree, int):
+        raise TypeError("The 'degree' parameter must be an integer or None.")
+
+    # Check if 'degree_map' is None or a dictionary
+    if degree_map is not None and not isinstance(degree_map, dict):
+        raise TypeError("The 'degree_map' parameter must be a dictionary or None.")
+
+    # Check if 'bins' is None or an integer
+    if bins is not None and not isinstance(bins, int):
+        raise TypeError("The 'bins' parameter must be an integer or None.")
+
+    # Check if 'bin_map' is None or a dictionary
+    if bin_map is not None and not isinstance(bin_map, dict):
+        raise TypeError("The 'bin_map' parameter must be a dictionary or None.")
+
+    # ValueErrors
+    # Check if specified variables exist in the DataFrame
+    missing_vars = [var for var in numerical_variables if var not in df.columns]
+    if missing_vars:
+        raise ValueError(f"The following numerical variables were not found in the DataFrame: {', '.join(missing_vars)}")
+
+    # Check if method is valid
+    valid_methods = ['standardize', 'log', 'normalize', 'quantile', 'robust', 'boxcox', 'yeojohnson', 'power', 'winsorization', 'interaction', 'polynomial', 'bin']
+    if method.lower() not in valid_methods:
+        raise ValueError(f"Invalid method '{method}'. Valid options are: {', '.join(valid_methods)}")
+
+    # For 'quantile' method specific checks
+    if method.lower() == 'quantile':
+        if output_distribution not in ['normal', 'uniform']:
+            raise ValueError("Invalid 'output_distribution' for 'quantile' method. Choose 'normal' or 'uniform'.")
+        if not isinstance(n_quantiles, int) or n_quantiles <= 0:
+            raise ValueError("The 'n_quantiles' must be a positive integer.")
+        if not isinstance(random_state, int):
+            raise ValueError("The 'random_state' must be an integer.")
+
+    # For 'robust' method specific checks
+    if method.lower() == 'robust':
+        if not isinstance(with_centering, bool):
+            raise ValueError("The 'with_centering' parameter must be a boolean (True or False).")
+        if not (isinstance(quantile_range, tuple) and len(quantile_range) == 2 and all(isinstance(num, float) for num in quantile_range)):
+            raise ValueError("The 'quantile_range' must be a tuple of two float values.")
+
+    # For 'power' method specific checks
+    if method.lower() == 'power':
+        if power is not None and not isinstance(power, float):
+            raise ValueError("The 'power' must be a float value or None.")
+        if power_map is not None and not isinstance(power_map, dict):
+            raise ValueError("The 'power_map' must be a dictionary mapping variables to powers or None.")
+
+    # For 'winsorization' method specific checks
+    if method.lower() == 'winsorization':
+        if not (isinstance(lower_percentile, float) and 0 <= lower_percentile < 1):
+            raise ValueError("The 'lower_percentile' must be a float between 0 and 1.")
+        if not (isinstance(upper_percentile, float) and 0 < upper_percentile <= 1):
+            raise ValueError("The 'upper_percentile' must be a float between 0 and 1.")
+        if lower_percentile >= upper_percentile:
+            raise ValueError("The 'lower_percentile' must be less than 'upper_percentile'.")
+
+    # For 'polynomial' method specific checks
+    if method.lower() == 'polynomial':
+        if degree is not None and not (isinstance(degree, int) and degree > 0):
+            raise ValueError("The 'degree' must be a positive integer or None.")
+        if degree_map is not None and not isinstance(degree_map, dict):
+            raise ValueError("The 'degree_map' must be a dictionary mapping variables to degrees or None.")
+
+    # For 'bin' method specific checks
+    if method.lower() == 'bin':
+        if bins is not None and not (isinstance(bins, int) and bins > 0):
+            raise ValueError("The 'bins' must be a positive integer or None.")
+        if bin_map is not None and not isinstance(bin_map, dict):
+            raise ValueError("The 'bin_map' must be a dictionary specifying binning criteria or None.")
+
+    # For 'interaction' method specific checks
+    if method.lower() == 'interaction':
+        if interaction_pairs is not None:
+            if not (isinstance(interaction_pairs, list) and all(isinstance(pair, tuple) and len(pair) == 2 for pair in interaction_pairs)):
+                raise ValueError("The 'interaction_pairs' must be a list of tuples specifying pairs of variables or None.")
+            missing_pairs = [pair for pair in interaction_pairs if pair[0] not in df.columns or pair[1] not in df.columns]
+            if missing_pairs:
+                raise ValueError(f"The following variable pairs in 'interaction_pairs' were not found in the DataFrame: {missing_pairs}")
+
+    # Additional checks for mapping dictionaries to ensure keys exist in the DataFrame
+    if power_map or winsorization_map or degree_map or bin_map:
+        for mapping, map_name in zip([power_map, winsorization_map, degree_map, bin_map], ['power_map', 'winsorization_map', 'degree_map', 'bin_map']):
+            if mapping:
+                invalid_keys = [key for key in mapping.keys() if key not in df.columns]
+                if invalid_keys:
+                    raise ValueError(f"The following keys in '{map_name}' were not found in the DataFrame columns: {', '.join(invalid_keys)}")
+
+
+    # Main Function #
     if method == 'standardize':
         print(f"< STANDARDIZING DATA >")
         print(f" This method centers the data around mean 0 with a standard deviation of 1, enhancing model performance and stability.")
@@ -542,91 +693,3 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         print(f"  ➡ Shape of original dataframe: {df.shape}")
         print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
         print("* Review the binned data to ensure it aligns with your analysis or modeling strategy.\n")
-
-
-# smoke testing #
-
-# example data to run tests on
-data = {
-    'Feature1': np.random.normal(0, 1, 100),  # Normally distributed data
-    'Feature2': np.random.exponential(1, 100),  # Exponentially distributed data (positively skewed)
-    'Feature3': np.random.randint(1, 100, 100)  # Uniformly distributed data between 1 and 100
-}
-
-df = pd.DataFrame(data)
-
-num_cols = ['Feature1', 'Feature2', 'Feature3']
-
-# standardize
-standardized_data, standardized_cols = transform_num(df, num_cols, method='standardize')
-
-# log
-log_data, log_cols = transform_num(df, num_cols, method='log')
-
-# normalize
-normalized_data, normalized_cols = transform_num(df, num_cols, method='normalize')
-
-# quantile
-quant_transformed_data, quant_transformed_cols = transform_num(df, num_cols, method='quantile', output_distribution='normal', n_quantiles=1000, random_state=444)
-
-# robust
-robust_transformed_df, robust_transformed_columns = transform_num(df, num_cols, method='robust', with_centering=True, quantile_range=(25.0, 75.0))
-
-# boxcox
-boxcox_transformed_df, boxcox_transformed_columns = transform_num(df, num_cols, method='boxcox')
-
-# yeojohnson
-yeojohnson_transformed_df, yeojohnson_transformed_columns = transform_num(df, num_cols, method='yeojohnson')
-
-# power
-
-# power usage
-power2 = 2
-power_transformed_df1, power_transformed_columns1 = transform_num(df, num_cols, method='power', power=power2)
-
-# power_map usage
-power_map234 = {
-    'Feature1': 2,
-    'Feature2': 3,
-    'Feature3': 4
-}
-power_transformed_df2, power_transformed_columns2 = transform_num(df, num_cols, method='power', power_map=power_map234)
-
-
-# winsorization
-
-# lower_quantile and upper_quantile usage
-lower_bound = 0.01
-upper_bound = 0.99
-wins_transformed_df1, wins_transformed_columns1 = transform_num(df, num_cols, method='winsorization', lower_percentile=lower_bound, upper_percentile=upper_bound)
-
-# winsorization_map usage
-win_map = {
-    'Feature1': (0.01, 0.99),
-    'Feature2': (0.05, 0.95), # tuples work
-    'Feature3': [0.10, 0.90] # lists work too
-}
-wins_transformed_df2, wins_transformed_columns2 = transform_num(df, num_cols, method='power', winsorization_map=win_map)
-
-# interaction
-interactions = [
-    ('Feature1', 'Feature2'),
-    ('Feature2', 'Feature3')
-]
-inter_transformed_df, inter_columns = transform_num(df, num_cols, method='interaction', interaction_pairs=interactions)
-
-# polynomial
-degree_map = {'Feature1': 2, 'Feature2': 3}
-poly_transformed_df, poly_features = transform_num(df, ['Feature1', 'Feature2'], method='polynomial', degree_map=degree_map)
-
-# bin
-bin_map = {
-    'Feature2': {'bins': 5},  # For simplicity, specifying only the number of bins for Feature2
-    'Feature3': {'edges': [1, 20, 40, 60, 80, 100]}  # Defining custom bin edges for Feature3
-}
-
-# Assuming transform_num is your function to apply binning based on bin_map or a uniform number of bins
-bin_transformed_df, binned_columns = transform_num(df, ['Feature2', 'Feature3'], method='bin', bin_map=bin_map)
-
-# This would bin Feature2 into 5 equal-width intervals based on its data range.
-# For Feature3, it creates bins based on the specified edges: [1-20), [20-40), [40-60), [60-80), [80-100].
