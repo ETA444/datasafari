@@ -69,6 +69,8 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
 
     Examples
     --------
+    >>> import numpy as np
+    >>> import pandas as pd
     >>> df = pd.DataFrame({'Feature1': np.random.normal(0, 1, 100), 'Feature2': np.random.exponential(1, 100), 'Feature3': np.random.randint(1, 100, 100)})
     >>> num_cols = ['Feature1', 'Feature2', 'Feature3']
 
