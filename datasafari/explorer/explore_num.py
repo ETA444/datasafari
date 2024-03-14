@@ -65,50 +65,42 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
 
     Examples
     --------
-    # Generating a dataframe for examples
+    # Generating a sample DataFrame for demonstration
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> np.random.seed(0) # For reproducible results
     >>> data = {
-    ...     'variable1': np.random.normal(0, 1, 100),
-    ...     'variable2': np.random.exponential(1, 100),
-    ...     'variable3': np.random.randint(1, 100, 100)
+    ...     'Feature1': np.random.normal(loc=0, scale=1, size=100), # Normally distributed data
+    ...     'Feature2': np.random.exponential(scale=2, size=100),   # Exponentially distributed data
+    ...     'Feature3': np.random.randint(low=1, high=100, size=100) # Uniformly distributed integers
     ... }
     >>> df = pd.DataFrame(data)
 
-    # Example 1: Exploring distribution characteristics and printing to console
-    >>> cols = ['variable1', 'variable2']
-    >>> explore_num(df, cols, method='distribution_analysis', output='print')
+    # Importing the explore_num function (assuming it is defined elsewhere in your module)
+    # from your_module import explore_num
 
-    # Example 2: Detecting outliers using the Z-score method and returning the results
-    >>> outliers_z_dict, outliers_z_df = explore_num(df, ['variable1', 'variable2'], method='outliers_zscore', output='return')
-    >>> print(outliers_z_dict)
-    >>> print(outliers_z_df.head())
+    # Performing correlation analysis and printing the results
+    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='correlation_analysis', output='print')
 
-    # Example 3: Identifying outliers with the IQR method and printing the summary
-    >>> explore_num(df, ['variable1', 'variable2'], method='outliers_iqr', output='print')
+    # Conducting distribution analysis and capturing the returned DataFrame for further analysis
+    >>> distribution_results = explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='distribution_analysis', output='return')
+    >>> print(distribution_results)
 
-    # Example 4: Performing all analyses on specified variables and printing summaries
-    >>> explore_num(df, ['variable1', 'variable2', 'variable3'], method='all', output='print')
+    # Detecting outliers using the IQR method and printing the results
+    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_iqr', output='print')
 
-    # Example 5: Using 'return' with 'all' method to get a comprehensive textual summary
-    >>> analysis_summary = explore_num(df, ['variable1', 'variable2'], method='all', output='return')
-    >>> print(analysis_summary)
+    # Detecting outliers using the Z-score method with a custom threshold and printing the results
+    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_zscore', output='print', threshold_z=2.5)
 
-    # Example 6: Exploring distribution for a single variable and capturing the DataFrame for further analysis
-    >>> distribution_df = explore_num(df, ['variable1'], method='distribution_analysis', output='return')
-    >>> print(distribution_df)
+    # Identifying outliers using the Mahalanobis distance method and printing the results
+    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_mahalanobis', output='print')
 
-    # Example 7: Comprehensive analysis for multiple variables, focusing on outlier detection and distribution, and returning data for IQR outliers
-    >>> outliers_iqr_dict, outliers_iqr_df = explore_num(df, cols, method='outliers_iqr', output='return')
-    >>> distribution_analysis_df = explore_num(df, cols, method='distribution_analysis', output='return')
-    >>> print(outliers_iqr_df.head())
-    >>> print(distribution_analysis_df)
+    # Examining multicollinearity among the numerical features and printing the VIF scores
+    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='multicollinearity', output='print')
 
-    # Example 8: Comprehensive analysis for multiple variables focusing on outliers, correlations, and multicollinearity
-    >>> outliers_mahalanobis_df = explore_num(df, cols, method='outliers_mahalanobis', output='return')
-    >>> correlation_analysis_df = explore_num(df, cols, method='correlation_analysis', output='return')
-    >>> multicollinearity_df = explore_num(df, cols, method='multicollinearity', output='return')
-    >>> print(outliers_mahalanobis_df.head())
-    >>> print(correlation_analysis_df)
-    >>> print(multicollinearity_df.head())
+    # Applying all available analyses and printing the comprehensive results
+    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='all', output='print')
+
     """
 
     # Error Handling #
