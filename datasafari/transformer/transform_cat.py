@@ -47,8 +47,20 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
 
     Raises
     ------
+    TypeError
+        - If `df` is not a pandas DataFrame.
+        - If `categorical_variables` is not a list or contains elements that are not strings.
+        - If `method`, `na_placeholder`, or `target_variable` (if provided) is not a string.
+        - If `abbreviation_map` or `ordinal_map` (if provided) is not a dictionary.
     ValueError
-        If an invalid transformation method is provided.
+        - If any variable specified in `categorical_variables` is not found in the DataFrame's columns.
+        - If `method` is not one of the valid options: 'uniform_simple', 'uniform_smart', 'uniform_mapping', 'encode_onehot', 'encode_ordinal', 'encode_freq', 'encode_target', 'encode_binary'.
+        - If `method` is 'encode_ordinal' and `ordinal_map` is not provided.
+        - If `method` is 'encode_target' and `target_variable` is not provided.
+        - If `method` is 'uniform_mapping' and `abbreviation_map` is not provided.
+        - If `target_variable` is specified but not found in the DataFrame's columns.
+        - If keys specified in `abbreviation_map` or `ordinal_map` are not found in the DataFrame's columns.
+
 
     Examples
     --------
