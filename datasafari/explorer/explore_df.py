@@ -158,5 +158,3 @@ def explore_df(df: pd.DataFrame, method: str = 'all', output: str = 'print', **k
         print(combined_result)
     elif output.lower() == 'return':
         return combined_result
-    else:
-        raise ValueError("Invalid output method. Choose 'print' or 'return'.")
