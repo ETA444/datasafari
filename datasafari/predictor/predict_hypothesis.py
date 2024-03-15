@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.stats import shapiro, levene
 
 
 def predict_hypothesis():
@@ -43,6 +44,8 @@ data = {
     'Feature3': np.random.randint(1, 100, 100)
 }
 test_df = pd.DataFrame(data)
+grouping = 'Category2'
+variable = 'Feature1'
 
 
 # infer data type
@@ -58,3 +61,16 @@ def assign_data_types(df, cols):
 
 dt_dict = assign_data_types(test_df, test_df.columns)
 
+
+def test_numeric_assumptions(df, grouping_variable, value_variable):
+    groups = df[grouping_variable].unique().tolist()
+    # normality
+    shapiro_pvals = [shapiro(df[df[grouping_variable] == group][value_variable]).pvalue for group in groups]
+    shapiro_stats = [shapiro(df[df[grouping_variable] == group][value_variable]).statistic for group in groups]
+    shapiro_info = {group: [shapiro_pvals[n], shapiro_stats[n]] for n, group in enumerate(groups)}
+    shapiro_text = [f"Shapiro Results for {key} group in variable {value_variable}:\n- statistic: {value[1]}\n- p-value: {value[0]}\n" for key, value in shapiro_info.items()]
+
+    [print(text) for text in shapiro_text]
+
+
+test_numeric_assumptions(test_df, grouping, variable)
