@@ -1,3 +1,7 @@
+import numpy as np
+import pandas as pd
+
+
 def predict_hypothesis():
     """
     The general idea here is to create a function where:
@@ -25,3 +29,32 @@ def predict_hypothesis():
         | 4B Inside: ...
         < Out < results + conclusion
     """
+
+# smoke tests
+
+
+# create df for testing
+data = {
+    'Category1': np.random.choice(['Apple', 'Banana', 'Cherry'], size=100),
+    'Category2': np.random.choice(['Yes', 'No'], size=100),
+    'Category3': np.random.choice(['Low', 'Medium', 'High'], size=100),
+    'Feature1': np.random.normal(0, 1, 100),
+    'Feature2': np.random.exponential(1, 100),
+    'Feature3': np.random.randint(1, 100, 100)
+}
+test_df = pd.DataFrame(data)
+
+
+# infer data type
+def assign_data_types(df, cols):
+    data_type_dictionary = {}
+    for col in cols:
+        if df[col].dtype in ['int', 'float']:
+            data_type_dictionary[col] = 'numeric'
+        else:
+            data_type_dictionary[col] = 'categorical'
+    return data_type_dictionary
+
+
+dt_dict = assign_data_types(test_df, test_df.columns)
+
