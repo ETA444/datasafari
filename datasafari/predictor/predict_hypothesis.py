@@ -82,3 +82,25 @@ def test_normality(df, grouping_variable, target_variable):
 
 
 test_normality(test_df, grouping, variable)
+
+
+def test_equal_variances(df, grouping_variable, target_variable):
+    groups = df[grouping_variable].unique().tolist()
+    samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
+
+    # levene test #
+    # calculating statistic and p-values to define equal_variances
+    levene_stat, levene_pval = levene(*samples).statistic, levene(*samples).pvalue
+    equal_variances = levene_pval > 0.05
+
+    # save the info for return and text for output
+    levene_info = {grouping_variable: {'stat': levene_stat, 'p': levene_pval, 'equal_variances': equal_variances}}
+    levene_text = f"Results for samples in groups of '{grouping_variable}' for ['{target_variable}'] target variable:\n  ➡ statistic: {levene_info[grouping_variable]['stat']}\n  ➡ p-value: {levene_info[grouping_variable]['p']}\n{(f'  ∴ Equal variances: Yes (H0 cannot be rejected)' if levene_info[grouping_variable]['equal_variances'] else f'  ∴ Equal variances: No (H0 rejected)')}\n\n"
+
+    # output & return
+    print(f"< EQUAL VARIANCES TESTING: LEVENE >\n")
+    print(levene_text)
+    return levene_info
+
+
+test_equal_variances(test_df, grouping, variable)
