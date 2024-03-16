@@ -62,22 +62,22 @@ def assign_data_types(df, cols):
 dt_dict = assign_data_types(test_df, test_df.columns)
 
 
-def test_normality(df, grouping_variable, value_variable):
+def test_normality(df, grouping_variable, target_variable):
     groups = df[grouping_variable].unique().tolist()
 
     # shapiro-wilk test #
-    # calculating statistic and p-values
-    shapiro_pvals = [shapiro(df[df[grouping_variable] == group][value_variable]).pvalue for group in groups]
-    shapiro_stats = [shapiro(df[df[grouping_variable] == group][value_variable]).statistic for group in groups]
-    normality = [True if p < 0.05 else False for p in shapiro_pvals]
+    # calculating statistic and p-values to define normality
+    shapiro_stats = [shapiro(df[df[grouping_variable] == group][target_variable]).statistic for group in groups]
+    shapiro_pvals = [shapiro(df[df[grouping_variable] == group][target_variable]).pvalue for group in groups]
+    normality = [True if p > 0.05 else False for p in shapiro_pvals]
 
     # save the info for return and text for output
     shapiro_info = {group: {'stat': shapiro_stats[n], 'p': shapiro_pvals[n], 'normality': normality[n]} for n, group in enumerate(groups)}
-    shapiro_text = [f"Shapiro Results for '{key}' group in variable ['{value_variable}']:\n  ➡ statistic: {value['stat']}\n  ➡ p-value: {value['p']}\n{(f'  ∴ Normality: Yes (H0 rejected)' if value['normality'] else f'  ∴ Normality: No (H0 cannot be rejected)')}\n" for key, value in shapiro_info.items()]
+    shapiro_text = [f"Results for '{key}' group in variable ['{target_variable}']:\n  ➡ statistic: {value['stat']}\n  ➡ p-value: {value['p']}\n{(f'  ∴ Normality: Yes (H0 cannot be rejected)' if value['normality'] else f'  ∴ Normality: No (H0 rejected)')}\n\n" for key, value in shapiro_info.items()]
 
     # output & return
     print(f"< NORMALITY TESTING: SHAPIRO-WILK >\n")
-    [print(text) for text in shapiro_text]
+    print(*shapiro_text)
     return shapiro_info
 
 
