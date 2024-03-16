@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.stats import shapiro, levene
+from scipy.stats import ttest_ind, mannwhitneyu, f_oneway, kruskal
 
 
 def predict_hypothesis():
@@ -62,7 +63,8 @@ def assign_data_types(df, cols):
 dt_dict = assign_data_types(test_df, test_df.columns)
 
 
-def test_normality(df, grouping_variable, target_variable):
+# TODO: Implement test preference mechanism where users can choose more tests (e.g. ...)
+def test_normality(df, target_variable, grouping_variable, test: str = 'shapiro'):
     groups = df[grouping_variable].unique().tolist()
 
     # shapiro-wilk test #
@@ -81,10 +83,11 @@ def test_normality(df, grouping_variable, target_variable):
     return shapiro_info
 
 
-test_normality(test_df, grouping, variable)
+normality_info = test_normality(test_df, variable, grouping)
 
 
-def test_equal_variances(df, grouping_variable, target_variable):
+# TODO: Implement test preference mechanism where users can choose more tests (e.g. bartlett)
+def test_equal_variances(df, target_variable, grouping_variable, test: str = 'shapiro'):
     groups = df[grouping_variable].unique().tolist()
     samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
 
@@ -103,4 +106,42 @@ def test_equal_variances(df, grouping_variable, target_variable):
     return levene_info
 
 
-test_equal_variances(test_df, grouping, variable)
+equal_variances_info = test_equal_variances(test_df, variable, grouping)
+
+
+#   , equal_variances_info
+def perform_hypothesis_testing_numeric(df, target_variable, grouping_variable, normality_info, equal_variances_info):
+    groups = [group for group in normality_info.keys()]
+    samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
+
+    # unpack info on normality and equal variance
+    normality_bool = all([info['normality'] for group, info in normality_info.items()])
+    equal_variances_bool = equal_variances_info[grouping_variable]['equal_variances']
+
+    if len(samples) == 2:  # two sample testing
+        if normality_bool and equal_variances_bool:  # parametric testing
+            stat, p_val = ttest_ind(*samples)
+            test_name = 'Independent Samples T-Test'
+            conclusion = f"" if p_val > 0.05 else f""
+        else:  # non-parametric testing
+            stat, p_val = mannwhitneyu(*samples)
+            test_name = 'Mann-Whitney U Rank Test (Two Independent Samples)'
+            conclusion = f"" if p_val > 0.05 else f""
+    else:  # more than two samples
+        if normality_bool and equal_variances_bool:
+            stat, p_val = f_oneway(*samples)
+            test_name = f'One-way ANOVA (with {len(samples)} groups)'
+            conclusion = f"" if p_val > 0.05 else f""
+        else:
+            stat, p_val = kruskal(*samples)
+            test_name = f'Kruskal-Wallis H-test (with {len(samples)} groups)'
+            conclusion = f"" if p_val > 0.05 else f""
+
+    # construct console output
+    print(f"\n< HYPOTHESIS TESTING: {test_name} >")
+    print(f"Based on:\n  ➡ Normality assumption: {'✔' if normality_bool else '✘'}\n  ➡ Equal variances assumption: {'✔' if equal_variances_bool else '✘'}\n  ➡ Sample size: {len(samples)} groups\n  ∴ {test_name} is performed.\n")
+    print(f"Results of {test_name}:\n  ➡ statistic: {stat}\n  ➡ p-value: {p_val}\n\n∴ Conclusion: {conclusion}")
+
+
+perform_hypothesis_testing_numeric(test_df, variable, grouping, normality_info, equal_variances_info)
+
