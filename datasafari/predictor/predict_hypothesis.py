@@ -73,27 +73,90 @@ def assign_data_types(df, cols):
 dt_dict = assign_data_types(test_df, test_df.columns)
 
 
-# TODO: Implement test preference mechanism where users can choose more tests (e.g. ...)
-def testing_normality(df, target_variable, grouping_variable, test: str = 'shapiro'):
+def test_normality(df, target_variable, grouping_variable, method: str = 'consensus'):
     groups = df[grouping_variable].unique().tolist()
 
-    # shapiro-wilk test #
-    # calculating statistic and p-values to define normality
-    shapiro_stats = [shapiro(df[df[grouping_variable] == group][target_variable]).statistic for group in groups]
-    shapiro_pvals = [shapiro(df[df[grouping_variable] == group][target_variable]).pvalue for group in groups]
-    normality = [True if p > 0.05 else False for p in shapiro_pvals]
+    # define output object
+    output_info = {}
+    normality_info = {}
 
-    # save the info for return and text for output
-    shapiro_info = {group: {'stat': shapiro_stats[n], 'p': shapiro_pvals[n], 'normality': normality[n]} for n, group in enumerate(groups)}
-    shapiro_text = [f"Results for '{key}' group in variable ['{target_variable}']:\n  ➡ statistic: {value['stat']}\n  ➡ p-value: {value['p']}\n{(f'  ∴ Normality: Yes (H0 cannot be rejected)' if value['normality'] else f'  ∴ Normality: No (H0 rejected)')}\n\n" for key, value in shapiro_info.items()]
+    if method in ['shapiro_wilk', 'consensus']:
+        # calculating statistic and p-values to define normality
+        shapiro_stats = [shapiro(df[df[grouping_variable] == group][target_variable]).statistic for group in groups]
+        shapiro_pvals = [shapiro(df[df[grouping_variable] == group][target_variable]).pvalue for group in groups]
+        shapiro_normality = [True if p > 0.05 else False for p in shapiro_pvals]
 
-    # output & return
-    print(f"< NORMALITY TESTING: SHAPIRO-WILK >\n")
-    print(*shapiro_text)
-    return shapiro_info
+        # save the info for return and text for output
+        shapiro_info = {group: {'stat': shapiro_stats[n], 'p': shapiro_pvals[n], 'normality': shapiro_normality[n]} for n, group in enumerate(groups)}
+        shapiro_text = [f"Results for '{key}' group in variable ['{target_variable}']:\n  ➡ statistic: {value['stat']}\n  ➡ p-value: {value['p']}\n{(f'  ∴ Normality: Yes (H0 cannot be rejected)' if value['normality'] else f'  ∴ Normality: No (H0 rejected)')}\n\n" for key, value in shapiro_info.items()]
+        shapiro_title = f"< NORMALITY TESTING: SHAPIRO-WILK >\n"
+        shapiro_tip = "☻ Tip: The Shapiro-Wilk test is particularly well-suited for small sample sizes (n < 50) and is considered one of the most powerful tests for assessing normality. It is sensitive to departures from normality, making it a preferred choice for rigorous normality assessments in small datasets."
+
+        # save info in return object and conditionally print to console
+        output_info['shapiro_wilk'] = shapiro_info
+        normality_info['shapiro_wilk_group_consensus'] = all(shapiro_normality)
+        print(shapiro_title, *shapiro_text, shapiro_tip) if method == 'shapiro_wilk' else None
+
+    if method in ['anderson_darling', 'consensus']:
+        # calculating statistic to define normality
+        anderson_stats = [anderson(df[df[grouping_variable] == group][target_variable]).statistic for group in groups]
+        anderson_critical_values = [anderson(df[df[grouping_variable] == group][target_variable]).critical_values[2] for group in groups]
+        anderson_normality = [True if c_val > anderson_stats[n] else False for n, c_val in enumerate(anderson_critical_values)]
+
+        # save the info for return and text for output
+        anderson_info = {group: {'stat': anderson_stats[n], 'p': anderson_critical_values[n], 'normality': anderson_normality[n]} for n, group in enumerate(groups)}
+        anderson_text = [f"Results for '{key}' group in variable ['{target_variable}']:\n  ➡ statistic: {value['stat']}\n  ➡ p-value: {value['p']}\n{(f'  ∴ Normality: Yes (H0 cannot be rejected)' if value['normality'] else f'  ∴ Normality: No (H0 rejected)')}\n\n" for key, value in anderson_info.items()]
+        anderson_title = f"< NORMALITY TESTING: SHAPIRO-WILK >\n"
+        anderson_tip = "☻ Tip: The Anderson-Darling test is a versatile test that can be applied to any sample size and is especially useful for comparing against multiple distribution types, not just the normal. It places more emphasis on the tails of the distribution than the Shapiro-Wilk test, making it useful for detecting outliers or heavy-tailed distributions."
+
+        # save info in return object and conditionally print to console
+        output_info['anderson_darling'] = anderson_info
+        normality_info['anderson_darling_group_consensus'] = all(anderson_normality)
+        print(anderson_title, *anderson_text, anderson_tip) if method == 'anderson_darling' else None
+
+    if method in ['normaltest', 'consensus']:
+        # calculating statistic and p-values to define normality
+        normaltest_stats = [normaltest(df[df[grouping_variable] == group][target_variable]).statistic for group in groups]
+        normaltest_pvals = [normaltest(df[df[grouping_variable] == group][target_variable]).pvalue for group in groups]
+        normaltest_normality = [True if p > 0.05 else False for p in normaltest_pvals]
+
+        # save the info for return and text for output
+        normaltest_info = {group: {'stat': normaltest_stats[n], 'p': normaltest_pvals[n], 'normality': normaltest_normality[n]} for n, group in enumerate(groups)}
+        normaltest_text = [f"Results for '{key}' group in variable ['{target_variable}']:\n  ➡ statistic: {value['stat']}\n  ➡ p-value: {value['p']}\n{(f'  ∴ Normality: Yes (H0 cannot be rejected)' if value['normality'] else f'  ∴ Normality: No (H0 rejected)')}\n\n" for key, value in normaltest_info.items()]
+        normaltest_title = f"< NORMALITY TESTING: D'AGOSTINO-PEARSON NORMALTEST >\n"
+        normaltest_tip = "\n☻ Tip: The D'Agostino-Pearson normality test, or simply 'normaltest', is best applied when the sample size is larger, as it combines skewness and kurtosis to form a test statistic. This test is useful for detecting departures from normality that involve asymmetry and tail thickness, offering a good balance between sensitivity and specificity in medium to large sample sizes."
+
+        # save info in return object and conditionally print to console
+        output_info['normaltest'] = normaltest_info
+        normality_info['normaltest_group_consensus'] = all(normaltest_normality)
+        print(normaltest_title, *normaltest_text, normaltest_tip) if method == 'normaltest' else None
+
+    if method in ['lilliefors', 'consensus']:
+        # calculating statistic and p-values to define normality
+        lilliefors_stats = [lilliefors(df[df[grouping_variable] == group][target_variable])[0] for group in groups]
+        lilliefors_pvals = [lilliefors(df[df[grouping_variable] == group][target_variable])[1] for group in groups]
+        lilliefors_normality = [True if p > 0.05 else False for p in lilliefors_pvals]
+
+        # save the info for return and text for output
+        lilliefors_info = {group: {'stat': lilliefors_stats[n], 'p': lilliefors_pvals[n], 'normality': lilliefors_normality[n]} for n, group in enumerate(groups)}
+        lilliefors_text = [f"Results for '{key}' group in variable ['{target_variable}']:\n  ➡ statistic: {value['stat']}\n  ➡ p-value: {value['p']}\n{(f'  ∴ Normality: Yes (H0 cannot be rejected)' if value['normality'] else f'  ∴ Normality: No (H0 rejected)')}\n\n" for key, value in lilliefors_info.items()]
+        lilliefors_title = f"< NORMALITY TESTING: LILLIEFORS' TEST >\n"
+        lilliefors_tip = "☻ Tip: The Lilliefors test is an adaptation of the Kolmogorov-Smirnov test for normality with the benefit of not requiring the mean and variance to be known parameters. It's particularly useful for small to moderately sized samples and is sensitive to deviations from normality in the center of the distribution rather than the tails. This makes it complementary to tests like the Anderson-Darling when a comprehensive assessment of normality is needed."
+
+        # save info in return object and conditionally print to console
+        output_info['lilliefors'] = lilliefors_info
+        normality_info['lilliefors_group_consensus'] = all(lilliefors_normality)
+        print(lilliefors_title, *lilliefors_text, lilliefors_tip) if method == 'lilliefors' else None
+
+    if method == 'consensus':
+        # the logic is that more than half of the tests need to give True for the consensus to be True
+        normality_consensus = [group_normality_consensus for test_name, group_normality_consensus in normality_info.items()].count(True) > len(normality_info)/2
+        # TODO: Construct console output for consensus + each seperate test info
+        # TODO: Construct appropriate return to be used in hypothesis testing function
+        # TODO: Think about the possibility of a tester subpackage where this function will stand on their own feet
 
 
-normality_info = testing_normality(test_df, variable, grouping)
+normality_infos = test_normality(test_df, variable, grouping)
 
 
 # TODO: Implement test preference mechanism where users can choose more tests (e.g. bartlett)
@@ -203,7 +266,7 @@ def perform_hypothesis_testing_categorical(contingency_table, chi2_bool, barnard
     contingency_table_shape = contingency_table.shape
     sample_size = np.sum(contingency_table.values)
 
-    # define output
+    # define output object
     output_info = []
 
     if chi2_bool:
