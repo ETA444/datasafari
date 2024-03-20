@@ -1,11 +1,13 @@
 import numpy as np
 import pandas as pd
 from scipy.stats import (
-    shapiro, levene,  # numerical assumptions
+    shapiro, anderson, normaltest,  # normality testing
+    levene,  # equal variances testing
     ttest_ind, mannwhitneyu, f_oneway, kruskal,  # numerical testing
     chi2_contingency, barnard_exact, boschloo_exact, fisher_exact  # categorical testing
 )
 from scipy.stats.contingency import expected_freq
+from statsmodels.stats.diagnostic import lilliefors
 
 
 def predict_hypothesis():
