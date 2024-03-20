@@ -44,11 +44,15 @@ data = {
     'Category1': np.random.choice(['Apple', 'Banana', 'Cherry'], size=100),
     'Category2': np.random.choice(['Yes', 'No'], size=100),
     'Category3': np.random.choice(['Low', 'Medium', 'High'], size=100),
+    'Category4': np.random.choice(['Short', 'Tall'], size=100),
     'Feature1': np.random.normal(0, 1, 100),
     'Feature2': np.random.exponential(1, 100),
     'Feature3': np.random.randint(1, 100, 100)
 }
 test_df = pd.DataFrame(data)
+contingency_table_test2x2 = pd.crosstab(test_df['Category2'], test_df['Category4'])
+contingency_table_test3x3 = pd.crosstab(test_df['Category1'], test_df['Category3'])
+contingency_table_test2x2sample39 = pd.crosstab(test_df['Category2'][0:39], test_df['Category4'][0:39])
 grouping = 'Category2'
 variable = 'Feature1'
 
@@ -68,7 +72,7 @@ dt_dict = assign_data_types(test_df, test_df.columns)
 
 
 # TODO: Implement test preference mechanism where users can choose more tests (e.g. ...)
-def test_normality(df, target_variable, grouping_variable, test: str = 'shapiro'):
+def testing_normality(df, target_variable, grouping_variable, test: str = 'shapiro'):
     groups = df[grouping_variable].unique().tolist()
 
     # shapiro-wilk test #
@@ -87,11 +91,11 @@ def test_normality(df, target_variable, grouping_variable, test: str = 'shapiro'
     return shapiro_info
 
 
-normality_info = test_normality(test_df, variable, grouping)
+normality_info = testing_normality(test_df, variable, grouping)
 
 
 # TODO: Implement test preference mechanism where users can choose more tests (e.g. bartlett)
-def test_equal_variances(df, target_variable, grouping_variable, test: str = 'shapiro'):
+def testing_equal_variances(df, target_variable, grouping_variable, test: str = 'shapiro'):
     groups = df[grouping_variable].unique().tolist()
     samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
 
@@ -110,7 +114,7 @@ def test_equal_variances(df, target_variable, grouping_variable, test: str = 'sh
     return levene_info
 
 
-equal_variances_info = test_equal_variances(test_df, variable, grouping)
+equal_variances_info = testing_equal_variances(test_df, variable, grouping)
 
 
 #   , equal_variances_info
