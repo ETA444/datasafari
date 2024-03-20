@@ -118,29 +118,41 @@ def perform_hypothesis_testing_numeric(df, target_variable, grouping_variable, n
     normality_bool = all([info['normality'] for group, info in normality_info.items()])
     equal_variances_bool = equal_variances_info[grouping_variable]['equal_variances']
 
+    # define output object
+    output_info = []
+
     if len(samples) == 2:  # two sample testing
         if normality_bool and equal_variances_bool:  # parametric testing
             stat, p_val = ttest_ind(*samples)
             test_name = 'Independent Samples T-Test'
-            conclusion = f"" if p_val > 0.05 else f""
+            conclusion = "The data do not provide sufficient evidence to conclude a significant difference between the group means, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference between the group means, rejecting the null hypothesis."
+            test_info = {'stat': stat, 'p_val': p_val, 'test_name': test_name, 'conclusion': conclusion}
+            output_info.append(test_info)
         else:  # non-parametric testing
             stat, p_val = mannwhitneyu(*samples)
             test_name = 'Mann-Whitney U Rank Test (Two Independent Samples)'
-            conclusion = f"" if p_val > 0.05 else f""
+            conclusion = "The data do not provide sufficient evidence to conclude a significant difference in group distributions, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference in group distributions, rejecting the null hypothesis."
+            test_info = {'stat': stat, 'p_val': p_val, 'test_name': test_name, 'conclusion': conclusion}
+            output_info.append(test_info)
     else:  # more than two samples
         if normality_bool and equal_variances_bool:
             stat, p_val = f_oneway(*samples)
             test_name = f'One-way ANOVA (with {len(samples)} groups)'
-            conclusion = f"" if p_val > 0.05 else f""
+            conclusion = "The data do not provide sufficient evidence to conclude a significant difference among the group means, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference among the group means, rejecting the null hypothesis."
+            test_info = {'stat': stat, 'p_val': p_val, 'test_name': test_name, 'conclusion': conclusion}
+            output_info.append(test_info)
         else:
             stat, p_val = kruskal(*samples)
             test_name = f'Kruskal-Wallis H-test (with {len(samples)} groups)'
-            conclusion = f"" if p_val > 0.05 else f""
+            conclusion = "The data do not provide sufficient evidence to conclude a significant difference among the group distributions, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference among the group distributions, rejecting the null hypothesis."
+            test_info = {'stat': stat, 'p_val': p_val, 'test_name': test_name, 'conclusion': conclusion}
+            output_info.append(test_info)
 
-    # construct console output
-    print(f"\n< HYPOTHESIS TESTING: {test_name} >")
-    print(f"Based on:\n  ➡ Normality assumption: {'✔' if normality_bool else '✘'}\n  ➡ Equal variances assumption: {'✔' if equal_variances_bool else '✘'}\n  ➡ Sample size: {len(samples)} groups\n  ∴ {test_name} is performed.\n")
-    print(f"Results of {test_name}:\n  ➡ statistic: {stat}\n  ➡ p-value: {p_val}\n\n∴ Conclusion: {conclusion}")
+    # construct console output and return
+    generate_test_names = (output_info[0]['test_name'] if len(output_info) == 1 else [info['test_name'] for info in output_info])
+    print(f"< HYPOTHESIS TESTING: {generate_test_names}>\nBased on:\n  ➡ Normality assumption: {'✔' if normality_bool else '✘'}\n  ➡ Equal variances assumption: {'✔' if equal_variances_bool else '✘'}\n  ➡ Nr. of Groups: {len(samples)} groups\n  ∴ Performing {generate_test_names}:\n")
+    [print(f"Results of {info['test_name']}:\n  ➡ statistic: {info['stat']}\n  ➡ p-value: {info['p_val']}\n  ∴ Conclusion: {info['conclusion']}\n") for info in output_info]
+    return output_info
 
 
 perform_hypothesis_testing_numeric(test_df, variable, grouping, normality_info, equal_variances_info)
