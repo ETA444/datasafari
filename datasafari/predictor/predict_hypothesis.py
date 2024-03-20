@@ -1,7 +1,11 @@
 import numpy as np
 import pandas as pd
-from scipy.stats import shapiro, levene
-from scipy.stats import ttest_ind, mannwhitneyu, f_oneway, kruskal
+from scipy.stats import (
+    shapiro, levene,  # numerical assumptions
+    ttest_ind, mannwhitneyu, f_oneway, kruskal,  # numerical testing
+    chi2_contingency, barnard_exact, boschloo_exact, fisher_exact  # categorical testing
+)
+from scipy.stats.contingency import expected_freq
 
 
 def predict_hypothesis():
