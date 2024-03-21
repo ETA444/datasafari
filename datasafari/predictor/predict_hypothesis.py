@@ -95,7 +95,10 @@ def test_normality(df, target_variable, grouping_variable, method: str = 'consen
         # save info in return object and conditionally print to console
         output_info['shapiro_wilk'] = shapiro_info
         normality_info['shapiro_wilk_group_consensus'] = all(shapiro_normality)
+
+        # end it here if non-consensus method
         print(shapiro_title, *shapiro_text, shapiro_tip) if method == 'shapiro_wilk' else None
+        return output_info if method == 'shapiro_wilk' else None
 
     if method in ['anderson_darling', 'consensus']:
         # calculating statistic to define normality
@@ -109,10 +112,13 @@ def test_normality(df, target_variable, grouping_variable, method: str = 'consen
         anderson_title = f"< NORMALITY TESTING: SHAPIRO-WILK >\n"
         anderson_tip = "☻ Tip: The Anderson-Darling test is a versatile test that can be applied to any sample size and is especially useful for comparing against multiple distribution types, not just the normal. It places more emphasis on the tails of the distribution than the Shapiro-Wilk test, making it useful for detecting outliers or heavy-tailed distributions."
 
-        # save info in return object and conditionally print to console
+        # saving info
         output_info['anderson_darling'] = anderson_info
         normality_info['anderson_darling_group_consensus'] = all(anderson_normality)
+
+        # end it here if non-consensus method
         print(anderson_title, *anderson_text, anderson_tip) if method == 'anderson_darling' else None
+        return output_info if method == 'anderson_darling' else None
 
     if method in ['normaltest', 'consensus']:
         # calculating statistic and p-values to define normality
@@ -126,10 +132,13 @@ def test_normality(df, target_variable, grouping_variable, method: str = 'consen
         normaltest_title = f"< NORMALITY TESTING: D'AGOSTINO-PEARSON NORMALTEST >\n"
         normaltest_tip = "\n☻ Tip: The D'Agostino-Pearson normality test, or simply 'normaltest', is best applied when the sample size is larger, as it combines skewness and kurtosis to form a test statistic. This test is useful for detecting departures from normality that involve asymmetry and tail thickness, offering a good balance between sensitivity and specificity in medium to large sample sizes."
 
-        # save info in return object and conditionally print to console
+        # saving info
         output_info['normaltest'] = normaltest_info
         normality_info['normaltest_group_consensus'] = all(normaltest_normality)
+
+        # end it here if non-consensus method
         print(normaltest_title, *normaltest_text, normaltest_tip) if method == 'normaltest' else None
+        return output_info if method == 'normaltest' else None
 
     if method in ['lilliefors', 'consensus']:
         # calculating statistic and p-values to define normality
@@ -143,14 +152,19 @@ def test_normality(df, target_variable, grouping_variable, method: str = 'consen
         lilliefors_title = f"< NORMALITY TESTING: LILLIEFORS' TEST >\n"
         lilliefors_tip = "☻ Tip: The Lilliefors test is an adaptation of the Kolmogorov-Smirnov test for normality with the benefit of not requiring the mean and variance to be known parameters. It's particularly useful for small to moderately sized samples and is sensitive to deviations from normality in the center of the distribution rather than the tails. This makes it complementary to tests like the Anderson-Darling when a comprehensive assessment of normality is needed."
 
-        # save info in return object and conditionally print to console
+        # saving info
         output_info['lilliefors'] = lilliefors_info
         normality_info['lilliefors_group_consensus'] = all(lilliefors_normality)
+
+        # end here if non-consensus method
         print(lilliefors_title, *lilliefors_text, lilliefors_tip) if method == 'lilliefors' else None
+        return output_info if method == 'lilliefors' else None
 
     if method == 'consensus':
         # the logic is that more than half of the tests need to give True for the consensus to be True
         normality_consensus = [group_normality_consensus for test_name, group_normality_consensus in normality_info.items()].count(True) > len(normality_info)/2
+
+        # construct output and return
         # TODO: Construct console output for consensus + each seperate test info
         # TODO: Construct appropriate return to be used in hypothesis testing function
         # TODO: Think about the possibility of a tester subpackage where this function will stand on their own feet
