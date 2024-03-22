@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 from scipy.stats import (
     shapiro, anderson, normaltest,  # normality testing
-    levene,  # equal variances testing
-    ttest_ind, mannwhitneyu, f_oneway, kruskal,  # numerical testing
-    chi2_contingency, barnard_exact, boschloo_exact, fisher_exact  # categorical testing
+    levene, bartlett, fligner,  # equal variances testing
+    ttest_ind, mannwhitneyu, f_oneway, kruskal,  # numerical hypothesis testing
+    chi2_contingency, barnard_exact, boschloo_exact, fisher_exact  # categorical hypothesis testing
 )
 from scipy.stats.contingency import expected_freq
 from statsmodels.stats.diagnostic import lilliefors
@@ -203,7 +203,7 @@ test_normality(test_df, variable, grouping, method='lilliefors', pipeline=True)
 
 
 # TODO: Implement test preference mechanism where users can choose more tests (e.g. bartlett)
-def testing_equal_variances(df, target_variable, grouping_variable, test: str = 'shapiro'):
+def testing_equal_variances(df, target_variable, grouping_variable, method: str = 'shapiro'):
     groups = df[grouping_variable].unique().tolist()
     samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
 
