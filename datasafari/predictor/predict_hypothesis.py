@@ -73,12 +73,13 @@ def assign_data_types(df, cols):
 dt_dict = assign_data_types(test_df, test_df.columns)
 
 
-def test_normality(df, target_variable, grouping_variable, method: str = 'consensus', pipeline: bool = False):
+def evaluate_normality(df, target_variable, grouping_variable, method: str = 'consensus', pipeline: bool = False):
     groups = df[grouping_variable].unique().tolist()
 
-    # define output object
-    output_info = {}
-    normality_info = {}
+    # define output objects
+    output_info = {}  # non-pipeline
+    normality_info = {}  # pipeline single-method
+    output_consensus = None  # pipeline consensus method
 
     if method in ['shapiro_wilk', 'consensus']:
         # calculating statistic and p-values to define normality
@@ -199,11 +200,10 @@ def test_normality(df, target_variable, grouping_variable, method: str = 'consen
         return output_info if not pipeline else output_consensus
 
 
-test_normality(test_df, variable, grouping, method='lilliefors', pipeline=True)
+evaluate_normality(test_df, variable, grouping, method='lilliefors', pipeline=True)
 
 
-# TODO: Implement test preference mechanism where users can choose more tests (e.g. bartlett)
-def testing_equal_variances(df, target_variable, grouping_variable, method: str = 'shapiro'):
+def evaluate_variance(df, target_variable, grouping_variable, normality_info: bool = None, method: str = 'consensus', pipeline: bool = False):
     groups = df[grouping_variable].unique().tolist()
     samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
 
@@ -212,17 +212,15 @@ def testing_equal_variances(df, target_variable, grouping_variable, method: str 
     levene_stat, levene_pval = levene(*samples).statistic, levene(*samples).pvalue
     equal_variances = levene_pval > 0.05
 
-    # save the info for return and text for output
-    levene_info = {grouping_variable: {'stat': levene_stat, 'p': levene_pval, 'equal_variances': equal_variances}}
-    levene_text = f"Results for samples in groups of '{grouping_variable}' for ['{target_variable}'] target variable:\n  ➡ statistic: {levene_info[grouping_variable]['stat']}\n  ➡ p-value: {levene_info[grouping_variable]['p']}\n{(f'  ∴ Equal variances: Yes (H0 cannot be rejected)' if levene_info[grouping_variable]['equal_variances'] else f'  ∴ Equal variances: No (H0 rejected)')}\n\n"
+        print(f"< VARIANCE TESTING: CONSENSUS >\nThe consensus method bases its conclusion on 2-3 tests: Levene test, Fligner-Killeen test, Bartlett test. (Note: More than 50% must have the same outcome to reach consensus.)\n\n{variance_consensus_text}")
+        print(levene_title, levene_text, levene_tip)
+        print(fligner_title, fligner_text, fligner_tip)
+        print(bartlett_title, bartlett_text, bartlett_tip) if normality_info else f"\n\n< NOTE ON BARTLETT >\nBartlett was not used in consensus as no normality info has been provided or data is non-normal. Accuracy of Bartlett's test results rely heavily on normality."
 
-    # output & return
-    print(f"< EQUAL VARIANCES TESTING: LEVENE >\n")
-    print(levene_text)
-    return levene_info
+        return output_info if not pipeline else variance_consensus
 
 
-equal_variances_info = testing_equal_variances(test_df, variable, grouping)
+equal_variances_info = evaluate_variance(test_df, variable, grouping)
 
 
 #   , equal_variances_info
