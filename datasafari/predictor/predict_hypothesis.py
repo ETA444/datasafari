@@ -73,7 +73,7 @@ def assign_data_types(df, cols):
 dt_dict = assign_data_types(test_df, test_df.columns)
 
 
-def test_normality(df, target_variable, grouping_variable, method: str = 'consensus'):
+def test_normality(df, target_variable, grouping_variable, method: str = 'consensus', pipeline: bool = False):
     groups = df[grouping_variable].unique().tolist()
 
     # define output object
@@ -99,7 +99,7 @@ def test_normality(df, target_variable, grouping_variable, method: str = 'consen
         # end it here if non-consensus method
         if method == 'shapiro_wilk':
             print(shapiro_title, *shapiro_text, shapiro_tip)
-            return output_info
+            return output_info if not pipeline else normality_info['shapiro_wilk_group_consensus']
 
     if method in ['anderson_darling', 'consensus']:
         # calculating statistic to define normality
@@ -120,7 +120,7 @@ def test_normality(df, target_variable, grouping_variable, method: str = 'consen
         # end it here if non-consensus method
         if method == 'anderson_darling':
             print(anderson_title, *anderson_text, anderson_tip)
-            return output_info
+            return output_info if not pipeline else normality_info['anderson_darling_group_consensus']
 
     if method in ['normaltest', 'consensus']:
         # calculating statistic and p-values to define normality
@@ -141,7 +141,7 @@ def test_normality(df, target_variable, grouping_variable, method: str = 'consen
         # end it here if non-consensus method
         if method == 'normaltest':
             print(normaltest_title, *normaltest_text, normaltest_tip)
-            return output_info
+            return output_info if not pipeline else normality_info['normaltest_group_consensus']
 
     if method in ['lilliefors', 'consensus']:
         # calculating statistic and p-values to define normality
@@ -162,7 +162,7 @@ def test_normality(df, target_variable, grouping_variable, method: str = 'consen
         # end here if non-consensus method
         if method == 'lilliefors':
             print(lilliefors_title, *lilliefors_text, lilliefors_tip)
-            return output_info
+            return output_info if not pipeline else normality_info['lilliefors_group_consensus']
 
     if method == 'consensus':
         # the logic is that more than half of the tests need to give True for the consensus to be True
@@ -196,13 +196,10 @@ def test_normality(df, target_variable, grouping_variable, method: str = 'consen
         print(anderson_title, *anderson_text, anderson_tip)
         print(normaltest_title, *normaltest_text, normaltest_tip)
         print(lilliefors_title, *lilliefors_text, lilliefors_tip)
-
-        # TODO: Construct console output for consensus + each seperate test info
-        # TODO: Construct appropriate return to be used in hypothesis testing function
-        # TODO: Think about the possibility of a tester subpackage where this function will stand on their own feet
+        return output_info if not pipeline else output_consensus
 
 
-test_normality(test_df, variable, grouping, method='lilliefors')
+test_normality(test_df, variable, grouping, method='lilliefors', pipeline=True)
 
 
 # TODO: Implement test preference mechanism where users can choose more tests (e.g. bartlett)
