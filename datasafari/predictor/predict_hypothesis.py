@@ -121,7 +121,7 @@ def evaluate_normality(df, target_variable, grouping_variable, method: str = 'co
         # end it here if non-consensus method
         if method == 'anderson':
             print(anderson_title, *anderson_text, anderson_tip)
-            return output_info if not pipeline else normality_info['anderson_darling_group_consensus']
+            return output_info if not pipeline else normality_info['anderson_group_consensus']
 
     if method in ['normaltest', 'consensus']:
         # calculating statistic and p-values to define normality
