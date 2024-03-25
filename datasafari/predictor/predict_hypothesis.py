@@ -300,50 +300,48 @@ def evaluate_variance(df, target_variable, grouping_variable, normality_info: bo
 
 equal_variances_info = evaluate_variance(test_df, variable, grouping)
 
+# DONE! TODO: simplify output_info structure on below func (considering only one test will be outputted
+# TODO: make evaluate_shape stand on it's own two feet OR integrate into the performer
+# TODO: make evaluate_frequency stand on it's own two feet OR integrate into the performer
 
-#   , equal_variances_info
-def perform_hypothesis_testing_numeric(df, target_variable, grouping_variable, normality_info, equal_variances_info):
-    groups = [group for group in normality_info.keys()]
+
+def perform_hypothesis_testing_numeric(df, target_variable, grouping_variable, normality_bool, equal_variances_bool):
+    groups = df[grouping_variable].unique().tolist()
     samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
 
-    # unpack info on normality and equal variance
-    normality_bool = all([info['normality'] for group, info in normality_info.items()])
-    equal_variances_bool = equal_variances_info[grouping_variable]['equal_variances']
+    # use evaluators to get normality and equal variance - THIS CODE IS FOR predict_hypothesis() SO THAT WE CAN HAVE custom normality_method, etc..
+    #  normality_bool = evaluate_normality(df, target_variable, grouping_variable, method='consensus', pipeline=True)
+    #  equal_variances_bool = evaluate_variance(df, target_variable, grouping_variable, normality_info=normality_bool, method='consensus', pipeline=True)
 
     # define output object
-    output_info = []
+    output_info = {}
 
     if len(samples) == 2:  # two sample testing
         if normality_bool and equal_variances_bool:  # parametric testing
             stat, p_val = ttest_ind(*samples)
             test_name = 'Independent Samples T-Test'
             conclusion = "The data do not provide sufficient evidence to conclude a significant difference between the group means, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference between the group means, rejecting the null hypothesis."
-            test_info = {'stat': stat, 'p_val': p_val, 'test_name': test_name, 'conclusion': conclusion}
-            output_info.append(test_info)
+            output_info['ttest_ind'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion}
         else:  # non-parametric testing
             stat, p_val = mannwhitneyu(*samples)
             test_name = 'Mann-Whitney U Rank Test (Two Independent Samples)'
             conclusion = "The data do not provide sufficient evidence to conclude a significant difference in group distributions, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference in group distributions, rejecting the null hypothesis."
-            test_info = {'stat': stat, 'p_val': p_val, 'test_name': test_name, 'conclusion': conclusion}
-            output_info.append(test_info)
+            output_info['mannwhitneyu'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion}
     else:  # more than two samples
         if normality_bool and equal_variances_bool:
             stat, p_val = f_oneway(*samples)
             test_name = f'One-way ANOVA (with {len(samples)} groups)'
             conclusion = "The data do not provide sufficient evidence to conclude a significant difference among the group means, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference among the group means, rejecting the null hypothesis."
-            test_info = {'stat': stat, 'p_val': p_val, 'test_name': test_name, 'conclusion': conclusion}
-            output_info.append(test_info)
+            output_info['f_oneway'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion}
         else:
             stat, p_val = kruskal(*samples)
             test_name = f'Kruskal-Wallis H-test (with {len(samples)} groups)'
             conclusion = "The data do not provide sufficient evidence to conclude a significant difference among the group distributions, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference among the group distributions, rejecting the null hypothesis."
-            test_info = {'stat': stat, 'p_val': p_val, 'test_name': test_name, 'conclusion': conclusion}
-            output_info.append(test_info)
+            output_info['kruskal'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion}
 
     # construct console output and return
-    generate_test_names = (output_info[0]['test_name'] if len(output_info) == 1 else [info['test_name'] for info in output_info])
-    print(f"< HYPOTHESIS TESTING: {generate_test_names}>\nBased on:\n  ➡ Normality assumption: {'✔' if normality_bool else '✘'}\n  ➡ Equal variances assumption: {'✔' if equal_variances_bool else '✘'}\n  ➡ Nr. of Groups: {len(samples)} groups\n  ∴ Performing {generate_test_names}:\n")
-    [print(f"Results of {info['test_name']}:\n  ➡ statistic: {info['stat']}\n  ➡ p-value: {info['p_val']}\n  ∴ Conclusion: {info['conclusion']}\n") for info in output_info]
+    print(f"< HYPOTHESIS TESTING: {test_name}>\nBased on:\n  ➡ Normality assumption: {'✔' if normality_bool else '✘'}\n  ➡ Equal variances assumption: {'✔' if equal_variances_bool else '✘'}\n  ➡ Nr. of Groups: {len(samples)} groups\n  ∴ predict_hypothesis() is performing {test_name}:\n")
+    print(f"Results of {test_name}:\n  ➡ statistic: {stat}\n  ➡ p-value: {p_val}\n  ∴ Conclusion: {conclusion}\n")
     return output_info
 
 
@@ -386,23 +384,23 @@ def perform_hypothesis_testing_categorical(contingency_table, chi2_bool, barnard
     sample_size = np.sum(contingency_table.values)
 
     # define output object
-    output_info = []
+    output_info = {}
 
     if chi2_bool:
         if yates_correction_shape_bool and sample_size <= yates_min_sample_size:
             stat, p_val, dof, expected_frequencies = chi2_contingency(contingency_table, correction=True)
-            test_name = f"Chi-square test of independence of variables (with Yate's Correction)"
+            test_name = f"Chi-square test (with Yates' Correction)"
             chi2_tip = f"\n☻ Tip: The Chi-square test of independence with Yates' Correction is used for 2x2 contingency tables with small sample sizes. Yates' Correction makes the test more conservative, reducing the Type I error rate by adjusting for the continuity of the chi-squared distribution. This correction is typically applied when sample sizes are small (often suggested for total sample sizes less than about 40), aiming to avoid overestimation of statistical significance."
             conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f}, with Yate's Correction)." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f}, with Yate's Correction)."
-            chi2_output_info = {'stat': stat, 'p_val': p_val, 'test_name': test_name, 'tip': chi2_tip, 'conclusion': conclusion}
-            output_info.append(chi2_output_info)
+            chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'tip': chi2_tip, 'test_name': test_name}
+            output_info['chi2_contingency'] = chi2_output_info
         else:
             stat, p_val, dof, expected_frequencies = chi2_contingency(contingency_table, correction=False)
-            test_name = f"Chi-square test of independence of variables (without Yate's Correction)"
+            test_name = f"Chi-square test (without Yates' Correction)"
             chi2_tip = f"\n☻ Tip: The Chi-square test of independence without Yates' Correction is preferred when analyzing larger contingency tables or when sample sizes are sufficiently large, even for 2x2 tables (often suggested for total sample sizes greater than 40). Removing Yates' Correction can increase the test's power by not artificially adjusting for continuity, making it more sensitive to detect genuine associations between variables in settings where the assumptions of the chi-squared test are met."
             conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f}, without Yate's Correction)." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f}, without Yate's Correction)."
-            chi2_output_info = {'stat': stat, 'p_val': p_val, 'test_name': test_name, 'tip': chi2_tip, 'conclusion': conclusion}
-            output_info.append(chi2_output_info)
+            chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'tip': chi2_tip, 'test_name': test_name}
+            output_info['chi2_contingency'] = chi2_output_info
     else:
         if barnard_bool:
             barnard_test = barnard_exact(contingency_table, alternative=alternative.lower())
@@ -418,8 +416,8 @@ def perform_hypothesis_testing_categorical(contingency_table, chi2_bool, barnard
                 bernard_conclusion = f"The data do not support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {barnard_p_val:.3f})." if barnard_p_val > 0.05 else f"The data support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {barnard_p_val:.3f})."
 
             # consolidate info for output
-            bernard_output_info = {'stat': barnard_stat, 'p_val': barnard_p_val, 'test_name': bernard_test_name, 'tip': bernard_tip, 'conclusion': bernard_conclusion}
-            output_info.append(bernard_output_info)
+            bernard_output_info = {'stat': barnard_stat, 'p_val': barnard_p_val, 'conclusion': bernard_conclusion, 'tip': bernard_tip, 'test_name': bernard_test_name}
+            output_info['barnard_exact'] = bernard_output_info
 
         if boschloo_bool:
             boschloo_test = boschloo_exact(contingency_table, alternative=alternative.lower())
@@ -435,8 +433,8 @@ def perform_hypothesis_testing_categorical(contingency_table, chi2_bool, barnard
                 boschloo_conclusion = f"The data do not support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {boschloo_p_val:.3f})." if boschloo_p_val > 0.05 else f"The data support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {boschloo_p_val:.3f})."
 
             # consolidate info for ouput
-            boschloo_output_info = {'stat': boschloo_stat, 'p_val': boschloo_p_val, 'test_name': boschloo_test_name, 'tip': boschloo_tip, 'conclusion': boschloo_conclusion}
-            output_info.append(boschloo_output_info)
+            boschloo_output_info = {'stat': boschloo_stat, 'p_val': boschloo_p_val, 'conclusion': boschloo_conclusion, 'tip': boschloo_tip, 'test_name': boschloo_test_name}
+            output_info['boschloo_exact'] = boschloo_output_info
 
         if fisher_bool:
             fisher_test = fisher_exact(contingency_table, alternative=alternative.lower())
@@ -452,13 +450,14 @@ def perform_hypothesis_testing_categorical(contingency_table, chi2_bool, barnard
                 fisher_conclusion = f"The data do not support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {fisher_p_val:.3f})." if fisher_p_val > 0.05 else f"The data support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {fisher_p_val:.3f})."
 
             # consolidate info for output
-            fisher_output_info = {'stat': fisher_stat, 'p_val': fisher_p_val, 'test_name': fisher_test_name, 'tip': fisher_tip, 'conclusion': fisher_conclusion}
-            output_info.append(fisher_output_info)
+            fisher_output_info = {'stat': fisher_stat, 'p_val': fisher_p_val, 'conclusion': fisher_conclusion, 'tip': fisher_tip, 'test_name': fisher_test_name}
+            output_info['fisher_exact'] = fisher_output_info
 
     # console output & return
-    generate_test_names = (output_info[0]['test_name'] if len(output_info) == 1 else [info['test_name'] for info in output_info])
+    generate_test_names = (output_info[0]['test_name'] if len(output_info) == 1 else [info['test_name'] for info in output_info.values()])
     print(f"< HYPOTHESIS TESTING: {generate_test_names}>\nBased on:\n  ➡ Sample size: {sample_size}\n  ➡ Minimum Observed Frequency: {min_observed_frequency}\n  ➡ Minimum Expected Frequency: {min_expected_frequency}\n  ➡ Contingency table shape: {contingency_table_shape[0]}x{contingency_table_shape[1]}\n  ∴ Performing {generate_test_names}:\n")
-    [print(f"Results of {info['test_name']}:\n  ➡ statistic: {info['stat']}\n  ➡ p-value: {info['p_val']}\n  ∴ Conclusion: {info['conclusion']}{info['tip']}\n") for info in output_info]
+    print("\n☻ Tip: Consider the tips provided for each test and assess which of the exact tests provided is most suitable for your data.") if len(output_info) > 1 else print('')
+    [print(f"Results of {info['test_name']}:\n  ➡ statistic: {info['stat']}\n  ➡ p-value: {info['p_val']}\n  ∴ Conclusion: {info['conclusion']}{info['tip']}\n") for info in output_info.values()]
     return output_info
 
 
