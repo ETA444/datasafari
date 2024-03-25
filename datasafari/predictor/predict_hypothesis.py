@@ -81,7 +81,7 @@ def evaluate_normality(df, target_variable, grouping_variable, method: str = 'co
     normality_info = {}  # pipeline single-method
     output_consensus = None  # pipeline consensus method
 
-    if method in ['shapiro_wilk', 'consensus']:
+    if method in ['shapiro', 'consensus']:
         # calculating statistic and p-values to define normality
         shapiro_stats = [shapiro(df[df[grouping_variable] == group][target_variable]).statistic for group in groups]
         shapiro_pvals = [shapiro(df[df[grouping_variable] == group][target_variable]).pvalue for group in groups]
@@ -94,15 +94,15 @@ def evaluate_normality(df, target_variable, grouping_variable, method: str = 'co
         shapiro_tip = "☻ Tip: The Shapiro-Wilk test is particularly well-suited for small sample sizes (n < 50) and is considered one of the most powerful tests for assessing normality. It is sensitive to departures from normality, making it a preferred choice for rigorous normality assessments in small datasets.\n"
 
         # save info in return object and conditionally print to console
-        output_info['shapiro_wilk'] = shapiro_info
-        normality_info['shapiro_wilk_group_consensus'] = all(shapiro_normality)
+        output_info['shapiro'] = shapiro_info
+        normality_info['shapiro_group_consensus'] = all(shapiro_normality)
 
         # end it here if non-consensus method
-        if method == 'shapiro_wilk':
+        if method == 'shapiro':
             print(shapiro_title, *shapiro_text, shapiro_tip)
-            return output_info if not pipeline else normality_info['shapiro_wilk_group_consensus']
+            return output_info if not pipeline else normality_info['shapiro_group_consensus']
 
-    if method in ['anderson_darling', 'consensus']:
+    if method in ['anderson', 'consensus']:
         # calculating statistic to define normality
         anderson_stats = [anderson(df[df[grouping_variable] == group][target_variable]).statistic for group in groups]
         anderson_critical_values = [anderson(df[df[grouping_variable] == group][target_variable]).critical_values[2] for group in groups]
@@ -115,11 +115,11 @@ def evaluate_normality(df, target_variable, grouping_variable, method: str = 'co
         anderson_tip = "☻ Tip: The Anderson-Darling test is a versatile test that can be applied to any sample size and is especially useful for comparing against multiple distribution types, not just the normal. It places more emphasis on the tails of the distribution than the Shapiro-Wilk test, making it useful for detecting outliers or heavy-tailed distributions.\n"
 
         # saving info
-        output_info['anderson_darling'] = anderson_info
-        normality_info['anderson_darling_group_consensus'] = all(anderson_normality)
+        output_info['anderson'] = anderson_info
+        normality_info['anderson_group_consensus'] = all(anderson_normality)
 
         # end it here if non-consensus method
-        if method == 'anderson_darling':
+        if method == 'anderson':
             print(anderson_title, *anderson_text, anderson_tip)
             return output_info if not pipeline else normality_info['anderson_darling_group_consensus']
 
@@ -189,7 +189,7 @@ def evaluate_normality(df, target_variable, grouping_variable, method: str = 'co
             normality_consensus_result = f"  ➡ Result: Consensus is not reached. (50% Normality / 50% Non-normality)\n\n∴ Please refer to the results of each test below:\n"
 
             # used only within predict_hypothesis() pipeline
-            output_consensus = all([normality_info['shapiro_wilk_group_consensus'], normality_info['anderson_darling_group_consensus']])
+            output_consensus = all([normality_info['shapiro_group_consensus'], normality_info['anderson_group_consensus']])
 
         # construct output and return
         print(f"< NORMALITY TESTING: CONSENSUS >\nThe consensus method bases its conclusion on 4 tests: Shapiro-Wilk test, Anderson-Darling test, D'Agostino-Pearson test, Lilliefors test. (Note: More than 50% must have the same outcome to reach consensus. In predict_hypothesis(), if consensus is not reached normality is settled based on Shapiro-Wilk and Anderson-Darling outcomes)\n\n{normality_consensus_result}")
@@ -229,22 +229,22 @@ def evaluate_variance(df, target_variable, grouping_variable, normality_info: bo
             print(levene_title, levene_text, levene_tip)
             return output_info if not pipeline else variance_info['levene']
 
-    if method in ['fligner_killeen', 'consensus']:
+    if method in ['fligner', 'consensus']:
         fligner_stat, fligner_pval = fligner(*samples).statistic, fligner(*samples).pvalue
-        variance_info['fligner_killeen'] = fligner_pval > 0.05
+        variance_info['fligner'] = fligner_pval > 0.05
 
         # save the info in return object
-        output_info['fligner_killeen'] = {'stat': fligner_stat, 'p': fligner_pval, 'equal_variances': variance_info['fligner_killeen']}
+        output_info['fligner'] = {'stat': fligner_stat, 'p': fligner_pval, 'equal_variances': variance_info['fligner']}
 
         # construct console output
-        fligner_text = f"Results for samples in groups of '{grouping_variable}' for ['{target_variable}'] target variable:\n  ➡ statistic: {fligner_stat}\n  ➡ p-value: {fligner_pval}\n{(f'  ∴ Equal variances: Yes (H0 cannot be rejected)' if variance_info['fligner_killeen'] else f'  ∴ Equal variances: No (H0 rejected)')}\n\n"
+        fligner_text = f"Results for samples in groups of '{grouping_variable}' for ['{target_variable}'] target variable:\n  ➡ statistic: {fligner_stat}\n  ➡ p-value: {fligner_pval}\n{(f'  ∴ Equal variances: Yes (H0 cannot be rejected)' if variance_info['fligner'] else f'  ∴ Equal variances: No (H0 rejected)')}\n\n"
         fligner_title = f"< EQUAL VARIANCES TESTING: FLIGNER-KILLEEN >\n\n"
         fligner_tip = "☻ Tip: The Fligner-Killeen test is a non-parametric alternative that is less sensitive to departures from normality compared to the Bartlett test. It's a good choice when dealing with data that might not be normally distributed, offering robustness similar to the Levene test but through a different statistical approach.\n"
 
         # output & return
-        if method == 'fligner_killeen':
+        if method == 'fligner':
             print(fligner_title, fligner_text, fligner_tip)
-            return output_info if not pipeline else variance_info['fligner_killeen']
+            return output_info if not pipeline else variance_info['fligner']
 
     if method in ['bartlett', 'consensus'] and normality_info:
         bartlett_stat, bartlett_pval = bartlett(*samples).statistic, bartlett(*samples).pvalue
