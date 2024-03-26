@@ -1,66 +1,17 @@
 import numpy as np
 import pandas as pd
 from scipy.stats import (
-    shapiro, anderson, normaltest,  # normality testing
-    levene, bartlett, fligner,  # equal variances testing
     ttest_ind, mannwhitneyu, f_oneway, kruskal,  # numerical hypothesis testing
     chi2_contingency, barnard_exact, boschloo_exact, fisher_exact  # categorical hypothesis testing
 )
 from scipy.stats.contingency import expected_freq
-from statsmodels.stats.diagnostic import lilliefors
+from datasafari.evaluator import evaluate_normality, evaluate_variance
 
 
-def predict_hypothesis():
-    """
-    The general idea here is to create a function where:
-    (1) Adheres to MVP of simplicity in user-input
-    (2) In case of hypothesis it does everything automatically (e.g. for numeric data it will check
-    for normality and choose parametric or non-parametric tests etc. it will also reject or not the null itself)
-    (3) It therefore not only eases writing the code but also decision-making, the user does not need
-    to know about: what test to use based on the data, what test of the appropriate tests are better (all are provided),
-    and so on
-    (4) It handles the key datatypes categorical and numeric automatically
+# Utility functions: used only in this module
+def evaluate_data_types(df, cols):
+    """Evaluates the data types of provided columns to choose the appropriate hypothesis testing procedure."""
 
-    Schema of the idea:
-    > In > user data (df and ??)
-    | 1 Inside: infer numeric or categorical
-    \\
-     \\
-        | 2A Inside: if numeric test assumptions to choose if parametric or non-parametric
-        | 3A Inside: perform either set of tests and get results
-        | 4A Inside: use results to build output and make a ready conclusion for the user
-        < Out < results + conclusion
-    \\
-     \\
-        | 2B Inside: if categorical  ...
-        | 3B Inside: ...
-        | 4B Inside: ...
-        < Out < results + conclusion
-    """
-
-# smoke tests
-
-
-# create df for testing
-data = {
-    'Category1': np.random.choice(['Apple', 'Banana', 'Cherry'], size=100),
-    'Category2': np.random.choice(['Yes', 'No'], size=100),
-    'Category3': np.random.choice(['Low', 'Medium', 'High'], size=100),
-    'Category4': np.random.choice(['Short', 'Tall'], size=100),
-    'Feature1': np.random.normal(0, 1, 100),
-    'Feature2': np.random.exponential(1, 100),
-    'Feature3': np.random.randint(1, 100, 100)
-}
-test_df = pd.DataFrame(data)
-contingency_table_test2x2 = pd.crosstab(test_df['Category2'], test_df['Category4'])
-contingency_table_test3x3 = pd.crosstab(test_df['Category1'], test_df['Category3'])
-contingency_table_test2x2sample39 = pd.crosstab(test_df['Category2'][0:39], test_df['Category4'][0:39])
-grouping = 'Category2'
-variable = 'Feature1'
-
-
-# infer data type
-def assign_data_types(df, cols):
     data_type_dictionary = {}
     for col in cols:
         if df[col].dtype in ['int', 'float']:
@@ -345,37 +296,10 @@ def perform_hypothesis_testing_numeric(df, target_variable, grouping_variable, n
     return output_info
 
 
-perform_hypothesis_testing_numeric(test_df, variable, grouping, normality_info, equal_variances_info)
+def predict_hypo_cat(contingency_table, chi2_bool, barnard_bool, boschloo_bool, fisher_bool, yates_correction_shape_bool, alternative: str = 'two-sided', yates_min_sample_size: int = 40):
+    """Runs tests for a hypothesis for categorical data."""
 
-
-def testing_frequencies(df, categorical_variable1, categorical_variable2):
-    # initialize contingency table
-    contingency_table = pd.crosstab(df[categorical_variable1], df[categorical_variable2])
-    # compute minimum expected and observed frequencies
-    min_expected_frequency = expected_freq(contingency_table).min()
-    min_observed_frequency = contingency_table.min().min()
-    # test assumption of chi2_contingency
-    chi2_bool = False
-    if min_expected_frequency >= 5 and min_observed_frequency >= 5:
-        chi2_bool = True
-    return chi2_bool, contingency_table
-
-
-def testing_shape(contingency_table):
-    barnard_bool = False
-    boschloo_bool = False
-    fisher_bool = False
-    yates_correction_shape_bool = False  # note: related to chi2_contingency parameter 'correction'
-    if contingency_table.shape == (2,2):  # if table is 2x2 various tests become viable
-        barnard_bool = True
-        boschloo_bool = True
-        fisher_bool = True
-        yates_correction_shape_bool = True
-    return barnard_bool, boschloo_bool, fisher_bool, yates_correction_shape_bool
-
-
-def perform_hypothesis_testing_categorical(contingency_table, chi2_bool, barnard_bool, boschloo_bool, fisher_bool, yates_correction_shape_bool, alternative: str = 'two-sided', yates_min_sample_size: int = 40):
-    # to avoid unnecessary parameter inputs get var names from contingency_table object
+    # to avoid unnecessary parameter inputs use contingency_table object
     categorical_variable1 = contingency_table.index.name
     categorical_variable2 = contingency_table.columns.name
     min_expected_frequency = expected_freq(contingency_table).min()
@@ -461,19 +385,30 @@ def perform_hypothesis_testing_categorical(contingency_table, chi2_bool, barnard
     return output_info
 
 
-# testing exact tests
-perform_hypothesis_testing_categorical(contingency_table_test2x2, False, True, True, True, True)
+# Main function
+def predict_hypothesis():
+    """
+    """
 
-# testing chi2 with yates
-perform_hypothesis_testing_categorical(contingency_table_test2x2sample39, True, False, False, False, True)
-
-# testing chi2 without yates
-perform_hypothesis_testing_categorical(contingency_table_test3x3, True, False, False, False, False)
+# smoke tests
 
 
-    # DONE! TODO: Handle returns of numerical
-    # TODO: Error handling for all
-    # TOOD: Enrich numerical testing
-    # TODO: Enrich parameters of internal functions
-    # TODO: Construct main function
-    # TODO: Write Numpy Docstring for main function
+# create df for testing
+data = {
+    'Category1': np.random.choice(['Apple', 'Banana', 'Cherry'], size=100),
+    'Category2': np.random.choice(['Yes', 'No'], size=100),
+    'Category3': np.random.choice(['Low', 'Medium', 'High'], size=100),
+    'Category4': np.random.choice(['Short', 'Tall'], size=100),
+    'Feature1': np.random.normal(0, 1, 100),
+    'Feature2': np.random.exponential(1, 100),
+    'Feature3': np.random.randint(1, 100, 100)
+}
+test_df = pd.DataFrame(data)
+contingency_table_test2x2 = pd.crosstab(test_df['Category2'], test_df['Category4'])
+contingency_table_test3x3 = pd.crosstab(test_df['Category1'], test_df['Category3'])
+contingency_table_test2x2sample39 = pd.crosstab(test_df['Category2'][0:39], test_df['Category4'][0:39])
+grouping = 'Category2'
+variable = 'Feature1'
+
+# TODO: Construct main function
+# TODO: Write Numpy Docstring for main function
