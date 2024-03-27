@@ -9,13 +9,13 @@ from datasafari.evaluator import evaluate_normality, evaluate_variance
 
 
 # Utility functions: used only in this module
-def evaluate_data_types(df, cols):
+def evaluate_data_types(df: pd.DataFrame, cols: list):
     """Evaluates the data types of provided columns to choose the appropriate hypothesis testing procedure."""
 
     data_type_dictionary = {}
     for col in cols:
         if df[col].dtype in ['int', 'float']:
-            data_type_dictionary[col] = 'numeric'
+            data_type_dictionary[col] = 'numerical'
         else:
             data_type_dictionary[col] = 'categorical'
     return data_type_dictionary
@@ -36,7 +36,7 @@ def evaluate_frequencies(df: pd.DataFrame, categorical_variable1: str, categoric
     return chi2_bool, contingency_table
 
 
-def evaluate_shape(contingency_table):
+def evaluate_shape(contingency_table: pd.DataFrame):
     """Evaluates whether the shape of the contingency table is suitable and for what tests."""
 
     barnard_bool = False
@@ -51,15 +51,11 @@ def evaluate_shape(contingency_table):
     return barnard_bool, boschloo_bool, fisher_bool, yates_correction_shape_bool
 
 
-def predict_hypo_num(df, target_variable, grouping_variable, normality_bool, equal_variances_bool):
+def predictor_core_numerical(df: pd.DataFrame, target_variable: str, grouping_variable: str, normality_bool: bool, equal_variances_bool: bool):
     """Runs tests for a hypothesis for numerical data."""
 
     groups = df[grouping_variable].unique().tolist()
     samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
-
-    # use evaluators to get normality and equal variance - THIS CODE IS FOR predict_hypothesis() SO THAT WE CAN HAVE custom normality_method, etc..
-    #  normality_bool = evaluate_normality(df, target_variable, grouping_variable, method='consensus', pipeline=True)
-    #  equal_variances_bool = evaluate_variance(df, target_variable, grouping_variable, normality_info=normality_bool, method='consensus', pipeline=True)
 
     # define output object
     output_info = {}
@@ -93,7 +89,7 @@ def predict_hypo_num(df, target_variable, grouping_variable, normality_bool, equ
     return output_info
 
 
-def predict_hypo_cat(contingency_table, chi2_bool, barnard_bool, boschloo_bool, fisher_bool, yates_correction_shape_bool, alternative: str = 'two-sided', yates_min_sample_size: int = 40):
+def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool, barnard_bool: bool, boschloo_bool: bool, fisher_bool: bool, yates_correction_shape_bool: bool, alternative: str = 'two-sided', yates_min_sample_size: int = 40):
     """Runs tests for a hypothesis for categorical data."""
 
     # to avoid unnecessary parameter inputs use contingency_table object
