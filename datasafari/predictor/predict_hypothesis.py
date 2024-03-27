@@ -180,9 +180,55 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
 
 
 # Main function
-def predict_hypothesis():
+def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method: str = 'consensus', variance_method: str = 'consensus', exact_tests_alternative: str = 'two-sided', yates_min_sample_size: int = 40):
     """
     """
+
+    # determine appropriate testing procedure and variable interpretation
+    data_types = evaluate_data_types(df, [var1, var2])
+
+    if data_types[var1] == 'categorical' and data_types[var2] == 'numerical':
+        hypothesis_testing = 'numerical'
+        grouping_variable = var1
+        target_variable = var2
+        print(f"< INITIALIZING predict_hypothesis() >\n")
+        print(f"Performing {hypothesis_testing} hypothesis testing with:")
+        print(f"  ➡ Grouping variable: '{grouping_variable}' (with groups: {df[grouping_variable].unique()})\n  ➡ Target variable: '{target_variable}'\n")
+        print(f"Output Contents:\n (1) Results of Normality Testing\n (2) Results of Variance Testing\n (3) Results of Hypothesis Testing\n\n")
+    elif data_types[var1] == 'numerical' and data_types[var2] == 'categorical':
+        hypothesis_testing = 'numerical'
+        grouping_variable = var2
+        target_variable = var1
+        print(f"< INITIALIZING predict_hypothesis() >\n")
+        print(f"Performing {hypothesis_testing} hypothesis testing with:")
+        print(f"  ➡ Grouping variable: '{grouping_variable}' (with groups: {df[grouping_variable].unique()})\n  ➡ Target variable: '{target_variable}'\n")
+        print(f"Output Contents:\n (1) Results of Normality Testing\n (2) Results of Variance Testing\n (3) Results of Hypothesis Testing\n\n")
+    elif data_types[var1] == 'categorical' and data_types[var2] == 'categorical':
+        hypothesis_testing = 'categorical'
+        categorical_variable1 = var1
+        categorical_variable2 = var2
+        print(f"< INITIALIZING predict_hypothesis() >")
+        print(f"Performing {hypothesis_testing} hypothesis testing with:\n")
+        print(f"  ➡ Categorical variable 1: '{categorical_variable1}'\n  ➡ Categorical variable 2: '{categorical_variable2}'\n\n")
+
+    # perform appropriate hypothesis testing process
+    if hypothesis_testing == 'numerical':
+        # evaluate test assumptions
+        normality_bool = evaluate_normality(df, target_variable, grouping_variable, method=normality_method, pipeline=True)
+        equal_variance_bool = evaluate_variance(df, target_variable, grouping_variable, normality_info=normality_bool, method=variance_method, pipeline=True)
+
+        # perform hypothesis testing
+        output_info = predictor_core_numerical(df, target_variable, grouping_variable, normality_bool, equal_variance_bool)
+        return output_info
+    elif hypothesis_testing == 'categorical':
+        # evaluate test criteria
+        chi2_bool, contingency_table = evaluate_frequencies(df, categorical_variable1, categorical_variable2)
+        barnard_bool, boschloo_bool, fisher_bool, yates_correction_shape_bool = evaluate_shape(contingency_table)
+
+        # perform hypothesis testing
+        output_info = predictor_core_categorical(contingency_table, chi2_bool, barnard_bool, boschloo_bool, fisher_bool, yates_correction_shape_bool, alternative=exact_tests_alternative, yates_min_sample_size=yates_min_sample_size)
+        return output_info
+
 
 # smoke tests
 
