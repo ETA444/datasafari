@@ -107,15 +107,15 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
         if yates_correction_shape_bool and sample_size <= yates_min_sample_size:
             stat, p_val, dof, expected_frequencies = chi2_contingency(contingency_table, correction=True)
             test_name = f"Chi-square test (with Yates' Correction)"
-            chi2_tip = f"\n☻ Tip: The Chi-square test of independence with Yates' Correction is used for 2x2 contingency tables with small sample sizes. Yates' Correction makes the test more conservative, reducing the Type I error rate by adjusting for the continuity of the chi-squared distribution. This correction is typically applied when sample sizes are small (often suggested for total sample sizes less than about 40), aiming to avoid overestimation of statistical significance."
-            conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f}, with Yate's Correction)." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f}, with Yate's Correction)."
+            chi2_tip = f"\n\n☻ Tip: The Chi-square test of independence with Yates' Correction is used for 2x2 contingency tables with small sample sizes. Yates' Correction makes the test more conservative, reducing the Type I error rate by adjusting for the continuity of the chi-squared distribution. This correction is typically applied when sample sizes are small (often suggested for total sample sizes less than about 40), aiming to avoid overestimation of statistical significance."
+            conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})."
             chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'tip': chi2_tip, 'test_name': test_name}
             output_info['chi2_contingency'] = chi2_output_info
         else:
             stat, p_val, dof, expected_frequencies = chi2_contingency(contingency_table, correction=False)
             test_name = f"Chi-square test (without Yates' Correction)"
-            chi2_tip = f"\n☻ Tip: The Chi-square test of independence without Yates' Correction is preferred when analyzing larger contingency tables or when sample sizes are sufficiently large, even for 2x2 tables (often suggested for total sample sizes greater than 40). Removing Yates' Correction can increase the test's power by not artificially adjusting for continuity, making it more sensitive to detect genuine associations between variables in settings where the assumptions of the chi-squared test are met."
-            conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f}, without Yate's Correction)." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f}, without Yate's Correction)."
+            chi2_tip = f"\n\n☻ Tip: The Chi-square test of independence without Yates' Correction is preferred when analyzing larger contingency tables or when sample sizes are sufficiently large, even for 2x2 tables (often suggested for total sample sizes greater than 40). Removing Yates' Correction can increase the test's power by not artificially adjusting for continuity, making it more sensitive to detect genuine associations between variables in settings where the assumptions of the chi-squared test are met."
+            conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})."
             chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'tip': chi2_tip, 'test_name': test_name}
             output_info['chi2_contingency'] = chi2_output_info
     else:
@@ -124,7 +124,7 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
             barnard_stat = barnard_test.statistic
             barnard_p_val = barnard_test.pvalue
             bernard_test_name = f"Barnard's exact test ({alternative.lower()})"
-            bernard_tip = f"\n☻ Tip: Barnard's exact test is often preferred for its power, especially in unbalanced designs or with small sample sizes, without the need for the continuity correction that Fisher's test applies."
+            bernard_tip = f"\n\n☻ Tip: Barnard's exact test is often preferred for its power, especially in unbalanced designs or with small sample sizes, without the need for the continuity correction that Fisher's test applies."
             if alternative.lower() == 'two-sided':
                 bernard_conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {barnard_p_val:.3f})." if barnard_p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {barnard_p_val:.3f})."
             elif alternative.lower() == 'less':
@@ -141,7 +141,7 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
             boschloo_stat = boschloo_test.statistic
             boschloo_p_val = boschloo_test.pvalue
             boschloo_test_name = f"Boschloo's exact test ({alternative.lower()})"
-            boschloo_tip = f"\n☻ Tip: Boschloo's exact test is an extension that increases power by combining the strengths of Fisher's and Barnard's tests, focusing on the most extreme probabilities."
+            boschloo_tip = f"\n\n☻ Tip: Boschloo's exact test is an extension that increases power by combining the strengths of Fisher's and Barnard's tests, focusing on the most extreme probabilities."
             if alternative.lower() == 'two-sided':
                 boschloo_conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {boschloo_p_val:.3f})." if boschloo_p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {boschloo_p_val:.3f})."
             elif alternative.lower() == 'less':
@@ -171,8 +171,9 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
             output_info['fisher_exact'] = fisher_output_info
 
     # console output & return
-    generate_test_names = (output_info[0]['test_name'] if len(output_info) == 1 else [info['test_name'] for info in output_info.values()])
-    print(f"< HYPOTHESIS TESTING: {generate_test_names}>\nBased on:\n  ➡ Sample size: {sample_size}\n  ➡ Minimum Observed Frequency: {min_observed_frequency}\n  ➡ Minimum Expected Frequency: {min_expected_frequency}\n  ➡ Contingency table shape: {contingency_table_shape[0]}x{contingency_table_shape[1]}\n  ∴ Performing {generate_test_names}:\n")
+    generate_test_names = [info['test_name'] for info in output_info.values()]
+    # generate_test_names = (output_info[0]['test_name'] if len(output_info) == 1 else [info['test_name'] for info in output_info.values()])
+    print(f"< HYPOTHESIS TESTING: {generate_test_names}>\nBased on:\n  ➡ Sample size: {sample_size}\n  ➡ Minimum Observed Frequency: {min_observed_frequency}\n  ➡ Minimum Expected Frequency: {min_expected_frequency}\n  ➡ Contingency table shape: {contingency_table_shape[0]}x{contingency_table_shape[1]}\n  ∴ Performing {generate_test_names}:")
     print("\n☻ Tip: Consider the tips provided for each test and assess which of the exact tests provided is most suitable for your data.") if len(output_info) > 1 else print('')
     [print(f"Results of {info['test_name']}:\n  ➡ statistic: {info['stat']}\n  ➡ p-value: {info['p_val']}\n  ∴ Conclusion: {info['conclusion']}{info['tip']}\n") for info in output_info.values()]
     return output_info
