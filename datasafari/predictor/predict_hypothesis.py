@@ -223,7 +223,59 @@ def predictor_core_numerical(df: pd.DataFrame, target_variable: str, grouping_va
 
 
 def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool, barnard_bool: bool, boschloo_bool: bool, fisher_bool: bool, yates_correction_shape_bool: bool, alternative: str = 'two-sided', yates_min_sample_size: int = 40):
-    """Runs tests for a hypothesis for categorical data."""
+    """
+    Conducts categorical hypothesis testing using contingency tables and appropriate statistical tests.
+
+    This function assesses the association between two categorical variables by applying a series of statistical
+    tests. It evaluates the data's suitability for different tests based on the shape of the contingency table,
+    the minimum expected and observed frequencies, and specific methodological preferences, including Yates' correction
+    for chi-square tests and alternatives for exact tests.
+
+    Parameters
+    ----------
+    contingency_table : pd.DataFrame
+        A contingency table of the two categorical variables.
+    chi2_bool : bool
+        Indicates whether chi-square tests should be considered based on the data's suitability.
+    barnard_bool, boschloo_bool, fisher_bool : bool
+        Indicators for the applicability of Barnard's, Boschloo's, and Fisher's exact tests, respectively.
+    yates_correction_shape_bool : bool
+        Determines whether Yates' correction is applicable based on the contingency table's shape and sample size.
+    alternative : str, optional
+        Specifies the alternative hypothesis for exact tests. Options include 'two-sided', 'less', or 'greater'.
+        Defaults to 'two-sided'.
+    yates_min_sample_size : int, optional
+        The minimum sample size for applying Yates' correction. Defaults to 40.
+
+    Returns
+    -------
+    output_info : dict
+        A comprehensive dictionary detailing the outcomes of the statistical tests performed, including test names,
+        statistics, p-values, and conclusions about the association between the categorical variables. The dictionary
+        also contains specific details about the application of Yates' correction and the chosen alternative hypothesis
+        for exact tests.
+
+    Examples
+    --------
+    # Example DataFrame creation for illustration
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame({
+    ...     'Variable1': np.random.choice(['Type A', 'Type B'], size=100),
+    ...     'Variable2': np.random.choice(['Outcome 1', 'Outcome 2'], size=100),
+    ... })
+    >>> contingency_table = pd.crosstab(df['Variable1'], df['Variable2'])
+    >>> results = predictor_core_categorical(
+    ...     contingency_table,
+    ...     chi2_bool=True,
+    ...     barnard_bool=True,
+    ...     boschloo_bool=True,
+    ...     fisher_bool=True,
+    ...     yates_correction_shape_bool=True,
+    ...     alternative='two-sided',
+    ...     yates_min_sample_size=40
+    ... )
+    """
 
     # to avoid unnecessary parameter inputs use contingency_table object
     categorical_variable1 = contingency_table.index.name
