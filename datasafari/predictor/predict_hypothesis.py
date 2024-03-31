@@ -96,8 +96,43 @@ def evaluate_frequencies(df: pd.DataFrame, categorical_variable1: str, categoric
 
 
 def evaluate_shape(contingency_table: pd.DataFrame):
-    """Evaluates whether the shape of the contingency table is suitable and for what tests."""
+    """
+    Determines the suitability of a contingency table's shape for various statistical tests.
 
+    This function evaluates the shape of a provided contingency table to determine which statistical tests
+    can be appropriately applied. Specifically, it checks if the table is 2x2, which enables the use of
+    Barnard's exact test, Boschloo's exact test, Fisher's exact test, and potentially applies Yates' correction
+    for the chi-square test.
+
+    Parameters
+    ----------
+    contingency_table : pd.DataFrame
+        A contingency table generated from two categorical variables.
+
+    Returns
+    -------
+    barnard_bool : bool
+        Indicates if Barnard's exact test can be applied (True if table is 2x2).
+    boschloo_bool : bool
+        Indicates if Boschloo's exact test can be applied (True if table is 2x2).
+    fisher_bool : bool
+        Indicates if Fisher's exact test can be applied (True if table is 2x2).
+    yates_correction_shape_bool : bool
+        Indicates if Yates' correction for chi-square test is applicable (True if table is 2x2).
+
+    Examples
+    --------
+    # Example usage with a programmatically created contingency table
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> data = {
+    ...     'Gender': np.random.choice(['Male', 'Female'], 100),
+    ...     'Preference': np.random.choice(['Option A', 'Option B'], 100)
+    ... }
+    >>> df_example = pd.DataFrame(data)
+    >>> contingency_table = pd.crosstab(df_example['Gender'], df_example['Preference'])
+    >>> barnard_bool, boschloo_bool, fisher_bool, yates_correction_shape_bool = evaluate_shape(contingency_table)
+    """
     barnard_bool = False
     boschloo_bool = False
     fisher_bool = False
