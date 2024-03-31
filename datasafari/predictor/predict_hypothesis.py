@@ -48,8 +48,41 @@ def evaluate_data_types(df: pd.DataFrame, cols: list):
 
 
 def evaluate_frequencies(df: pd.DataFrame, categorical_variable1: str, categorical_variable2: str):
-    """Evaluates whether expected and observed frequencies are adequate for chi2_contingency()."""
+    """
+    Evaluates the adequacy of observed and expected frequencies for applying the chi-square test of independence.
 
+    This function calculates a contingency table from two categorical variables and checks if the data meets
+    the minimum expected frequency criteria for the chi-square test of independence. It ensures that the chi-square test
+    results will be reliable by verifying that both observed and expected frequencies in the contingency table
+    are sufficient (typically >= 5).
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing the categorical data to be evaluated.
+    categorical_variable1 : str
+        The name of the first categorical variable for constructing the contingency table.
+    categorical_variable2 : str
+        The name of the second categorical variable for constructing the contingency table.
+
+    Returns
+    -------
+    chi2_bool : bool
+        Boolean indicating if the data meets the minimum frequency criteria for chi-square testing.
+    contingency_table : pd.DataFrame
+        The generated contingency table used for the chi-square test.
+
+    Examples
+    --------
+    # Example usage
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df_example = pd.DataFrame({
+    ...     'Gender': np.random.choice(['Male', 'Female'], 100),
+    ...     'Preference': np.random.choice(['Option A', 'Option B', 'Option C'], 100)
+    ... })
+    >>> chi2_bool, contingency_table = evaluate_frequencies(df_example, 'Gender', 'Preference')
+    """
     # initialize contingency table
     contingency_table = pd.crosstab(df[categorical_variable1], df[categorical_variable2])
     # compute minimum expected and observed frequencies
