@@ -1,8 +1,40 @@
 from scipy.stats import shapiro, anderson, normaltest
 from statsmodels.stats.diagnostic import lilliefors
+import pandas as pd
 
 
-def evaluate_normality(df, target_variable, grouping_variable, method: str = 'consensus', pipeline: bool = False):
+def evaluate_normality(df: pd.DataFrame, target_variable: str, grouping_variable: str, method: str = 'consensus', pipeline: bool = False):
+    """
+    Evaluates the normality of a numeric variable within groups defined by a grouping variable.
+
+    This function offers a comprehensive approach to testing the normality of a distribution within subsets of data. It supports multiple statistical tests and a consensus method that combines the results of all tests to determine normality. It's designed to be flexible for use both as a standalone function and as part of a larger pipeline for hypothesis testing.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing the data to be tested.
+    target_variable : str
+        The name of the numeric variable to test for normality.
+    grouping_variable : str
+        The name of the categorical variable used to create subsets of data for normality testing.
+    method : str, optional
+        The method to use for testing normality. Options include:
+            - 'shapiro': Shapiro-Wilk test
+            - 'anderson': Anderson-Darling test
+            - 'normaltest': D'Agostino and Pearson's test
+            - 'lilliefors': Lilliefors test
+            - 'consensus': A combination of the above tests, defaulting to consensus if normality is indicated by the majority.
+        Default is 'consensus'.
+    pipeline : bool, optional
+        If True, the function returns a simple boolean indicating normality instead of detailed test results. Useful for integrating with other testing pipelines. Default is False.
+
+    Returns
+    -------
+    output_info : dict or bool
+        - If `pipeline` is False, returns a dictionary with test names as keys and test results, including statistics, p-values, and normality conclusions, as values.
+        - If `pipeline` is True, returns a boolean indicating the consensus on normality across all tests, or if consensus method was not used a boolean indicating the result of that test.
+    """
+
     groups = df[grouping_variable].unique().tolist()
 
     # define output objects
