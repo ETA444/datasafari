@@ -10,8 +10,34 @@ from datasafari.evaluator import evaluate_normality, evaluate_variance
 
 # Utility functions: used only in this module
 def evaluate_data_types(df: pd.DataFrame, cols: list):
-    """Evaluates the data types of provided columns to choose the appropriate hypothesis testing procedure."""
+    """
+    Evaluates and categorizes the data types of specified columns in a DataFrame.
 
+    This utility function is used to determine the appropriate hypothesis testing procedure
+    by identifying whether the columns are numerical or categorical. It supports the internal
+    logic of the predict_hypothesis function by preparing the data type information required
+    for decision-making.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing the data to be evaluated.
+    cols : list
+        A list of column names whose data types are to be evaluated.
+
+    Returns
+    -------
+    data_type_dictionary : dict
+        A dictionary where keys are the column names from 'cols', and values are the determined
+        data types, either 'numerical' or 'categorical', based on the column's dtype.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df_example = pd.DataFrame({'Age': np.random.randint(20, 40, 100), 'Income': np.random.rand(100) * 1000, 'Gender': np.random.choice(['Male', 'Female'], 100)})
+    >>> evaluate_data_types(df_example, ['Age', 'Income', 'Gender'])
+    """
     data_type_dictionary = {}
     for col in cols:
         if df[col].dtype in ['int', 'float']:
