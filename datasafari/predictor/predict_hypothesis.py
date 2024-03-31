@@ -273,6 +273,46 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
     This function stands out by automating complex decision trees involved in statistical testing, offering a
     simplified yet comprehensive approach to hypothesis testing. It exemplifies how advanced statistical analysis
     can be made accessible and actionable, fostering data-driven decision-making.
+
+    Examples
+    --------
+    # First, we'll create a DataFrame with categorical and numerical variables to use in our examples:
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame({
+            'Group': np.random.choice(['Control', 'Treatment'], size=100),
+            'Score': np.random.normal(0, 1, 100),
+            'Category': np.random.choice(['Type1', 'Type2'], size=100),
+            'Feature2': np.random.exponential(1, 100)
+        })
+
+    # Scenario 1: Basic numerical hypothesis testing (T-test or ANOVA based on groups)
+    >>> output_num_basic = predict_hypothesis(df, 'Group', 'Score')
+
+    # Scenario 2: Numerical hypothesis testing specifying method to evaluate normality
+    >>> output_num_normality = predict_hypothesis(df, 'Group', 'Score', normality_method='shapiro')
+
+    # Scenario 3: Numerical hypothesis testing with a specified method to evaluate variance
+    >>> output_num_variance = predict_hypothesis(df, 'Group', 'Score', variance_method='levene')
+
+    # Scenario 4: Categorical hypothesis testing (Chi-square or Fisher's exact test)
+    >>> output_cat_basic = predict_hypothesis(df, 'Group', 'Category')
+
+    # Scenario 5: Categorical hypothesis testing with alternative hypothesis specified
+    >>> output_cat_alternative = predict_hypothesis(df, 'Category', 'Group', exact_tests_alternative='less')
+
+    # Scenario 6: Applying Yates' correction in a Chi-square test for small samples
+    >>> output_yates_correction = predict_hypothesis(df, 'Group', 'Category', yates_min_sample_size=30)
+
+    # Scenario 7: Comprehensive numerical hypothesis testing using consensus for normality and variance evaluation
+    >>> output_num_comprehensive = predict_hypothesis(df, 'Group', 'Score', normality_method='consensus', variance_method='consensus')
+
+    # Scenario 8: Testing with a numerical variable against a different grouping variable
+    >>> output_different_group = predict_hypothesis(df, 'Feature2', 'Group')
+
+    # Scenario 9: Exploring exact tests in categorical hypothesis testing for a 2x2 table
+    >>> df_small = df.sample(20) # Smaller sample for demonstration
+    >>> output_exact_tests = predict_hypothesis(df_small, 'Category', 'Group', exact_tests_alternative='two-sided')
     """
 
     # determine appropriate testing procedure and variable interpretation
