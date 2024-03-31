@@ -1,7 +1,55 @@
 from scipy.stats import levene, bartlett, fligner
+import pandas as pd
 
 
-def evaluate_variance(df, target_variable, grouping_variable, normality_info: bool = None, method: str = 'consensus', pipeline: bool = False):
+def evaluate_variance(df: pd.DataFrame, target_variable: str, grouping_variable: str, normality_info: bool = None, method: str = 'consensus', pipeline: bool = False):
+    """
+    Evaluates the homogeneity of variances in the numerical/target variable across groups defined by a grouping/categorical variable in a dataset.
+
+    This function is versatile, allowing for the evaluation of variance homogeneity through several statistical tests, including Levene's, Bartlett's, and Fligner-Killeen's tests. It provides an option to use a consensus method for a more robust determination of homogeneity. It's suitable for preliminary data analysis before conducting hypothesis tests that assume equal variances and can be used in a pipeline for automated data analysis processes.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing the dataset for analysis.
+    target_variable : str
+        The name of the numerical variable for which the variance homogeneity is to be evaluated.
+    grouping_variable : str
+        The name of the categorical variable used to divide the dataset into groups.
+    normality_info : bool, optional
+        A boolean indicating the normality of the dataset, which affects the choice of tests.
+            - If True, normality is assumed, which is relevant for the Bartlett's test. Default is None.
+    method : str, optional
+        Specifies the method to evaluate variance homogeneity. Options include:
+            - 'levene': Uses Levene's test, suitable for non-normal distributions.
+            - 'bartlett': Uses Bartlett's test, requires normality assumption.
+            - 'fligner': Uses Fligner-Killeen's test, a non-parametric alternative.
+            - 'consensus': Combines results from the available tests to reach a consensus.
+        Default is 'consensus'.
+    pipeline : bool, optional
+        If True, simplifies the output to a boolean indicating the consensus on equal variances. Useful for integration into automated analysis pipelines. Default is False.
+
+    Returns
+    -------
+    output_info : dict or bool
+        - If `pipeline` is False, returns a dictionary containing the results of the variance tests, including statistics, p-values, and a conclusion on variance homogeneity.
+        - If `pipeline` is True, returns a boolean indicating whether a consensus was reached on variance homogeneity.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame({'Group': np.random.choice(['A', 'B', 'C'], 100), 'Data': np.random.normal(0, 1, 100)})
+    # Evaluate variance homogeneity using the consensus method
+    >>> variance_info = evaluate_variance(df, 'Data', 'Group')
+    # Evaluate variance with explicit assumption of normality (for Bartlett's test)
+    >>> variance_info_bartlett = evaluate_variance(df, 'Data', 'Group', normality_info=True, method='bartlett')
+    # Use the function in a pipeline with simplified boolean output
+    >>> variance_homogeneity = evaluate_variance(df, 'Data', 'Group', pipeline=True)
+    >>> if variance_homogeneity:
+    >>>     # ...
+    """
+
     groups = df[grouping_variable].unique().tolist()
     samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
 
