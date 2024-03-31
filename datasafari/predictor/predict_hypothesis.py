@@ -146,7 +146,46 @@ def evaluate_shape(contingency_table: pd.DataFrame):
 
 
 def predictor_core_numerical(df: pd.DataFrame, target_variable: str, grouping_variable: str, normality_bool: bool, equal_variances_bool: bool):
-    """Runs tests for a hypothesis for numerical data."""
+    """
+    Conducts hypothesis testing on numerical data, choosing appropriate tests based on data characteristics.
+
+    This function performs hypothesis testing between groups defined by a categorical variable for a numerical
+    target variable. It selects the appropriate statistical test based on the normality of the data and the homogeneity
+    of variances across groups, utilizing t-tests, Mann-Whitney U tests, ANOVA, or Kruskal-Wallis tests as appropriate.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing the data to be analyzed.
+    target_variable : str
+        The name of the numerical variable to test across groups.
+    grouping_variable : str
+        The name of the categorical variable used to define groups.
+    normality_bool : bool
+        A boolean indicating if the data follows a normal distribution within groups.
+    equal_variances_bool : bool
+        A boolean indicating if the groups have equal variances.
+
+    Returns
+    -------
+    output_info : dict
+        A dictionary containing the results of the hypothesis test, including test statistics, p-values,
+        conclusions regarding the differences between groups, the name of the test used, and the assumptions
+        tested (normality and equal variances).
+
+    Examples
+    --------
+    # Example usage for conducting hypothesis testing on numerical data
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame({
+    ...     'Group': np.random.choice(['A', 'B', 'C'], size=100),
+    ...     'Scores': np.random.normal(0, 1, 100)
+    ... })
+    >>> normality_bool = True  # Assume normality based on prior tests
+    >>> equal_variances_bool = True  # Assume equal variances based on prior tests
+    >>> results = predictor_core_numerical(df, 'Scores', 'Group', normality_bool, equal_variances_bool)
+    """
 
     groups = df[grouping_variable].unique().tolist()
     samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
