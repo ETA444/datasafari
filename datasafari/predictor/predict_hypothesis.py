@@ -65,23 +65,23 @@ def predictor_core_numerical(df: pd.DataFrame, target_variable: str, grouping_va
             stat, p_val = ttest_ind(*samples)
             test_name = 'Independent Samples T-Test'
             conclusion = "The data do not provide sufficient evidence to conclude a significant difference between the group means, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference between the group means, rejecting the null hypothesis."
-            output_info['ttest_ind'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion}
+            output_info['ttest_ind'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'test_name': test_name, 'normality': normality_bool, 'equal_variance': equal_variances_bool}
         else:  # non-parametric testing
             stat, p_val = mannwhitneyu(*samples)
             test_name = 'Mann-Whitney U Rank Test (Two Independent Samples)'
             conclusion = "The data do not provide sufficient evidence to conclude a significant difference in group distributions, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference in group distributions, rejecting the null hypothesis."
-            output_info['mannwhitneyu'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion}
+            output_info['mannwhitneyu'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'test_name': test_name, 'normality': normality_bool, 'equal_variance': equal_variances_bool}
     else:  # more than two samples
         if normality_bool and equal_variances_bool:
             stat, p_val = f_oneway(*samples)
             test_name = f'One-way ANOVA (with {len(samples)} groups)'
             conclusion = "The data do not provide sufficient evidence to conclude a significant difference among the group means, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference among the group means, rejecting the null hypothesis."
-            output_info['f_oneway'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion}
+            output_info['f_oneway'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'test_name': test_name, 'normality': normality_bool, 'equal_variance': equal_variances_bool}
         else:
             stat, p_val = kruskal(*samples)
             test_name = f'Kruskal-Wallis H-test (with {len(samples)} groups)'
             conclusion = "The data do not provide sufficient evidence to conclude a significant difference among the group distributions, failing to reject the null hypothesis." if p_val > 0.05 else "The data provide sufficient evidence to conclude a significant difference among the group distributions, rejecting the null hypothesis."
-            output_info['kruskal'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion}
+            output_info['kruskal'] = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'test_name': test_name, 'normality': normality_bool, 'equal_variance': equal_variances_bool}
 
     # construct console output and return
     print(f"< HYPOTHESIS TESTING: {test_name}>\nBased on:\n  ➡ Normality assumption: {'✔' if normality_bool else '✘'}\n  ➡ Equal variances assumption: {'✔' if equal_variances_bool else '✘'}\n  ➡ Nr. of Groups: {len(samples)} groups\n  ∴ predict_hypothesis() is performing {test_name}:\n")
@@ -109,14 +109,14 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
             test_name = f"Chi-square test (with Yates' Correction)"
             chi2_tip = f"\n\n☻ Tip: The Chi-square test of independence with Yates' Correction is used for 2x2 contingency tables with small sample sizes. Yates' Correction makes the test more conservative, reducing the Type I error rate by adjusting for the continuity of the chi-squared distribution. This correction is typically applied when sample sizes are small (often suggested for total sample sizes less than about 40), aiming to avoid overestimation of statistical significance."
             conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})."
-            chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'tip': chi2_tip, 'test_name': test_name}
+            chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'yates_correction': yates_correction_shape_bool, 'tip': chi2_tip, 'test_name': test_name}
             output_info['chi2_contingency'] = chi2_output_info
         else:
             stat, p_val, dof, expected_frequencies = chi2_contingency(contingency_table, correction=False)
             test_name = f"Chi-square test (without Yates' Correction)"
             chi2_tip = f"\n\n☻ Tip: The Chi-square test of independence without Yates' Correction is preferred when analyzing larger contingency tables or when sample sizes are sufficiently large, even for 2x2 tables (often suggested for total sample sizes greater than 40). Removing Yates' Correction can increase the test's power by not artificially adjusting for continuity, making it more sensitive to detect genuine associations between variables in settings where the assumptions of the chi-squared test are met."
             conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})."
-            chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'tip': chi2_tip, 'test_name': test_name}
+            chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'yates_correction': yates_correction_shape_bool, 'tip': chi2_tip, 'test_name': test_name}
             output_info['chi2_contingency'] = chi2_output_info
     else:
         if barnard_bool:
@@ -133,7 +133,7 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
                 bernard_conclusion = f"The data do not support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {barnard_p_val:.3f})." if barnard_p_val > 0.05 else f"The data support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {barnard_p_val:.3f})."
 
             # consolidate info for output
-            bernard_output_info = {'stat': barnard_stat, 'p_val': barnard_p_val, 'conclusion': bernard_conclusion, 'tip': bernard_tip, 'test_name': bernard_test_name}
+            bernard_output_info = {'stat': barnard_stat, 'p_val': barnard_p_val, 'conclusion': bernard_conclusion, 'alternative': alternative.lower(), 'tip': bernard_tip, 'test_name': bernard_test_name}
             output_info['barnard_exact'] = bernard_output_info
 
         if boschloo_bool:
@@ -150,7 +150,7 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
                 boschloo_conclusion = f"The data do not support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {boschloo_p_val:.3f})." if boschloo_p_val > 0.05 else f"The data support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {boschloo_p_val:.3f})."
 
             # consolidate info for ouput
-            boschloo_output_info = {'stat': boschloo_stat, 'p_val': boschloo_p_val, 'conclusion': boschloo_conclusion, 'tip': boschloo_tip, 'test_name': boschloo_test_name}
+            boschloo_output_info = {'stat': boschloo_stat, 'p_val': boschloo_p_val, 'conclusion': boschloo_conclusion, 'alternative': alternative.lower(), 'tip': boschloo_tip, 'test_name': boschloo_test_name}
             output_info['boschloo_exact'] = boschloo_output_info
 
         if fisher_bool:
@@ -167,7 +167,7 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
                 fisher_conclusion = f"The data do not support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {fisher_p_val:.3f})." if fisher_p_val > 0.05 else f"The data support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {fisher_p_val:.3f})."
 
             # consolidate info for output
-            fisher_output_info = {'stat': fisher_stat, 'p_val': fisher_p_val, 'conclusion': fisher_conclusion, 'tip': fisher_tip, 'test_name': fisher_test_name}
+            fisher_output_info = {'stat': fisher_stat, 'p_val': fisher_p_val, 'conclusion': fisher_conclusion, 'alternative': alternative.lower(), 'tip': fisher_tip, 'test_name': fisher_test_name}
             output_info['fisher_exact'] = fisher_output_info
 
     # console output & return
@@ -296,12 +296,12 @@ data = {
     'Feature2': np.random.exponential(1, 100),
     'Feature3': np.random.randint(1, 100, 100)
 }
-test_df = pd.DataFrame(data)
-contingency_table_test2x2 = pd.crosstab(test_df['Category2'], test_df['Category4'])
-contingency_table_test3x3 = pd.crosstab(test_df['Category1'], test_df['Category3'])
-contingency_table_test2x2sample39 = pd.crosstab(test_df['Category2'][0:39], test_df['Category4'][0:39])
-grouping = 'Category2'
-variable = 'Feature1'
 
-# TODO: Construct main function
+test_df = pd.DataFrame(data)
+
+output_info = predict_hypothesis(test_df, 'Category1', 'Category2')
+
 # TODO: Write Numpy Docstring for main function
+# TODO: Write Numpy DocstringS for test cores (x 2)
+# TODO: Write Numpy DocstringS for evaluators (x 5)
+# TODO: Add implementations as issues on GitHub to document progress
