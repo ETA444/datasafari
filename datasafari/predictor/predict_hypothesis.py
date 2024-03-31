@@ -191,44 +191,38 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
     df : pd.DataFrame
         The DataFrame containing the data for hypothesis testing. This function analyzes the data to
         determine the type of hypothesis testing required based on the data types and relationships of `var1` and `var2`.
-
     var1 : str
         The name of the first variable for hypothesis testing. The combination of `var1` and `var2` data types
-        determines the type of hypothesis test to perform. A pairing with at least one categorical variable
+        determines the type of hypothesis test to perform. A pairing with two categorical variables
         triggers categorical testing (e.g., Chi-square, Fisher's exact test, etc.), while a numerical and
-        categorical variable pairing leads to numerical testing (e.g., t-tests, ANOVA, etc.). Numerical and numerical
-        variable pairings are not supported.
-
+        categorical variable pairing, interpreted as target and grouping variables respectively, leads to numerical testing
+        (e.g., t-tests, ANOVA, etc.). Numerical and numerical variable pairings are not supported.
     var2 : str
         The name of the second variable for hypothesis testing. Similar to `var1`, its combination with `var1`
         guides the selection of hypothesis testing procedures.
-
     normality_method : str, optional
         Specifies the method to evaluate normality within numerical hypothesis testing. Understanding the
         distribution is crucial to selecting parametric or non-parametric tests. Available methods include:
-        - 'shapiro': Shapiro-Wilk test.
-        - 'anderson': Anderson-Darling test.
-        - 'normaltest': D’Agostino and Pearson’s test.
-        - 'lilliefors': Lilliefors test for normality.
-        - 'consensus': Utilizes a combination of the above tests to reach a consensus on normality.
+            - 'shapiro': Shapiro-Wilk test.
+            - 'anderson': Anderson-Darling test.
+            - 'normaltest': D’Agostino and Pearson’s test.
+            - 'lilliefors': Lilliefors test for normality.
+            - 'consensus': Utilizes a combination of the above tests to reach a consensus on normality.
         Defaults to 'consensus'. For detailed explanation, refer to `evaluate_normality`'s docstring.
-
     variance_method : str, optional
         Determines the method to evaluate variance homogeneity (equal variances) across groups in numerical hypothesis testing.
         The choice of test affects the selection between parametric and non-parametric tests for numerical data. Available methods include:
-        - 'levene': Levene's test, robust to non-normal distributions.
-        - 'bartlett': Bartlett’s test, sensitive to non-normal distributions.
-        - 'fligner': Fligner-Killeen test, a non-parametric alternative.
-        - 'consensus': A combination approach to determine equal variances across methods.
+            - 'levene': Levene's test, robust to non-normal distributions.
+            - 'bartlett': Bartlett’s test, sensitive to non-normal distributions.
+            - 'fligner': Fligner-Killeen test, a non-parametric alternative.
+            - 'consensus': A combination approach to determine equal variances across methods.
         Defaults to 'consensus'. For more information, see `evaluate_variance`'s docstring.
-
     exact_tests_alternative : str, optional
         For categorical hypothesis testing, this parameter specifies the alternative hypothesis direction for exact tests:
-        - 'two-sided': Tests for any difference between the two variables without directionality.
-        - 'less': Tests if the first variable is less than the second variable.
-        - 'greater': Tests if the first variable is greater than the second variable.
+            - 'two-sided': Tests for any difference between the two variables without directionality.
+            - 'less': Tests if the first variable is less than the second variable.
+            - 'greater': Tests if the first variable is greater than the second variable.
         This parameter influences tests like Fisher's exact test or Barnard's exact test. Defaults to 'two-sided'.
-
     yates_min_sample_size : int, optional
         Specifies the minimum sample size threshold for applying Yates' correction in chi-square testing to adjust
         for continuity. The correction is applied to 2x2 contingency tables with small sample sizes to prevent
