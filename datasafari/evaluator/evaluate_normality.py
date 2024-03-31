@@ -33,6 +33,20 @@ def evaluate_normality(df: pd.DataFrame, target_variable: str, grouping_variable
     output_info : dict or bool
         - If `pipeline` is False, returns a dictionary with test names as keys and test results, including statistics, p-values, and normality conclusions, as values.
         - If `pipeline` is True, returns a boolean indicating the consensus on normality across all tests, or if consensus method was not used a boolean indicating the result of that test.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame({'Group': np.random.choice(['A', 'B', 'C'], 100), 'Data': np.random.normal(0, 1, 100)})
+    # Using the most robust method 'consensus'
+    >>> result_dictionary = evaluate_normality(df, 'Data', 'Group')
+    # Focusing on using 'shapiro'
+    >>> evaluate_normality(df, 'Data', 'Group', method='shapiro')
+    # Integrating the function into your own pipeline
+    >>> normality = evaluate_normality(df, 'Data', 'Group', pipeline=True)
+    >>> if normality:
+    >>>     # ...
     """
 
     groups = df[grouping_variable].unique().tolist()
