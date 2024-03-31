@@ -228,7 +228,51 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
         for continuity. The correction is applied to 2x2 contingency tables with small sample sizes to prevent
         overestimation of the significance level. Defaults to 40.
 
+    Returns
+    -------
+    output_info : dict
+        A dictionary with key the short test name (e.g. f_oneway) and value another dictionary which contains all results from that test, namely:
+            - 'stat': The test statistic value, quantifying the degree to which the observed data conform to the null hypothesis.
+            - 'p_val': The p-value, indicating the probability of observing the test results under the null hypothesis.
+            - 'conclusion': A textual interpretation of the test outcome, stating whether the evidence was sufficient to reject the null hypothesis.
+            - 'test_name': The full name of the statistical test performed (e.g., 'Independent Samples T-Test', 'Chi-square test').
+        Additional keys in certain scenarios may be:
+            - 'alternative': Specifies the alternative hypothesis direction used in exact tests ('two-sided', 'less', 'greater').
+            - 'yates_correction': A boolean that indicates whether a Yate's correction was applied used in Chi-square test.
+            - 'normality': A boolean that indicates whether the data were found to meet the normality assumption.
+            - 'equal_variance': A boolean that indicates whether the data were found to have equal variances across groups.
+            - 'tip': Helpful insights or considerations regarding the test's application or interpretation.
 
+    Notes
+    -----
+    `predict_hypothesis` is engineered to facilitate an intuitive yet powerful entry into hypothesis testing. Here’s a deeper look into its operational logic:
+
+    1. **Type Determination and Variable Interpretation**:
+        - **Numerical Testing**: Activated when one variable is numerical and the other categorical. The numerical variable is considered the 'target variable', subject to hypothesis testing across groups defined by the categorical 'grouping variable'.
+        - **Categorical Testing**: Engaged when both variables are categorical, examining the association between them through appropriate exact tests.
+    2. **Assumption Evaluation and Preparatory Checks**:
+        - For **numerical data**, it evaluates:
+            - **Normality**: Using methods such as Shapiro-Wilk, Anderson-Darling, D'Agostino's K-squared test, and Lilliefors test to assess the distribution of data.
+            - **Homogeneity of Variances**: With Levene, Bartlett, or Fligner-Killeen tests to ensure variance uniformity across groups, guiding the choice between parametric and non-parametric tests.
+        - For **categorical data**, it checks:
+            - **Adequacy of Frequencies**: Ensuring observed and expected frequencies support the validity of Chi-square and other exact tests.
+            - **Table Shape**: Determining the applicability of tests like Fisher’s exact test or Barnard’s test, based on the contingency table's dimensions.
+    3. **Test Selection and Execution**:
+        - **Numerical Hypothesis Tests** may include:
+            - T-tests (independent samples, paired samples) for normally distributed data with equal variances.
+            - ANOVA or Welch's ANOVA for comparing more than two groups, under respective assumptions.
+            - Mann-Whitney U, Wilcoxon signed-rank, Kruskal-Wallis H, or Friedman tests as non-parametric alternatives.
+        - **Categorical Hypothesis Tests** encompass:
+            - Chi-square test of independence, with or without Yates’ correction, for general association between two categorical variables.
+            - Fisher’s exact test for small sample sizes or when Chi-square assumptions are not met.
+            - Barnard’s exact test, offering more power in some scenarios compared to Fisher’s test.
+            - Boschloo’s exact test, aiming to increase the power further by combining strengths of Fisher’s and Barnard’s tests.
+    4. **Conclusive Results and Interpretation**: Outputs include test statistics, p-values, and clear conclusions.
+        The function demystifies statistical analysis, making it approachable for users across various disciplines, enabling informed decisions based on robust statistical evidence.
+
+    This function stands out by automating complex decision trees involved in statistical testing, offering a
+    simplified yet comprehensive approach to hypothesis testing. It exemplifies how advanced statistical analysis
+    can be made accessible and actionable, fostering data-driven decision-making.
     """
 
     # determine appropriate testing procedure and variable interpretation
