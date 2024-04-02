@@ -40,10 +40,11 @@ def explore_cat(df: pd.DataFrame, categorical_variables: list, method: str = 'al
         - If `df` is not a pandas DataFrame.
         - If `categorical_variables` is not a list or contains non-string elements.
         - If `method` or `output` is not a string.
-
     ValueError
         - If `method` is not one of the valid options ('unique_values', 'counts_percentage', 'entropy', 'all').
         - If `output` is not one of the valid options ('print', 'return').
+        - If 'categorical_variables' list is empty.
+        - If variables provided through 'categorical_variables' are not categorical variables.
         - If any of the specified categorical variables are not found in the DataFrame.
 
     Examples:

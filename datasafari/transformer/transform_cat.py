@@ -6,6 +6,7 @@ from sklearn.preprocessing import (
 from scipy.cluster.hierarchy import linkage, fcluster
 import Levenshtein as lev
 from category_encoders import BinaryEncoder
+from datasafari.evaluator import evaluate_dtype
 
 
 def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na_placeholder: str = 'Unknown', abbreviation_map: dict = None, ordinal_map: dict = None, target_variable: str = None):
@@ -52,6 +53,8 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
         - If `method`, `na_placeholder`, or `target_variable` (if provided) is not a string.
         - If `abbreviation_map` or `ordinal_map` (if provided) is not a dictionary.
     ValueError
+        - If 'categorical_variables' list is empty.
+        - If variables provided through 'categorical_variables' are not categorical variables.
         - If any variable specified in `categorical_variables` is not found in the DataFrame's columns.
         - If `method` is not one of the valid options: 'uniform_simple', 'uniform_smart', 'uniform_mapping', 'encode_onehot', 'encode_ordinal', 'encode_freq', 'encode_target', 'encode_binary'.
         - If `method` is 'encode_ordinal' and `ordinal_map` is not provided.
@@ -143,6 +146,15 @@ def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na
         raise TypeError("The 'target_variable' parameter must be a string if provided.")
 
     # ValueErrors
+    # Check if list has any members
+    if len(categorical_variables) == 0:
+        raise ValueError("The 'categorical_variables' list must contain at least one column name.")
+
+    # Check if variables are categorical
+    categorical_types = evaluate_dtype(df, categorical_variables, output='list_c')
+    if not all(categorical_types):
+        raise ValueError(f"The 'categorical_variables' list must contain only names of categorical variables.")
+
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in categorical_variables if var not in df.columns]
     if missing_vars:

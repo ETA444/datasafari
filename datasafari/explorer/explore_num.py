@@ -63,6 +63,8 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     ValueError
         - If `method` is not one of the specified valid methods ('correlation_analysis', 'distribution_analysis', 'outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis', 'multicollinearity', 'all').
         - If `output` is not 'print' or 'return'.
+        - If 'numerical_variables' list is empty.
+        - If variables provided through 'numerical_variables' are not numerical variables.
         - If any specified variables in `numerical_variables` are not found in the DataFrame's columns.
 
     Notes
@@ -147,7 +149,7 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     if len(numerical_variables) == 0:
         raise ValueError("The 'numerical_variables' list must contain at least one column name.")
 
-    # Check if variables are categorical
+    # Check if variables are numerical
     numerical_types = evaluate_dtype(df, numerical_variables, output='list_n')
     if not all(numerical_types):
         raise ValueError(f"The 'numerical_variables' list must contain only names of numerical variables.")

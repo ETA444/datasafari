@@ -43,6 +43,7 @@ def evaluate_dtype(df: pd.DataFrame, col_names: list, max_unique_values_ratio: f
     ValueError
         - If `max_unique_values_ratio` is outside the range [0, 1].
         - If `min_unique_values` is less than 1, as at least one unique value is needed to categorize a column.
+        - If 'col_names' list is empty.
         - If any of the specified column names in `col_names` are not present in the DataFrame.
         - If the `output` string does not correspond to one of the valid options ('dict', 'list_n', 'list_c'), indicating a request for an unsupported output format.
 
@@ -85,6 +86,10 @@ def evaluate_dtype(df: pd.DataFrame, col_names: list, max_unique_values_ratio: f
 
     if min_unique_values < 1:
         raise ValueError("evaluate_dtype(): The 'min_unique_values' must be at least 1.")
+
+    # Check if list has any members
+    if len(col_names) == 0:
+        raise ValueError("The 'col_names' list must contain at least one column name.")
 
     missing_cols = [col for col in col_names if col not in df.columns]
     if missing_cols:

@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer, RobustScaler
 from scipy.stats import boxcox, yeojohnson
 from scipy.stats.mstats_basic import winsorize
+from datasafari.evaluator import evaluate_dtype
 
 
 def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: float = None, power_map: dict = None, lower_percentile: float = 0.01, upper_percentile: float = 0.99, winsorization_map: dict = None, interaction_pairs: list = None, degree: int = None, degree_map: dict = None, bins: int = None, bin_map: dict = None):
@@ -85,6 +86,8 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         - If `degree` is provided but not an integer.
         - If `bins` is provided but not an integer.
     ValueError
+        - If 'numerical_variables' list is empty.
+        - If variables provided through 'numerical_variables' are not numerical variables.
         - If any of the specified `numerical_variables` are not found in the DataFrame's columns.
         - If the `method` specified is not one of the valid methods: 'standardize', 'log', 'normalize', 'quantile', 'robust', 'boxcox', 'yeojohnson', 'power', 'winsorization', 'interaction', 'polynomial', 'bin'.
         - If `output_distribution` is not 'normal' or 'uniform' for the 'quantile' method.
@@ -228,6 +231,15 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         raise TypeError("The 'bin_map' parameter must be a dictionary or None.")
 
     # ValueErrors
+    # Check if list has any members
+    if len(numerical_variables) == 0:
+        raise ValueError("The 'numerical_variables' list must contain at least one column name.")
+
+    # Check if variables are numerical
+    numerical_types = evaluate_dtype(df, numerical_variables, output='list_n')
+    if not all(numerical_types):
+        raise ValueError(f"The 'numerical_variables' list must contain only names of numerical variables.")
+
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in numerical_variables if var not in df.columns]
     if missing_vars:
