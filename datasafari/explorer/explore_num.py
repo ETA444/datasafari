@@ -117,47 +117,47 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     # Error Handling #
     # TypeErrors
     if not isinstance(df, pd.DataFrame):
-        raise TypeError("The df parameter must be a pandas DataFrame.")
+        raise TypeError("explore_num(): The df parameter must be a pandas DataFrame.")
 
     if not isinstance(numerical_variables, list):
-        raise TypeError(f"The categorical_variables parameter must be a list of variable names.\n Example: var_list = ['var1', 'var2', 'var3']")
+        raise TypeError(f"explore_num(): The categorical_variables parameter must be a list of variable names.\n Example: var_list = ['var1', 'var2', 'var3']")
     else:
         if not all(isinstance(var, str) for var in numerical_variables):
-            raise TypeError("All items in the numerical_variables list must be strings representing column names.")
+            raise TypeError("explore_num(): All items in the numerical_variables list must be strings representing column names.")
 
     if not isinstance(method, str):
-        raise TypeError(f"The method parameter must be a string.\n Example: method = 'all'")
+        raise TypeError(f"explore_num(): The method parameter must be a string.\n Example: method = 'all'")
 
     if not isinstance(output, str):
-        raise TypeError(f"The output parameter must be a string. \n Example: output = 'return'")
+        raise TypeError(f"explore_num(): The output parameter must be a string. \n Example: output = 'return'")
 
     if not isinstance(threshold_z, (float, int)):
-        raise TypeError(f"The value of threshold_z must be a float or int.\nExample: threshold_z = 3")
+        raise TypeError(f"explore_num(): The value of threshold_z must be a float or int.\nExample: threshold_z = 3")
 
     # ValueErrors
 
     # Check if method is valid
     valid_methods = ['correlation_analysis', 'distribution_analysis', 'outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis', 'multicollinearity', 'all']
     if method.lower() not in valid_methods:
-        raise ValueError(f"Invalid method '{method}'. Valid options are: {', '.join(valid_methods)}")
+        raise ValueError(f"explore_num(): Invalid method '{method}'. Valid options are: {', '.join(valid_methods)}")
 
     # Check if output is valid
     if output.lower() not in ['print', 'return']:
-        raise ValueError("Invalid output method. Choose 'print' or 'return'.")
+        raise ValueError("explore_num(): Invalid output method. Choose 'print' or 'return'.")
 
     # Check if list has any members
     if len(numerical_variables) == 0:
-        raise ValueError("The 'numerical_variables' list must contain at least one column name.")
+        raise ValueError("explore_num(): The 'numerical_variables' list must contain at least one column name.")
 
     # Check if variables are numerical
     numerical_types = evaluate_dtype(df, numerical_variables, output='list_n')
     if not all(numerical_types):
-        raise ValueError(f"The 'numerical_variables' list must contain only names of numerical variables.")
+        raise ValueError(f"explore_num(): The 'numerical_variables' list must contain only names of numerical variables.")
 
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in numerical_variables if var not in df.columns]
     if missing_vars:
-        raise ValueError(f"The following variables were not found in the DataFrame: {', '.join(missing_vars)}")
+        raise ValueError(f"explore_num(): The following variables were not found in the DataFrame: {', '.join(missing_vars)}")
 
     # Main Function #
     # initialize variables #

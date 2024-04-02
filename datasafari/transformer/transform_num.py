@@ -161,155 +161,155 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
     # TypeErrors
     # Check if 'df' is a pandas DataFrame
     if not isinstance(df, pd.DataFrame):
-        raise TypeError("The 'df' parameter must be a pandas DataFrame.")
+        raise TypeError("transform_num(): The 'df' parameter must be a pandas DataFrame.")
 
     # Check if 'numerical_variables' is a list
     if not isinstance(numerical_variables, list):
-        raise TypeError("The 'numerical_variables' parameter must be a list of column names.")
+        raise TypeError("transform_num(): The 'numerical_variables' parameter must be a list of column names.")
     else:
         if not all(isinstance(var, str) for var in numerical_variables):
-            raise TypeError("All elements in the 'numerical_variables' list must be strings representing column names.")
+            raise TypeError("transform_num(): All elements in the 'numerical_variables' list must be strings representing column names.")
 
     # Check if 'method' is a string
     if not isinstance(method, str):
-        raise TypeError("The 'method' parameter must be a string.")
+        raise TypeError("transform_num(): The 'method' parameter must be a string.")
 
     # Check if 'output_distribution' is a string
     if not isinstance(output_distribution, str):
-        raise TypeError("The 'output_distribution' parameter must be a string.")
+        raise TypeError("transform_num(): The 'output_distribution' parameter must be a string.")
 
     # Check if 'n_quantiles' is an integer
     if not isinstance(n_quantiles, int):
-        raise TypeError("The 'n_quantiles' parameter must be an integer.")
+        raise TypeError("transform_num(): The 'n_quantiles' parameter must be an integer.")
 
     # Check if 'random_state' is an integer
     if not isinstance(random_state, int):
-        raise TypeError("The 'random_state' parameter must be an integer.")
+        raise TypeError("transform_num(): The 'random_state' parameter must be an integer.")
 
     # Check if 'with_centering' is a boolean
     if not isinstance(with_centering, bool):
-        raise TypeError("The 'with_centering' parameter must be a boolean.")
+        raise TypeError("transform_num(): The 'with_centering' parameter must be a boolean.")
 
     # Check if 'quantile_range' is a tuple and contains two floats
     if not (isinstance(quantile_range, tuple) and len(quantile_range) == 2 and all(isinstance(num, float) for num in quantile_range)):
-        raise TypeError("The 'quantile_range' parameter must be a tuple containing two float values.")
+        raise TypeError("transform_num(): The 'quantile_range' parameter must be a tuple containing two float values.")
 
     # Check if 'power' is None or a float
     if power is not None and not isinstance(power, float):
-        raise TypeError("The 'power' parameter must be a float or None.")
+        raise TypeError("transform_num(): The 'power' parameter must be a float or None.")
 
     # Check if 'power_map' is None or a dictionary
     if power_map is not None and not isinstance(power_map, dict):
-        raise TypeError("The 'power_map' parameter must be a dictionary or None.")
+        raise TypeError("transform_num(): The 'power_map' parameter must be a dictionary or None.")
 
     # Check if 'lower_percentile' and 'upper_percentile' are floats
     if not isinstance(lower_percentile, float) or not isinstance(upper_percentile, float):
-        raise TypeError("The 'lower_percentile' and 'upper_percentile' parameters must be floats.")
+        raise TypeError("transform_num(): The 'lower_percentile' and 'upper_percentile' parameters must be floats.")
 
     # Check if 'winsorization_map' is None or a dictionary
     if winsorization_map is not None and not isinstance(winsorization_map, dict):
-        raise TypeError("The 'winsorization_map' parameter must be a dictionary or None.")
+        raise TypeError("transform_num(): The 'winsorization_map' parameter must be a dictionary or None.")
 
     # Check if 'interaction_pairs' is None or a list of tuples
     if interaction_pairs is not None:
         if not (isinstance(interaction_pairs, list) and all(isinstance(pair, tuple) and len(pair) == 2 for pair in interaction_pairs)):
-            raise TypeError("The 'interaction_pairs' parameter must be a list of tuples or None.")
+            raise TypeError("transform_num(): The 'interaction_pairs' parameter must be a list of tuples or None.")
 
     # Check if 'degree' is None or an integer
     if degree is not None and not isinstance(degree, int):
-        raise TypeError("The 'degree' parameter must be an integer or None.")
+        raise TypeError("transform_num(): The 'degree' parameter must be an integer or None.")
 
     # Check if 'degree_map' is None or a dictionary
     if degree_map is not None and not isinstance(degree_map, dict):
-        raise TypeError("The 'degree_map' parameter must be a dictionary or None.")
+        raise TypeError("transform_num(): The 'degree_map' parameter must be a dictionary or None.")
 
     # Check if 'bins' is None or an integer
     if bins is not None and not isinstance(bins, int):
-        raise TypeError("The 'bins' parameter must be an integer or None.")
+        raise TypeError("transform_num(): The 'bins' parameter must be an integer or None.")
 
     # Check if 'bin_map' is None or a dictionary
     if bin_map is not None and not isinstance(bin_map, dict):
-        raise TypeError("The 'bin_map' parameter must be a dictionary or None.")
+        raise TypeError("transform_num(): The 'bin_map' parameter must be a dictionary or None.")
 
     # ValueErrors
     # Check if list has any members
     if len(numerical_variables) == 0:
-        raise ValueError("The 'numerical_variables' list must contain at least one column name.")
+        raise ValueError("transform_num(): The 'numerical_variables' list must contain at least one column name.")
 
     # Check if variables are numerical
     numerical_types = evaluate_dtype(df, numerical_variables, output='list_n')
     if not all(numerical_types):
-        raise ValueError(f"The 'numerical_variables' list must contain only names of numerical variables.")
+        raise ValueError(f"transform_num(): The 'numerical_variables' list must contain only names of numerical variables.")
 
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in numerical_variables if var not in df.columns]
     if missing_vars:
-        raise ValueError(f"The following numerical variables were not found in the DataFrame: {', '.join(missing_vars)}")
+        raise ValueError(f"transform_num(): The following numerical variables were not found in the DataFrame: {', '.join(missing_vars)}")
 
     # Check if method is valid
     valid_methods = ['standardize', 'log', 'normalize', 'quantile', 'robust', 'boxcox', 'yeojohnson', 'power', 'winsorization', 'interaction', 'polynomial', 'bin']
     if method.lower() not in valid_methods:
-        raise ValueError(f"Invalid method '{method}'. Valid options are: {', '.join(valid_methods)}")
+        raise ValueError(f"transform_num(): Invalid method '{method}'. Valid options are: {', '.join(valid_methods)}")
 
     # For 'quantile' method specific checks
     if method.lower() == 'quantile':
         if output_distribution not in ['normal', 'uniform']:
-            raise ValueError("Invalid 'output_distribution' for 'quantile' method. Choose 'normal' or 'uniform'.")
+            raise ValueError("transform_num(): Invalid 'output_distribution' for 'quantile' method. Choose 'normal' or 'uniform'.")
         if not isinstance(n_quantiles, int) or n_quantiles <= 0:
-            raise ValueError("The 'n_quantiles' must be a positive integer.")
+            raise ValueError("transform_num(): The 'n_quantiles' must be a positive integer.")
         if not isinstance(random_state, int):
-            raise ValueError("The 'random_state' must be an integer.")
+            raise ValueError("transform_num(): The 'random_state' must be an integer.")
 
     # For 'robust' method specific checks
     if method.lower() == 'robust':
         if not isinstance(with_centering, bool):
-            raise ValueError("The 'with_centering' parameter must be a boolean (True or False).")
+            raise ValueError("transform_num(): The 'with_centering' parameter must be a boolean (True or False).")
         if not (isinstance(quantile_range, tuple) and len(quantile_range) == 2 and all(isinstance(num, float) for num in quantile_range)):
-            raise ValueError("The 'quantile_range' must be a tuple of two float values.")
+            raise ValueError("transform_num(): The 'quantile_range' must be a tuple of two float values.")
 
     # For 'power' method specific checks
     if method.lower() == 'power':
         if power is not None and not isinstance(power, float):
-            raise ValueError("The 'power' must be a float value or None.")
+            raise ValueError("transform_num(): The 'power' must be a float value or None.")
         if power_map is not None and not isinstance(power_map, dict):
-            raise ValueError("The 'power_map' must be a dictionary mapping variables to powers or None.")
+            raise ValueError("transform_num(): The 'power_map' must be a dictionary mapping variables to powers or None.")
 
     # For 'winsorization' method specific checks
     if method.lower() == 'winsorization':
         if not (isinstance(lower_percentile, float) and 0 <= lower_percentile < 1):
-            raise ValueError("The 'lower_percentile' must be a float between 0 and 1.")
+            raise ValueError("transform_num(): The 'lower_percentile' must be a float between 0 and 1.")
         if not (isinstance(upper_percentile, float) and 0 < upper_percentile <= 1):
-            raise ValueError("The 'upper_percentile' must be a float between 0 and 1.")
+            raise ValueError("transform_num(): The 'upper_percentile' must be a float between 0 and 1.")
         if lower_percentile >= upper_percentile:
-            raise ValueError("The 'lower_percentile' must be less than 'upper_percentile'.")
+            raise ValueError("transform_num(): The 'lower_percentile' must be less than 'upper_percentile'.")
 
     # For 'polynomial' method specific checks
     if method.lower() == 'polynomial':
         if degree is not None and not (isinstance(degree, int) and degree > 0):
-            raise ValueError("The 'degree' must be a positive integer or None.")
+            raise ValueError("transform_num(): The 'degree' must be a positive integer or None.")
         if degree_map is not None and not isinstance(degree_map, dict):
-            raise ValueError("The 'degree_map' must be a dictionary mapping variables to degrees or None.")
+            raise ValueError("transform_num(): The 'degree_map' must be a dictionary mapping variables to degrees or None.")
 
     # For 'bin' method specific checks
     if method.lower() == 'bin':
         if bins is not None and not (isinstance(bins, int) and bins > 0):
-            raise ValueError("The 'bins' must be a positive integer or None.")
+            raise ValueError("transform_num(): The 'bins' must be a positive integer or None.")
         if bin_map is not None and not isinstance(bin_map, dict):
-            raise ValueError("The 'bin_map' must be a dictionary specifying binning criteria or None.")
+            raise ValueError("transform_num(): The 'bin_map' must be a dictionary specifying binning criteria or None.")
 
     # For 'interaction' method specific checks
     if method.lower() == 'interaction':
         if interaction_pairs is not None:
             if not (isinstance(interaction_pairs, list) and all(isinstance(pair, tuple) and len(pair) == 2 for pair in interaction_pairs)):
-                raise ValueError("The 'interaction_pairs' must be a list of tuples specifying pairs of variables or None.")
+                raise ValueError("transform_num(): The 'interaction_pairs' must be a list of tuples specifying pairs of variables or None.")
             missing_pairs = [pair for pair in interaction_pairs if pair[0] not in df.columns or pair[1] not in df.columns]
             if missing_pairs:
-                raise ValueError(f"The following variable pairs in 'interaction_pairs' were not found in the DataFrame: {missing_pairs}")
+                raise ValueError(f"transform_num(): The following variable pairs in 'interaction_pairs' were not found in the DataFrame: {missing_pairs}")
 
     # Check for NaN or infinite values in the DataFrame for methods that cannot handle them
     if method.lower() in ['log', 'boxcox', 'yeojohnson']:
         if df[numerical_variables].isnull().values.any() or np.isinf(df[numerical_variables].values).any():
-            raise ValueError(f"The 'numerical_variables' contain NaN or infinite values, which are not compatible with the '{method}' method.")
+            raise ValueError(f"transform_num(): The 'numerical_variables' contain NaN or infinite values, which are not compatible with the '{method}' method.")
 
     # Additional checks for mapping dictionaries to ensure keys exist in the DataFrame
     if power_map or winsorization_map or degree_map or bin_map:
@@ -317,7 +317,7 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
             if mapping:
                 invalid_keys = [key for key in mapping.keys() if key not in df.columns]
                 if invalid_keys:
-                    raise ValueError(f"The following keys in '{map_name}' were not found in the DataFrame columns: {', '.join(invalid_keys)}")
+                    raise ValueError(f"transform_num(): The following keys in '{map_name}' were not found in the DataFrame columns: {', '.join(invalid_keys)}")
 
     # Main Function #
     if method == 'standardize':
