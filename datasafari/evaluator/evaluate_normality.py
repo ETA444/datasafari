@@ -89,11 +89,11 @@ def evaluate_normality(df: pd.DataFrame, target_variable: str, grouping_variable
         raise ValueError(f"evaluate_normality(): The grouping variable '{grouping_variable}' was not found in the DataFrame.")
 
     # Check if the specified columns are the appropriate dtypes
-    target_variable_is_numerical = evaluate_dtype(df, [target_variable], output='list_n')
+    target_variable_is_numerical = evaluate_dtype(df, [target_variable], output='list_n')[0]
     if not target_variable_is_numerical:
         raise ValueError(f"evaluate_normality(): The target variable '{target_variable}' must be a numerical variable.")
 
-    grouping_variable_is_categorical = evaluate_dtype(df, [grouping_variable], output='list_c')
+    grouping_variable_is_categorical = evaluate_dtype(df, [grouping_variable], output='list_c')[0]
     if not grouping_variable_is_categorical:
         raise ValueError(f"evaluate_normality(): The grouping variable '{grouping_variable}' must be a categorical variable.")
 
