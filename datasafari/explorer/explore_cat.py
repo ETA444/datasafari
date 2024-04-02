@@ -1,5 +1,6 @@
 import pandas as pd
 from datasafari.utils import calculate_entropy
+from datasafari.evaluator import evaluate_dtype
 
 
 def explore_cat(df: pd.DataFrame, categorical_variables: list, method: str = 'all', output: str = 'print'):
@@ -109,6 +110,15 @@ def explore_cat(df: pd.DataFrame, categorical_variables: list, method: str = 'al
     # Check if output is valid
     if output.lower() not in ['print', 'return']:
         raise ValueError("Invalid output method. Choose 'print' or 'return'.")
+
+    # Check if list has any members
+    if len(categorical_variables) == 0:
+        raise ValueError("The 'categorical_variables' list must contain at least one column name.")
+
+    # Check if variables are categorical
+    categorical_types = evaluate_dtype(df, categorical_variables, output='list_c')
+    if not all(categorical_types):
+        raise ValueError(f"The 'categorical_variables' list must contain only names of categorical variables.")
 
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in categorical_variables if var not in df.columns]
