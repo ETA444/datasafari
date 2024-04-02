@@ -97,6 +97,7 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
         - If `lower_percentile` or `upper_percentile` is not between 0 and 1, or if `lower_percentile` is greater than or equal to `upper_percentile` for the 'winsorization' method.
         - If `degree` is not provided or is not a positive integer for the 'polynomial' method when required.
         - If `bins` is not a positive integer for the 'bin' method when required.
+        - If method is 'log', 'boxcox' or 'yeojohnson' and the provided columns have NAs or Infs raise as these statistical methods are not compatible with NAs or Infs.
         - If specified keys in `power_map`, `winsorization_map`, `degree_map`, or `bin_map` do not match any column in the DataFrame.
         - If the `interaction_pairs` specified do not consist of columns that exist in the DataFrame.
 
@@ -304,6 +305,11 @@ def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, outp
             missing_pairs = [pair for pair in interaction_pairs if pair[0] not in df.columns or pair[1] not in df.columns]
             if missing_pairs:
                 raise ValueError(f"The following variable pairs in 'interaction_pairs' were not found in the DataFrame: {missing_pairs}")
+
+    # Check for NaN or infinite values in the DataFrame for methods that cannot handle them
+    if method.lower() in ['log', 'boxcox', 'yeojohnson']:
+        if df[numerical_variables].isnull().values.any() or np.isinf(df[numerical_variables].values).any():
+            raise ValueError(f"The 'numerical_variables' contain NaN or infinite values, which are not compatible with the '{method}' method.")
 
     # Additional checks for mapping dictionaries to ensure keys exist in the DataFrame
     if power_map or winsorization_map or degree_map or bin_map:
