@@ -1,6 +1,7 @@
 from scipy.stats import shapiro, anderson, normaltest
 from statsmodels.stats.diagnostic import lilliefors
 import pandas as pd
+from datasafari.evaluator import evaluate_dtype
 
 
 def evaluate_normality(df: pd.DataFrame, target_variable: str, grouping_variable: str, method: str = 'consensus', pipeline: bool = False):
@@ -48,7 +49,47 @@ def evaluate_normality(df: pd.DataFrame, target_variable: str, grouping_variable
     >>> if normality:
     >>>     # ...
     """
+    # Error Handling
+    # TypeErrors
+    # Check if 'df' is a pandas DataFrame
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("evaluate_normality(): The 'df' parameter must be a pandas DataFrame.")
 
+    # Check if 'target_variable' and 'grouping_variable' are strings
+    if not isinstance(target_variable, str) or not isinstance(grouping_variable, str):
+        raise TypeError("evaluate_normality(): The 'target_variable' and 'grouping_variable' parameters must be strings.")
+
+    # Check if 'method' is a string
+    if not isinstance(method, str):
+        raise TypeError("evaluate_normality(): The 'method' parameter must be a string.")
+
+    # Check if 'pipeline' is a boolean
+    if not isinstance(pipeline, bool):
+        raise TypeError("evaluate_normality(): The 'pipeline' parameter must be a boolean.")
+
+    # ValueErrors
+    # Check if the specified columns exist in the DataFrame
+    if target_variable not in df.columns:
+        raise ValueError(f"evaluate_normality(): The target variable '{target_variable}' was not found in the DataFrame.")
+
+    if grouping_variable not in df.columns:
+        raise ValueError(f"evaluate_normality(): The grouping variable '{grouping_variable}' was not found in the DataFrame.")
+
+    # Check if the specified columns are the appropriate dtypes
+    target_variable_is_numerical = evaluate_dtype(df, [target_variable], output='list_n')
+    if not target_variable_is_numerical:
+        raise ValueError(f"evaluate_normality(): The target variable '{target_variable}' must be a numerical variable.")
+
+    grouping_variable_is_categorical = evaluate_dtype(df, [grouping_variable], output='list_c')
+    if not grouping_variable_is_categorical:
+        raise ValueError(f"evaluate_normality(): The grouping variable '{grouping_variable}' must be a categorical variable.")
+
+    # Check if the method specified is one of the allowed methods
+    allowed_methods = ['shapiro', 'anderson', 'normaltest', 'lilliefors', 'consensus']
+    if method not in allowed_methods:
+        raise ValueError(f"evaluate_normality(): The method '{method}' is not supported. Allowed methods are: {', '.join(allowed_methods)}.")
+
+    # Main Functionality
     groups = df[grouping_variable].unique().tolist()
 
     # define output objects
