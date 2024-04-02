@@ -36,6 +36,19 @@ def evaluate_variance(df: pd.DataFrame, target_variable: str, grouping_variable:
         - If `pipeline` is False, returns a dictionary containing the results of the variance tests, including statistics, p-values, and a conclusion on variance homogeneity.
         - If `pipeline` is True, returns a boolean indicating whether a consensus was reached on variance homogeneity.
 
+    Raises
+    ------
+    TypeError
+        - If `df` is not a pandas DataFrame.
+        - If `target_variable` or `grouping_variable` is not a string.
+        - If `normality_info` is provided but is not a boolean.
+        - If `method` is not a string.
+        - If `pipeline` is not a boolean.
+    ValueError
+        - If the `target_variable` or `grouping_variable` does not exist in the DataFrame.
+        - If the `method` specified is not supported. Allowed methods are: 'levene', 'bartlett', 'fligner', 'consensus'.
+        - If the `target_variable` is not numerical, or if the `grouping_variable` is not categorical, as determined by evaluating their data types with `evaluate_dtype()`.
+
     Examples
     --------
     >>> import pandas as pd
