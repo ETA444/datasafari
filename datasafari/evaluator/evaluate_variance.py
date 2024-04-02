@@ -1,5 +1,6 @@
 from scipy.stats import levene, bartlett, fligner
 import pandas as pd
+from datasafari.evaluator import evaluate_dtype
 
 
 def evaluate_variance(df: pd.DataFrame, target_variable: str, grouping_variable: str, normality_info: bool = None, method: str = 'consensus', pipeline: bool = False):
@@ -50,6 +51,47 @@ def evaluate_variance(df: pd.DataFrame, target_variable: str, grouping_variable:
     >>>     # ...
     """
 
+    # Error Handling
+    # TypeErrors
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("evaluate_variance(): The 'df' parameter must be a pandas DataFrame.")
+
+    if not isinstance(target_variable, str):
+        raise TypeError("evaluate_variance(): The 'target_variable' parameter must be a string.")
+
+    if not isinstance(grouping_variable, str):
+        raise TypeError("evaluate_variance(): The 'grouping_variable' parameter must be a string.")
+
+    if normality_info is not None and not isinstance(normality_info, bool):
+        raise TypeError("evaluate_variance(): The 'normality_info' parameter must be a boolean if provided.")
+
+    if not isinstance(method, str):
+        raise TypeError("evaluate_variance(): The 'method' parameter must be a string.")
+
+    if not isinstance(pipeline, bool):
+        raise TypeError("evaluate_variance(): The 'pipeline' parameter must be a boolean.")
+
+    # ValueErrors
+    if target_variable not in df.columns:
+        raise ValueError(f"evaluate_variance(): The target variable '{target_variable}' was not found in the DataFrame.")
+
+    if grouping_variable not in df.columns:
+        raise ValueError(f"evaluate_variance(): The grouping variable '{grouping_variable}' was not found in the DataFrame.")
+
+    allowed_methods = ['levene', 'bartlett', 'fligner', 'consensus']
+    if method not in allowed_methods:
+        raise ValueError(f"evaluate_variance(): The method '{method}' is not supported. Allowed methods are: {', '.join(allowed_methods)}.")
+
+    # Check if the specified columns are the appropriate dtypes
+    target_variable_is_numerical = evaluate_dtype(df, [target_variable], output='list_n')[0]
+    if not target_variable_is_numerical:
+        raise ValueError(f"evaluate_variance(): The target variable '{target_variable}' must be a numerical variable.")
+
+    grouping_variable_is_categorical = evaluate_dtype(df, [grouping_variable], output='list_c')[0]
+    if not grouping_variable_is_categorical:
+        raise ValueError(f"evaluate_variance(): The grouping variable '{grouping_variable}' must be a categorical variable.")
+
+    # Main Function
     groups = df[grouping_variable].unique().tolist()
     samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
 
