@@ -6,6 +6,7 @@ from scipy.stats import (
     chi2  # used in 'outliers_mahalanobis'
 )
 from datasafari.utils import calculate_mahalanobis, calculate_vif
+from datasafari.evaluator import evaluate_dtype
 
 
 # explore_num todos 2.0 #
@@ -141,6 +142,15 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     # Check if output is valid
     if output.lower() not in ['print', 'return']:
         raise ValueError("Invalid output method. Choose 'print' or 'return'.")
+
+    # Check if list has any members
+    if len(numerical_variables) == 0:
+        raise ValueError("The 'numerical_variables' list must contain at least one column name.")
+
+    # Check if variables are categorical
+    categorical_types = evaluate_dtype(df, numerical_variables, output='list_n')
+    if not all(categorical_types):
+        raise ValueError(f"The 'numerical_variables' list must contain only names of numerical variables.")
 
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in numerical_variables if var not in df.columns]
