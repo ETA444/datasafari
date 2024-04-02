@@ -148,8 +148,8 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         raise ValueError("The 'numerical_variables' list must contain at least one column name.")
 
     # Check if variables are categorical
-    categorical_types = evaluate_dtype(df, numerical_variables, output='list_n')
-    if not all(categorical_types):
+    numerical_types = evaluate_dtype(df, numerical_variables, output='list_n')
+    if not all(numerical_types):
         raise ValueError(f"The 'numerical_variables' list must contain only names of numerical variables.")
 
     # Check if specified variables exist in the DataFrame
