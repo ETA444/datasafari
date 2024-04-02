@@ -35,6 +35,19 @@ def evaluate_normality(df: pd.DataFrame, target_variable: str, grouping_variable
         - If `pipeline` is False, returns a dictionary with test names as keys and test results, including statistics, p-values, and normality conclusions, as values.
         - If `pipeline` is True, returns a boolean indicating the consensus on normality across all tests, or if consensus method was not used a boolean indicating the result of that test.
 
+    Raises
+    ------
+    TypeError
+        - If `df` is not a pandas DataFrame.
+        - If `target_variable` or `grouping_variable` is not a string.
+        - If `method` is not a string.
+        - If `pipeline` is not a boolean.
+    ValueError
+        - If the `target_variable` or `grouping_variable` does not exist in the DataFrame.
+        - If the `method` specified is not supported. Allowed methods are: 'shapiro', 'anderson', 'normaltest', 'lilliefors', 'consensus'.
+        - If the `target_variable` is not numerical.
+        - If the `grouping_variable` is not categorical.
+
     Examples
     --------
     >>> import pandas as pd
