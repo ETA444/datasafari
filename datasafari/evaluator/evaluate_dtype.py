@@ -2,6 +2,63 @@ import pandas as pd
 
 
 def evaluate_dtype(df: pd.DataFrame, col_names: list, max_unique_values_ratio: float = 0.05, min_unique_values: int = 10, output: str = 'dict'):
+    """
+    Evaluates and categorizes data types of specified columns in a DataFrame, with enhanced handling for numerical data that may functionally serve as categorical data.
+
+    This function examines columns within a DataFrame to determine if they are numerical or categorical. It goes beyond simple data type checks by considering the distribution of unique values within numerical data. This allows for more nuanced categorization, where numerical columns with a limited range of unique values can be treated as categorical, based on specified thresholds.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing the data to be evaluated.
+    col_names : list
+        A list of column names whose data types are to be evaluated.
+    max_unique_values_ratio : float, optional
+        The maximum ratio of unique values to total observations for a numerical column to be considered categorical. Default is 0.05.
+    min_unique_values : int, optional
+        The minimum number of unique values for a numerical column to be considered continuous. Columns with unique values below this threshold are considered categorical. Default is 10.
+    output : str, optional
+        Specifies the format of the output. Options are:
+            - 'dict': returns a dictionary with columns as keys and their determined data types ('numerical' or 'categorical') as values.
+            - 'list_n': returns a list of booleans indicating whether each column in `col_names` is numerical (True) or not (False).
+            - 'list_c': returns a list of booleans indicating whether each column in `col_names` is categorical (True) or not (False).
+        Default is 'dict'.
+
+    Returns
+    -------
+    dict or list
+        Depending on the 'output' parameter, this function returns:
+            - A dictionary mapping column names to their determined data types ('numerical' or 'categorical').
+            - A list of booleans indicating the nature (numerical or categorical) of each column in `col_names`, according to the specified 'output' parameter.
+
+    Raises
+    ------
+    TypeError
+        - If `df` is not a pandas DataFrame.
+        - If `col_names` is not a list.
+        - If elements of `col_names` are not all strings.
+        - If `max_unique_values_ratio` is not a float or an integer.
+        - If `min_unique_values` is not an integer.
+        - If `output` is not a string or does not match one of the expected output format strings ('dict', 'list_n', 'list_c').
+    ValueError
+        - If `max_unique_values_ratio` is outside the range [0, 1].
+        - If `min_unique_values` is less than 1, as at least one unique value is needed to categorize a column.
+        - If any of the specified column names in `col_names` are not present in the DataFrame.
+        - If the `output` string does not correspond to one of the valid options ('dict', 'list_n', 'list_c'), indicating a request for an unsupported output format.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame({
+            'Age': np.random.randint(18, 35, 100),
+            'Income': np.random.normal(50000, 15000, 100),
+            'Department': np.random.choice(['HR', 'Tech', 'Admin'], 100)
+        })
+    >>> data_type_dict = evaluate_dtype(df, ['Age', 'Income', 'Department'], output='dict')
+    >>> numerical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department'], output='list_n')
+    >>> categorical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department'], output='list_c')
+    """
 
     # Error-handling #
     # TypeErrors
