@@ -89,7 +89,7 @@ def evaluate_dtype(df: pd.DataFrame, col_names: list, max_unique_values_ratio: f
 
     # Check if list has any members
     if len(col_names) == 0:
-        raise ValueError("The 'col_names' list must contain at least one column name.")
+        raise ValueError("evaluate_dtype(): The 'col_names' list must contain at least one column name.")
 
     missing_cols = [col for col in col_names if col not in df.columns]
     if missing_cols:
