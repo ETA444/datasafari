@@ -110,7 +110,43 @@ def evaluate_shape(contingency_table: pd.DataFrame):
 
 def evaluate_contingency_table(contingency_table: pd.DataFrame, min_sample_size_yates: int = 40, pipeline: bool = False):
     """
+    Evaluates a contingency table to determine the viability of various statistical tests based on the table's characteristics.
+
+    This function assesses the contingency table's suitability for chi-square tests, exact tests (Barnard's, Boschloo's, and Fisher's), and the application of Yates' correction within the chi-square test. It examines expected and observed frequencies, sample size, and table shape to guide the choice of appropriate statistical tests for hypothesis testing.
+
+    Parameters
+    ----------
+    contingency_table : pd.DataFrame
+        A contingency table generated from two categorical variables.
+    min_sample_size_yates : int, optional
+        The minimum sample size below which Yates' correction should be considered. Default is 40.
+    pipeline : bool, optional
+        Determines the format of the output. If True, outputs a tuple of boolean values representing the viability of each test. If False, outputs a dictionary with the test names as keys and their viabilities as boolean values. Default is False.
+
+    Returns
+    -------
+    test_viability : dict or tuple
+        Depending on the 'pipeline' parameter:
+            - If `pipeline` is False, returns a dictionary with keys as test names ('chi2_contingency', 'yates_correction', 'barnard_exact', 'boschloo_exact', 'fisher_exact') and values as boolean indicators of their viability.
+            - If `pipeline` is True, returns a tuple of boolean values in the order: (chi2_viability, yates_correction_viability, barnard_viability, boschloo_viability, fisher_viability).
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> data = {
+    ...     'Gender': np.random.choice(['Male', 'Female'], 100),
+    ...     'Preference': np.random.choice(['Option A', 'Option B'], 100)
+    ... }
+    >>> df_example = pd.DataFrame(data)
+    >>> contingency_table = pd.crosstab(df_example['Gender'], df_example['Preference'])
+    >>> test_viability = evaluate_contingency_table(contingency_table)
+    >>> print(test_viability)
+    >>> chi2, yates, barnard, boschloo, fisher = evaluate_contingency_table(contingency_table, pipeline=True)
+    >>> if chi2:
+    >>>     # ...
     """
+
     test_viability = {}  # non-pipeline output
 
     # compute objects for checks
