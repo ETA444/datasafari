@@ -11,7 +11,7 @@ from datasafari.evaluator import (
 
 
 # Hypothesis Predictor Cores
-def predictor_core_numerical(df: pd.DataFrame, target_variable: str, grouping_variable: str, normality_bool: bool, equal_variances_bool: bool):
+def predictor_core_n(df: pd.DataFrame, target_variable: str, grouping_variable: str, normality_bool: bool, equal_variances_bool: bool):
     """
     Conducts hypothesis testing on numerical data, choosing appropriate tests based on data characteristics.
 
@@ -40,6 +40,39 @@ def predictor_core_numerical(df: pd.DataFrame, target_variable: str, grouping_va
         tested (normality and equal variances).
     """
 
+    # Error Handling
+    # TypeErrors
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("predictor_core_numerical(): The 'df' parameter must be a pandas DataFrame.")
+
+    if not isinstance(target_variable, str):
+        raise TypeError("predictor_core_numerical(): The 'target_variable' must be a string.")
+
+    if not isinstance(grouping_variable, str):
+        raise TypeError("predictor_core_numerical(): The 'grouping_variable' must be a string.")
+
+    if not isinstance(normality_bool, bool):
+        raise TypeError("predictor_core_numerical(): The 'normality_bool' must be a boolean.")
+
+    if not isinstance(equal_variances_bool, bool):
+        raise TypeError("predictor_core_numerical(): The 'equal_variances_bool' must be a boolean.")
+
+    # ValueErrors
+    if target_variable not in df.columns:
+        raise ValueError(f"predictor_core_n(): The target variable '{target_variable}' was not found in the DataFrame.")
+
+    if grouping_variable not in df.columns:
+        raise ValueError(f"predictor_core_n(): The grouping variable '{grouping_variable}' was not found in the DataFrame.")
+
+    target_variable_is_numerical = evaluate_dtype(df, [target_variable], output='list_n')[0]
+    if not target_variable_is_numerical:
+        raise ValueError(f"predictor_core_n(): The target variable '{target_variable}' must be a numerical variable.")
+
+    grouping_variable_is_categorical = evaluate_dtype(df, [grouping_variable], output='list_c')[0]
+    if not grouping_variable_is_categorical:
+        raise ValueError(f"predictor_core_n(): The grouping variable '{grouping_variable}' must be a categorical variable.")
+
+    # Main Function
     groups = df[grouping_variable].unique().tolist()
     samples = [df[df[grouping_variable] == group][target_variable] for group in groups]
 
@@ -364,7 +397,7 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
         equal_variance_bool = evaluate_variance(df, target_variable, grouping_variable, normality_info=normality_bool, method=variance_method, pipeline=True)
 
         # perform hypothesis testing
-        output_info = predictor_core_numerical(df, target_variable, grouping_variable, normality_bool, equal_variance_bool)
+        output_info = predictor_core_n(df, target_variable, grouping_variable, normality_bool, equal_variance_bool)
         return output_info
     elif hypothesis_testing == 'categorical':
         # create contingency table
@@ -374,7 +407,7 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
         chi2_viability, yates_correction_viability, barnard_viability, boschloo_viability, fisher_viability = evaluate_contingency_table(contingency_table, min_sample_size_yates=yates_min_sample_size, pipeline=True, quiet=True)
 
         # perform hypothesis testing
-        output_info = predictor_core_categorical(contingency_table, chi2_viability, barnard_viability, boschloo_viability, fisher_viability, yates_correction_viability, alternative=exact_tests_alternative)
+        output_info = predictor_core_c(contingency_table, chi2_viability, barnard_viability, boschloo_viability, fisher_viability, yates_correction_viability, alternative=exact_tests_alternative)
         return output_info
 
 
