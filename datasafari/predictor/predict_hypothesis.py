@@ -143,7 +143,7 @@ def evaluate_contingency_table(contingency_table: pd.DataFrame, min_sample_size_
     >>> contingency_table = pd.crosstab(df_example['Gender'], df_example['Preference'])
     >>> test_viability = evaluate_contingency_table(contingency_table)
     >>> print(test_viability)
-    >>> chi2, yates, barnard, boschloo, fisher = evaluate_contingency_table(contingency_table, pipeline=True)
+    >>> chi2, yates, barnard, boschloo, fisher = evaluate_contingency_table(contingency_table, pipeline=True, quiet=True)
     >>> if chi2:
     >>>     # ...
     """
@@ -165,14 +165,14 @@ def evaluate_contingency_table(contingency_table: pd.DataFrame, min_sample_size_
     test_viability['yates_correction'] = yates_correction_viability
 
     # assumption check for all exact tests
-    barnard_viability, boschloo_viability, fisher_viability = True if table_shape == (2, 2) else False
+    barnard_viability, boschloo_viability, fisher_viability = (True, True, True) if table_shape == (2, 2) else (False, False, False)
     test_viability['barnard_exact'], test_viability['boschloo_exact'], test_viability['fisher_exact'] = barnard_viability, boschloo_viability, fisher_viability
 
     # console output
     title = f"< CONTINGENCY TABLE EVALUATION >\n"
-    on_chi2 = f"Based on minimum expected freq. ({min_expected_frequency}) & minimum observed freq. ({min_observed_frequency}):\n  ➡ chi2_contingecy() viability: {'✔' if chi2_viability else '✘'}\n"
-    on_yates = f"Based on table shape ({table_shape[0]}x{table_shape[1]}) & sample size ({sample_size}):\n  ➡ chi2_contingecy() Yate's correction viability: {'✔' if yates_correction_viability else '✘'}\n"
-    on_exact = f"Based on table shape ({table_shape[0]}x{table_shape[1]}):\n  ➡ barnard_exact() viability: {'✔' if barnard_viability else '✘'}\n  ➡ boschloo_exact() viability: {'✔' if boschloo_viability else '✘'}\n  ➡ fisher_exact() viability: {'✔' if fisher_viability else '✘'}\n"
+    on_chi2 = f"Based on minimum expected freq. ({min_expected_frequency}) & minimum observed freq. ({min_observed_frequency}):\n  ➡ chi2_contingecy() viability: {'✔' if chi2_viability else '✘'}\n\n"
+    on_yates = f"Based on table shape ({table_shape[0]}x{table_shape[1]}) & sample size ({sample_size}):\n  ➡ chi2_contingecy() Yate's correction viability: {'✔' if yates_correction_viability else '✘'}\n\n"
+    on_exact = f"Based on table shape ({table_shape[0]}x{table_shape[1]}):\n  ➡ barnard_exact() viability: {'✔' if barnard_viability else '✘'}\n  ➡ boschloo_exact() viability: {'✔' if boschloo_viability else '✘'}\n  ➡ fisher_exact() viability: {'✔' if fisher_viability else '✘'}\n\n\n"
     print(title, on_chi2, on_yates, on_exact) if not quiet else ""
 
     if pipeline:
@@ -599,8 +599,3 @@ data = {
 test_df = pd.DataFrame(data)
 
 output_info = predict_hypothesis(test_df, 'Category1', 'Category2')
-
-# TODO: Write Numpy Docstring for main function
-# TODO: Write Numpy DocstringS for test cores (x 2)
-# TODO: Write Numpy DocstringS for evaluators (x 5)
-# TODO: Add implementations as issues on GitHub to document progress
