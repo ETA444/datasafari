@@ -1,7 +1,8 @@
 from scipy.stats import shapiro, anderson, normaltest
 from statsmodels.stats.diagnostic import lilliefors
 import pandas as pd
-from datasafari.evaluator import evaluate_dtype
+import numpy as np
+from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 
 
 def evaluate_normality(df: pd.DataFrame, target_variable: str, grouping_variable: str, method: str = 'consensus', pipeline: bool = False):

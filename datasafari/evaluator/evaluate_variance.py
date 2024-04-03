@@ -1,6 +1,6 @@
 from scipy.stats import levene, bartlett, fligner
 import pandas as pd
-from datasafari.evaluator import evaluate_dtype
+from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 
 
 def evaluate_variance(df: pd.DataFrame, target_variable: str, grouping_variable: str, normality_info: bool = None, method: str = 'consensus', pipeline: bool = False):
