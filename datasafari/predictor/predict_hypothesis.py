@@ -45,6 +45,7 @@ def evaluate_frequencies(df: pd.DataFrame, categorical_variable1: str, categoric
     ... })
     >>> chi2_bool, contingency_table = evaluate_frequencies(df_example, 'Gender', 'Preference')
     """
+
     # initialize contingency table
     contingency_table = pd.crosstab(df[categorical_variable1], df[categorical_variable2])
     # compute minimum expected and observed frequencies
@@ -105,6 +106,35 @@ def evaluate_shape(contingency_table: pd.DataFrame):
         fisher_bool = True
         yates_correction_shape_bool = True
     return barnard_bool, boschloo_bool, fisher_bool, yates_correction_shape_bool
+
+
+def evaluate_contingency_table(contingency_table: pd.DataFrame, min_sample_size_yates: int = 40, pipeline: bool = False):
+    """
+    """
+    test_viability = {}  # non-pipeline output
+
+    # compute objects for checks
+    min_expected_frequency = expected_freq(contingency_table).min()
+    min_observed_frequency = contingency_table.min().min()
+    sample_size = np.sum(contingency_table.values)
+    table_shape = contingency_table.shape
+
+    # assumption check for chi2_contingency test
+    chi2_viability = True if min_expected_frequency >= 5 and min_observed_frequency >= 5 else False
+    test_viability['chi2_contingency'] = chi2_viability
+
+    # assumption check for chi2_contingency yate's-correction
+    yates_correction_viability = True if table_shape == (2, 2) and sample_size < min_sample_size_yates else False
+    test_viability['yates_correction'] = yates_correction_viability
+
+    # assumption check for all exact tests
+    barnard_viability, boschloo_viability, fisher_viability = True if table_shape == (2, 2) else False
+    test_viability['barnard_exact'], test_viability['boschloo_exact'], test_viability['fisher_exact'] = barnard_viability, boschloo_viability, fisher_viability
+
+    if pipeline:
+        return chi2_viability, yates_correction_viability, barnard_viability, boschloo_viability, fisher_viability
+    elif not pipeline:
+        return test_viability
 
 
 def predictor_core_numerical(df: pd.DataFrame, target_variable: str, grouping_variable: str, normality_bool: bool, equal_variances_bool: bool):
