@@ -38,7 +38,6 @@ def predictor_core_n(df: pd.DataFrame, target_variable: str, grouping_variable: 
         - If `df` is not a pandas DataFrame.
         - If `target_variable` or `grouping_variable` is not a string.
         - If `normality_bool` or `equal_variances_bool` is not a boolean.
-
     ValueError
         - If `target_variable` or `grouping_variable` is not found in the DataFrame's columns.
         - If `target_variable` is not numerical.
@@ -120,7 +119,7 @@ def predictor_core_n(df: pd.DataFrame, target_variable: str, grouping_variable: 
     return output_info
 
 
-def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_viability: bool, barnard_viability: bool, boschloo_viability: bool, fisher_viability: bool, yates_correction_viability: bool, alternative: str = 'two-sided'):
+def predictor_core_c(contingency_table: pd.DataFrame, chi2_viability: bool, barnard_viability: bool, boschloo_viability: bool, fisher_viability: bool, yates_correction_viability: bool, alternative: str = 'two-sided'):
     """
     Conducts categorical hypothesis testing using contingency tables and appropriate statistical tests.
 
@@ -142,6 +141,15 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_viability: 
     alternative : str, optional
         Specifies the alternative hypothesis for exact tests. Options include 'two-sided', 'less', or 'greater'.
         Defaults to 'two-sided'.
+
+    Raises
+    ------
+    TypeError
+        - If `contingency_table` is not a pandas DataFrame.
+        - If `chi2_viability`, `barnard_viability`, `boschloo_viability`, `fisher_viability`, or `yates_correction_viability` is not a boolean.
+        - If `alternative` is not a string indicating the alternative hypothesis ('two-sided', 'less', 'greater').
+    ValueError
+        - If the `alternative` specified does not match one of the expected values: 'two-sided', 'less', or 'greater'.
 
     Returns
     -------
