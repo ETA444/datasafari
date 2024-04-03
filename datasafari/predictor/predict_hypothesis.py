@@ -32,6 +32,18 @@ def predictor_core_n(df: pd.DataFrame, target_variable: str, grouping_variable: 
     equal_variances_bool : bool
         A boolean indicating if the groups have equal variances.
 
+    Raises
+    ------
+    TypeError
+        - If `df` is not a pandas DataFrame.
+        - If `target_variable` or `grouping_variable` is not a string.
+        - If `normality_bool` or `equal_variances_bool` is not a boolean.
+
+    ValueError
+        - If `target_variable` or `grouping_variable` is not found in the DataFrame's columns.
+        - If `target_variable` is not numerical.
+        - If `grouping_variable` is not categorical.
+
     Returns
     -------
     output_info : dict
