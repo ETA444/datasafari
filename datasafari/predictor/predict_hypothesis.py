@@ -208,19 +208,6 @@ def predictor_core_numerical(df: pd.DataFrame, target_variable: str, grouping_va
         A dictionary containing the results of the hypothesis test, including test statistics, p-values,
         conclusions regarding the differences between groups, the name of the test used, and the assumptions
         tested (normality and equal variances).
-
-    Examples
-    --------
-    # Example usage for conducting hypothesis testing on numerical data
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> df = pd.DataFrame({
-    ...     'Group': np.random.choice(['A', 'B', 'C'], size=100),
-    ...     'Scores': np.random.normal(0, 1, 100)
-    ... })
-    >>> normality_bool = True  # Assume normality based on prior tests
-    >>> equal_variances_bool = True  # Assume equal variances based on prior tests
-    >>> results = predictor_core_numerical(df, 'Scores', 'Group', normality_bool, equal_variances_bool)
     """
 
     groups = df[grouping_variable].unique().tolist()
@@ -258,7 +245,7 @@ def predictor_core_numerical(df: pd.DataFrame, target_variable: str, grouping_va
     return output_info
 
 
-def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool, barnard_bool: bool, boschloo_bool: bool, fisher_bool: bool, yates_correction_shape_bool: bool, alternative: str = 'two-sided', yates_min_sample_size: int = 40):
+def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_viability: bool, barnard_viability: bool, boschloo_viability: bool, fisher_viability: bool, yates_correction_viability: bool, alternative: str = 'two-sided'):
     """
     Conducts categorical hypothesis testing using contingency tables and appropriate statistical tests.
 
@@ -271,17 +258,15 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
     ----------
     contingency_table : pd.DataFrame
         A contingency table of the two categorical variables.
-    chi2_bool : bool
+    chi2_viability : bool
         Indicates whether chi-square tests should be considered based on the data's suitability.
-    barnard_bool, boschloo_bool, fisher_bool : bool
+    barnard_viability, boschloo_viability, fisher_viability : bool
         Indicators for the applicability of Barnard's, Boschloo's, and Fisher's exact tests, respectively.
-    yates_correction_shape_bool : bool
+    yates_correction_viability : bool
         Determines whether Yates' correction is applicable based on the contingency table's shape and sample size.
     alternative : str, optional
         Specifies the alternative hypothesis for exact tests. Options include 'two-sided', 'less', or 'greater'.
         Defaults to 'two-sided'.
-    yates_min_sample_size : int, optional
-        The minimum sample size for applying Yates' correction. Defaults to 40.
 
     Returns
     -------
@@ -290,27 +275,6 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
         statistics, p-values, and conclusions about the association between the categorical variables. The dictionary
         also contains specific details about the application of Yates' correction and the chosen alternative hypothesis
         for exact tests.
-
-    Examples
-    --------
-    # Example DataFrame creation for illustration
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> df = pd.DataFrame({
-    ...     'Variable1': np.random.choice(['Type A', 'Type B'], size=100),
-    ...     'Variable2': np.random.choice(['Outcome 1', 'Outcome 2'], size=100),
-    ... })
-    >>> contingency_table = pd.crosstab(df['Variable1'], df['Variable2'])
-    >>> results = predictor_core_categorical(
-    ...     contingency_table,
-    ...     chi2_bool=True,
-    ...     barnard_bool=True,
-    ...     boschloo_bool=True,
-    ...     fisher_bool=True,
-    ...     yates_correction_shape_bool=True,
-    ...     alternative='two-sided',
-    ...     yates_min_sample_size=40
-    ... )
     """
 
     # to avoid unnecessary parameter inputs use contingency_table object
@@ -324,8 +288,8 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
     # define output object
     output_info = {}
 
-    if chi2_bool:
-        if yates_correction_shape_bool and sample_size <= yates_min_sample_size:
+    if chi2_viability:
+        if yates_correction_viability:
             stat, p_val, dof, expected_frequencies = chi2_contingency(contingency_table, correction=True)
             test_name = f"Chi-square test (with Yates' Correction)"
             chi2_tip = f"\n\n☻ Tip: The Chi-square test of independence with Yates' Correction is used for 2x2 contingency tables with small sample sizes. Yates' Correction makes the test more conservative, reducing the Type I error rate by adjusting for the continuity of the chi-squared distribution. This correction is typically applied when sample sizes are small (often suggested for total sample sizes less than about 40), aiming to avoid overestimation of statistical significance."
@@ -340,7 +304,7 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
             chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'yates_correction': yates_correction_shape_bool, 'tip': chi2_tip, 'test_name': test_name}
             output_info['chi2_contingency'] = chi2_output_info
     else:
-        if barnard_bool:
+        if barnard_viability:
             barnard_test = barnard_exact(contingency_table, alternative=alternative.lower())
             barnard_stat = barnard_test.statistic
             barnard_p_val = barnard_test.pvalue
@@ -357,7 +321,7 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
             bernard_output_info = {'stat': barnard_stat, 'p_val': barnard_p_val, 'conclusion': bernard_conclusion, 'alternative': alternative.lower(), 'tip': bernard_tip, 'test_name': bernard_test_name}
             output_info['barnard_exact'] = bernard_output_info
 
-        if boschloo_bool:
+        if boschloo_viability:
             boschloo_test = boschloo_exact(contingency_table, alternative=alternative.lower())
             boschloo_stat = boschloo_test.statistic
             boschloo_p_val = boschloo_test.pvalue
@@ -374,7 +338,7 @@ def predictor_core_categorical(contingency_table: pd.DataFrame, chi2_bool: bool,
             boschloo_output_info = {'stat': boschloo_stat, 'p_val': boschloo_p_val, 'conclusion': boschloo_conclusion, 'alternative': alternative.lower(), 'tip': boschloo_tip, 'test_name': boschloo_test_name}
             output_info['boschloo_exact'] = boschloo_output_info
 
-        if fisher_bool:
+        if fisher_viability:
             fisher_test = fisher_exact(contingency_table, alternative=alternative.lower())
             fisher_stat = fisher_test[0]
             fisher_p_val = fisher_test[1]
@@ -573,12 +537,14 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
         output_info = predictor_core_numerical(df, target_variable, grouping_variable, normality_bool, equal_variance_bool)
         return output_info
     elif hypothesis_testing == 'categorical':
+        # create contingency table
+        contingency_table = pd.crosstab(df[categorical_variable1], df[categorical_variable2])
+
         # evaluate test criteria
-        chi2_bool, contingency_table = evaluate_frequencies(df, categorical_variable1, categorical_variable2)
-        barnard_bool, boschloo_bool, fisher_bool, yates_correction_shape_bool = evaluate_shape(contingency_table)
+        chi2_viability, yates_correction_viability, barnard_viability, boschloo_viability, fisher_viability = evaluate_contingency_table(contingency_table, min_sample_size_yates=yates_min_sample_size, pipeline=True, quiet=True)
 
         # perform hypothesis testing
-        output_info = predictor_core_categorical(contingency_table, chi2_bool, barnard_bool, boschloo_bool, fisher_bool, yates_correction_shape_bool, alternative=exact_tests_alternative, yates_min_sample_size=yates_min_sample_size)
+        output_info = predictor_core_categorical(contingency_table, chi2_viability, barnard_viability, boschloo_viability, fisher_viability, yates_correction_viability, alternative=exact_tests_alternative)
         return output_info
 
 
