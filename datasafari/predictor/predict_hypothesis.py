@@ -424,7 +424,43 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
     >>> df_small = df.sample(20) # Smaller sample for demonstration
     >>> output_exact_tests = predict_hypothesis(df_small, 'Category', 'Group', exact_tests_alternative='two-sided')
     """
+    # Error Handling
+    # TypeErrors
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("predict_hypothesis(): The 'df' parameter must be a pandas DataFrame.")
 
+    if not isinstance(var1, str) or not isinstance(var2, str):
+        raise TypeError("predict_hypothesis(): The 'var1' and 'var2' parameters must be strings.")
+
+    if not isinstance(normality_method, str):
+        raise TypeError("predict_hypothesis(): The 'normality_method' parameter must be a string.")
+
+    if not isinstance(variance_method, str):
+        raise TypeError("predict_hypothesis(): The 'variance_method' parameter must be a string.")
+
+    if not isinstance(exact_tests_alternative, str):
+        raise TypeError("predict_hypothesis(): The 'exact_tests_alternative' parameter must be a string.")
+
+    if not isinstance(yates_min_sample_size, int):
+        raise TypeError("predict_hypothesis(): The 'yates_min_sample_size' parameter must be an integer.")
+
+    # ValueErrors
+    valid_normality_methods = ['shapiro', 'anderson', 'normaltest', 'lilliefors', 'consensus']
+    if normality_method.lower() not in valid_normality_methods:
+        raise ValueError(f"predict_hypothesis(): Invalid 'normality_method' value. Expected one of {valid_normality_methods}, got '{normality_method}'.")
+
+    valid_variance_methods = ['levene', 'bartlett', 'fligner', 'consensus']
+    if variance_method.lower() not in valid_variance_methods:
+        raise ValueError(f"predict_hypothesis(): Invalid 'variance_method' value. Expected one of {valid_variance_methods}, got '{variance_method}'.")
+
+    valid_alternatives = ['two-sided', 'less', 'greater']
+    if exact_tests_alternative.lower() not in valid_alternatives:
+        raise ValueError(f"predict_hypothesis(): Invalid 'exact_tests_alternative' value. Expected one of {valid_alternatives}, got '{exact_tests_alternative}'.")
+
+    if yates_min_sample_size < 1:
+        raise ValueError("predict_hypothesis(): The 'yates_min_sample_size' must be at least 1.")
+
+    # Main Function
     # determine appropriate testing procedure and variable interpretation
     data_types = evaluate_dtype(df, [var1, var2])
 
@@ -455,8 +491,8 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
     # perform appropriate hypothesis testing process
     if hypothesis_testing == 'numerical':
         # evaluate test assumptions
-        normality_bool = evaluate_normality(df, target_variable, grouping_variable, method=normality_method, pipeline=True)
-        equal_variance_bool = evaluate_variance(df, target_variable, grouping_variable, normality_info=normality_bool, method=variance_method, pipeline=True)
+        normality_bool = evaluate_normality(df, target_variable, grouping_variable, method=normality_method.lower(), pipeline=True)
+        equal_variance_bool = evaluate_variance(df, target_variable, grouping_variable, normality_info=normality_bool, method=variance_method.lower(), pipeline=True)
 
         # perform hypothesis testing
         output_info = predictor_core_n(df, target_variable, grouping_variable, normality_bool, equal_variance_bool)
@@ -469,7 +505,7 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
         chi2_viability, yates_correction_viability, barnard_viability, boschloo_viability, fisher_viability = evaluate_contingency_table(contingency_table, min_sample_size_yates=yates_min_sample_size, pipeline=True, quiet=True)
 
         # perform hypothesis testing
-        output_info = predictor_core_c(contingency_table, chi2_viability, barnard_viability, boschloo_viability, fisher_viability, yates_correction_viability, alternative=exact_tests_alternative)
+        output_info = predictor_core_c(contingency_table, chi2_viability, barnard_viability, boschloo_viability, fisher_viability, yates_correction_viability, alternative=exact_tests_alternative.lower())
         return output_info
 
 
