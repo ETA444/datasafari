@@ -206,14 +206,14 @@ def predictor_core_c(contingency_table: pd.DataFrame, chi2_viability: bool, barn
             test_name = f"Chi-square test (with Yates' Correction)"
             chi2_tip = f"\n\n☻ Tip: The Chi-square test of independence with Yates' Correction is used for 2x2 contingency tables with small sample sizes. Yates' Correction makes the test more conservative, reducing the Type I error rate by adjusting for the continuity of the chi-squared distribution. This correction is typically applied when sample sizes are small (often suggested for total sample sizes less than about 40), aiming to avoid overestimation of statistical significance."
             conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})."
-            chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'yates_correction': yates_correction_shape_bool, 'tip': chi2_tip, 'test_name': test_name}
+            chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'yates_correction': yates_correction_viability, 'tip': chi2_tip, 'test_name': test_name}
             output_info['chi2_contingency'] = chi2_output_info
         else:
             stat, p_val, dof, expected_frequencies = chi2_contingency(contingency_table, correction=False)
             test_name = f"Chi-square test (without Yates' Correction)"
             chi2_tip = f"\n\n☻ Tip: The Chi-square test of independence without Yates' Correction is preferred when analyzing larger contingency tables or when sample sizes are sufficiently large, even for 2x2 tables (often suggested for total sample sizes greater than 40). Removing Yates' Correction can increase the test's power by not artificially adjusting for continuity, making it more sensitive to detect genuine associations between variables in settings where the assumptions of the chi-squared test are met."
             conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})."
-            chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'yates_correction': yates_correction_shape_bool, 'tip': chi2_tip, 'test_name': test_name}
+            chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'yates_correction': yates_correction_viability, 'tip': chi2_tip, 'test_name': test_name}
             output_info['chi2_contingency'] = chi2_output_info
     else:
         if barnard_viability:
@@ -462,7 +462,7 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
 
     # Main Function
     # determine appropriate testing procedure and variable interpretation
-    data_types = evaluate_dtype(df, [var1, var2])
+    data_types = evaluate_dtype(df, col_names=[var1, var2], output='dict')
 
     if data_types[var1] == 'categorical' and data_types[var2] == 'numerical':
         hypothesis_testing = 'numerical'
@@ -487,6 +487,8 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
         print(f"< INITIALIZING predict_hypothesis() >")
         print(f"Performing {hypothesis_testing} hypothesis testing with:\n")
         print(f"  ➡ Categorical variable 1: '{categorical_variable1}'\n  ➡ Categorical variable 2: '{categorical_variable2}'\n\n")
+    else:
+        raise ValueError(f"predict_hypothesis(): Both of the provided variables are numerical.\n - To do numerical hypothesis testing, provide a numerical variable (target variable) and a categorical variable (grouping variable).\n - To do categorical hypothesis testing, provide two categorical variables.")
 
     # perform appropriate hypothesis testing process
     if hypothesis_testing == 'numerical':
@@ -507,22 +509,3 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
         # perform hypothesis testing
         output_info = predictor_core_c(contingency_table, chi2_viability, barnard_viability, boschloo_viability, fisher_viability, yates_correction_viability, alternative=exact_tests_alternative.lower())
         return output_info
-
-
-# smoke tests
-
-
-# create df for testing
-data = {
-    'Category1': np.random.choice(['Apple', 'Banana', 'Cherry'], size=100),
-    'Category2': np.random.choice(['Yes', 'No'], size=100),
-    'Category3': np.random.choice(['Low', 'Medium', 'High'], size=100),
-    'Category4': np.random.choice(['Short', 'Tall'], size=100),
-    'Feature1': np.random.normal(0, 1, 100),
-    'Feature2': np.random.exponential(1, 100),
-    'Feature3': np.random.randint(1, 100, 100)
-}
-
-test_df = pd.DataFrame(data)
-
-output_info = predict_hypothesis(test_df, 'Category1', 'Category2')
