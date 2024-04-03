@@ -340,6 +340,19 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
             - 'equal_variance': A boolean that indicates whether the data were found to have equal variances across groups.
             - 'tip': Helpful insights or considerations regarding the test's application or interpretation.
 
+    Raises
+    ------
+    TypeError
+        - If `df` is not a pandas DataFrame.
+        - If `var1` or `var2` is not a string.
+        - If `normality_method`, `variance_method`, or `exact_tests_alternative` is not a string.
+        - If `yates_min_sample_size` is not an integer.
+    ValueError
+        - If `normality_method` is not one of the valid options: 'shapiro', 'anderson', 'normaltest', 'lilliefors', 'consensus'.
+        - If `variance_method` is not one of the valid options: 'levene', 'bartlett', 'fligner', 'consensus'.
+        - If `exact_tests_alternative` is not one of the valid options: 'two-sided', 'less', 'greater'.
+        - If `yates_min_sample_size` is less than 1.
+
     Notes
     -----
     `predict_hypothesis` is engineered to facilitate an intuitive yet powerful entry into hypothesis testing. Here’s a deeper look into its operational logic:
