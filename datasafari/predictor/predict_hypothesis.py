@@ -160,6 +160,35 @@ def predictor_core_c(contingency_table: pd.DataFrame, chi2_viability: bool, barn
         for exact tests.
     """
 
+    # Error Handling
+    # TypeErrors
+    if not isinstance(contingency_table, pd.DataFrame):
+        raise TypeError("predictor_core_c(): The 'contingency_table' parameter must be a pandas DataFrame.")
+
+    if not isinstance(chi2_viability, bool):
+        raise TypeError("predictor_core_c(): The 'chi2_viability' parameter must be a boolean.")
+
+    if not isinstance(barnard_viability, bool):
+        raise TypeError("predictor_core_c(): The 'barnard_viability' parameter must be a boolean.")
+
+    if not isinstance(boschloo_viability, bool):
+        raise TypeError("predictor_core_c(): The 'boschloo_viability' parameter must be a boolean.")
+
+    if not isinstance(fisher_viability, bool):
+        raise TypeError("predictor_core_c(): The 'fisher_viability' parameter must be a boolean.")
+
+    if not isinstance(yates_correction_viability, bool):
+        raise TypeError("predictor_core_c(): The 'yates_correction_viability' parameter must be a boolean.")
+
+    if not isinstance(alternative, str):
+        raise TypeError("predictor_core_c(): The 'alternative' parameter must be a string.")
+
+    # ValueErrors
+    valid_alternatives = ['two-sided', 'less', 'greater']
+    if alternative not in valid_alternatives:
+        raise ValueError(f"predictor_core_c(): Invalid 'alternative' value. Expected one of {valid_alternatives}, got '{alternative}'.")
+
+    # Main Function
     # to avoid unnecessary parameter inputs use contingency_table object
     categorical_variable1 = contingency_table.index.name
     categorical_variable2 = contingency_table.columns.name
