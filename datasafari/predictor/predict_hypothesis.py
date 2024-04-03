@@ -131,6 +131,16 @@ def evaluate_contingency_table(contingency_table: pd.DataFrame, min_sample_size_
             - If `pipeline` is False, returns a dictionary with keys as test names ('chi2_contingency', 'yates_correction', 'barnard_exact', 'boschloo_exact', 'fisher_exact') and values as boolean indicators of their viability.
             - If `pipeline` is True, returns a tuple of boolean values in the order: (chi2_viability, yates_correction_viability, barnard_viability, boschloo_viability, fisher_viability).
 
+    Raises
+    ------
+    TypeError
+        - If `contingency_table` is not a pandas DataFrame, indicating the wrong data type has been passed.
+        - If `min_sample_size_yates` is not an integer, indicating the parameter is of the wrong type.
+        - If `pipeline` or `quiet` is not a boolean, indicating incorrect data types for these parameters.
+    ValueError
+        - If the `contingency_table` is empty, indicating that there's no data to evaluate.
+        - If `min_sample_size_yates` is not a positive integer, indicating an invalid parameter value.
+
     Examples
     --------
     >>> import pandas as pd
@@ -147,7 +157,28 @@ def evaluate_contingency_table(contingency_table: pd.DataFrame, min_sample_size_
     >>> if chi2:
     >>>     # ...
     """
+    # Error Handling
+    # TypeErrors
+    if not isinstance(contingency_table, pd.DataFrame):
+        raise TypeError("evaluate_contingency_table(): The 'contingency_table' parameter must be a pandas DataFrame.")
 
+    if not isinstance(min_sample_size_yates, int):
+        raise TypeError("evaluate_contingency_table(): The 'min_sample_size_yates' parameter must be an integer.")
+
+    if not isinstance(pipeline, bool):
+        raise TypeError("evaluate_contingency_table(): The 'pipeline' parameter must be a boolean.")
+
+    if not isinstance(quiet, bool):
+        raise TypeError("evaluate_contingency_table(): The 'quiet' parameter must be a boolean.")
+
+    # ValueErrors
+    if contingency_table.empty:
+        raise ValueError("evaluate_contingency_table(): The 'contingency_table' parameter must not be empty.")
+
+    if min_sample_size_yates <= 0:
+        raise ValueError("evaluate_contingency_table(): The 'min_sample_size_yates' parameter must be a positive integer.")
+
+    # Main Function
     test_viability = {}  # non-pipeline output
 
     # compute objects for checks
