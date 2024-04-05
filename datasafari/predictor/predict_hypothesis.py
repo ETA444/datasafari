@@ -11,7 +11,7 @@ from datasafari.evaluator import (
 
 
 # Hypothesis Predictor Cores
-def predictor_core_n(df: pd.DataFrame, target_variable: str, grouping_variable: str, normality_bool: bool, equal_variances_bool: bool):
+def hypothesis_predictor_core_n(df: pd.DataFrame, target_variable: str, grouping_variable: str, normality_bool: bool, equal_variances_bool: bool):
     """
     Conducts hypothesis testing on numerical data, choosing appropriate tests based on data characteristics.
 
@@ -119,7 +119,7 @@ def predictor_core_n(df: pd.DataFrame, target_variable: str, grouping_variable: 
     return output_info
 
 
-def predictor_core_c(contingency_table: pd.DataFrame, chi2_viability: bool, barnard_viability: bool, boschloo_viability: bool, fisher_viability: bool, yates_correction_viability: bool, alternative: str = 'two-sided'):
+def hypothesis_predictor_core_c(contingency_table: pd.DataFrame, chi2_viability: bool, barnard_viability: bool, boschloo_viability: bool, fisher_viability: bool, yates_correction_viability: bool, alternative: str = 'two-sided'):
     """
     Conducts categorical hypothesis testing using contingency tables and appropriate statistical tests.
 
@@ -497,7 +497,7 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
         equal_variance_bool = evaluate_variance(df, target_variable, grouping_variable, normality_info=normality_bool, method=variance_method.lower(), pipeline=True)
 
         # perform hypothesis testing
-        output_info = predictor_core_n(df, target_variable, grouping_variable, normality_bool, equal_variance_bool)
+        output_info = hypothesis_predictor_core_n(df, target_variable, grouping_variable, normality_bool, equal_variance_bool)
         return output_info
     elif hypothesis_testing == 'categorical':
         # create contingency table
@@ -507,5 +507,5 @@ def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method:
         chi2_viability, yates_correction_viability, barnard_viability, boschloo_viability, fisher_viability = evaluate_contingency_table(contingency_table, min_sample_size_yates=yates_min_sample_size, pipeline=True, quiet=True)
 
         # perform hypothesis testing
-        output_info = predictor_core_c(contingency_table, chi2_viability, barnard_viability, boschloo_viability, fisher_viability, yates_correction_viability, alternative=exact_tests_alternative.lower())
+        output_info = hypothesis_predictor_core_c(contingency_table, chi2_viability, barnard_viability, boschloo_viability, fisher_viability, yates_correction_viability, alternative=exact_tests_alternative.lower())
         return output_info
