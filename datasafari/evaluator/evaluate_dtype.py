@@ -135,5 +135,11 @@ def evaluate_dtype(df: pd.DataFrame, col_names: list, max_unique_values_ratio: f
         numerical_type_list = [dtype == 'numerical' for dtype in data_type_dictionary.values()]
         return numerical_type_list
     elif output.lower() == 'list_c':
-        categorical_type_list = [dtype.startswith('categorical') for dtype in data_type_dictionary.values()]
+        categorical_type_list = [dtype == 'categorical' for dtype in data_type_dictionary.values()]
         return categorical_type_list
+    elif output.lower() == 'list_d':
+        datetime_type_list = [dtype == 'datetime' for dtype in data_type_dictionary.values()]
+        return datetime_type_list
+    elif output.lower() == 'list_t':
+        text_type_list = [dtype == 'text' for dtype in data_type_dictionary.values()]
+        return text_type_list
