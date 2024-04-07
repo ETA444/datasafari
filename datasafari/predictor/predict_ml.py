@@ -49,6 +49,55 @@ def data_preprocessing_core(
 ):
     """
     """
+    # Error Handling
+    # TypeErrors
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("data_preprocessing_core(): The 'df' parameter must be a pandas DataFrame.")
+
+    if not isinstance(x_cols, list) or not all(isinstance(col, str) for col in x_cols):
+        raise TypeError("data_preprocessing_core(): The 'x_cols' parameter must be a list of strings representing column names.")
+
+    if not isinstance(y_col, str):
+        raise TypeError("data_preprocessing_core(): The 'y_col' parameter must be a string representing the target column name.")
+
+    if not isinstance(data_state, str) or data_state.lower() not in ['unprocessed', 'preprocessed']:
+        raise TypeError("data_preprocessing_core(): The 'data_state' parameter must be a string and one of ['unprocessed', 'preprocessed'].")
+
+    if not isinstance(test_size, float) or not 0 < test_size < 1:
+        raise TypeError("data_preprocessing_core(): The 'test_size' parameter must be a float between 0 and 1.")
+
+    if not isinstance(random_state, int):
+        raise TypeError("data_preprocessing_core(): The 'random_state' parameter must be an integer.")
+
+    # Checking for the essential methods in imputers, scalers, encoders, and vectorizers
+    if not (hasattr(numeric_imputer, 'fit_transform') or (hasattr(numeric_imputer, 'fit') and hasattr(numeric_imputer, 'transform'))):
+        raise TypeError("data_preprocessing_core(): The 'numeric_imputer' must support 'fit_transform' or both 'fit' and 'transform' methods.")
+
+    if not hasattr(numeric_scaler, 'fit_transform'):
+        raise TypeError("data_preprocessing_core(): The 'numeric_scaler' must support 'fit_transform' method.")
+
+    if not (hasattr(categorical_imputer, 'fit_transform') or (hasattr(categorical_imputer, 'fit') and hasattr(categorical_imputer, 'transform'))):
+        raise TypeError("data_preprocessing_core(): The 'categorical_imputer' must support 'fit_transform' or both 'fit' and 'transform' methods.")
+
+    if not hasattr(categorical_encoder, 'fit_transform'):
+        raise TypeError("data_preprocessing_core(): The 'categorical_encoder' must support 'fit_transform' method.")
+
+    if not hasattr(text_vectorizer, 'fit_transform'):
+        raise TypeError("data_preprocessing_core(): The 'text_vectorizer' must support 'fit_transform' method.")
+
+    if not callable(datetime_transformer):
+        raise TypeError("data_preprocessing_core(): The 'datetime_transformer' must be callable or support a 'transform' method.")
+
+    # ValueErrors
+    if y_col not in df.columns:
+        raise ValueError(f"data_preprocessing_core(): The specified target column '{y_col}' is not present in the DataFrame.")
+
+    missing_cols = set(x_cols) - set(df.columns)
+    if missing_cols:
+        raise ValueError(f"data_preprocessing_core(): The following feature columns are not present in the DataFrame: {', '.join(missing_cols)}")
+
+
+    # Main Functionality
     # split data
     x_train, x_test, y_train, y_test = train_test_split(df[x_cols], df[y_col], test_size=test_size, random_state=random_state)
 
