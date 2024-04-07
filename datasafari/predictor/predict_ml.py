@@ -48,7 +48,71 @@ def data_preprocessing_core(
         datetime_transformer=FunctionTransformer(lambda x: pd.to_datetime(x).apply(lambda x: [x.year, x.month, x.day]))
 ):
     """
+    Performs comprehensive preprocessing on a dataset containing mixed data types.
+
+    This function prepares a dataset for machine learning by handling numerical, categorical, text, and datetime data. It supports flexible imputation, scaling, encoding, and vectorization methods to cater to a wide range of preprocessing needs. The function automatically splits the data into training and test sets and applies the preprocessing steps defined by the user. It accommodates custom preprocessing steps for various data types, enhancing flexibility and control over the preprocessing pipeline.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame to preprocess.
+    x_cols : list of str
+        List of feature column names in `df` to include in the preprocessing.
+    y_col : str
+        The name of the target variable column in `df`.
+    data_state : str, optional
+        Specifies the initial state of the data ('unprocessed' or 'preprocessed'). Default is 'unprocessed'.
+    test_size : float, optional
+        Proportion of the dataset to include in the test split. Default is 0.2.
+    random_state : int, optional
+        Controls the shuffling applied to the data before applying the split. Default is 42.
+    numeric_imputer : sklearn imputer object, optional
+        The imputation transformer for handling missing values in numerical data. Default is SimpleImputer(strategy='median').
+    numeric_scaler : sklearn scaler object, optional
+        The scaling transformer for numerical data. Default is StandardScaler().
+    categorical_imputer : sklearn imputer object, optional
+        The imputation transformer for handling missing values in categorical data. Default is SimpleImputer(strategy='constant', fill_value='missing').
+    categorical_encoder : sklearn encoder object, optional
+        The encoding transformer for categorical data. Default is OneHotEncoder(handle_unknown='ignore').
+    text_vectorizer : sklearn vectorizer object, optional
+        The vectorization transformer for text data. Default is CountVectorizer().
+    datetime_transformer : callable, optional
+        The transformation operation for datetime data. Default extracts year, month, and day as separate features.
+
+    Returns
+    -------
+    x_train_processed : ndarray
+        The preprocessed training feature set.
+    x_test_processed : ndarray
+        The preprocessed test feature set.
+    y_train : Series
+        The training target variable.
+    y_test : Series
+        The test target variable.
+    task_type : str
+        The type of machine learning task inferred from the target variable ('regression' or 'classification').
+
+    Raises
+    ------
+    TypeError
+        If input types are incorrect or if any transformer does not support the required methods.
+    ValueError
+        If specified columns are not found in `df`, or if `data_state` is not one of the expected values.
+
+    Examples
+    --------
+    >>> df = pd.DataFrame({
+    ...     'Age': np.random.randint(18, 35, size=100),
+    ...     'Salary': np.random.normal(50000, 12000, size=100),
+    ...     'Department': np.random.choice(['HR', 'Tech', 'Marketing'], size=100),
+    ...     'Review': ['Good review']*50 + ['Bad review']*50,
+    ...     'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
+    ... })
+    >>> x_cols = ['Age', 'Salary', 'Department', 'Review', 'Employment Date']
+    >>> y_col = 'Salary'
+    >>> processed_data = data_preprocessing_core(df, x_cols, y_col, test_size=0.25, random_state=123)
     """
+
     # Error Handling
     # TypeErrors
     if not isinstance(df, pd.DataFrame):
@@ -95,7 +159,6 @@ def data_preprocessing_core(
     missing_cols = set(x_cols) - set(df.columns)
     if missing_cols:
         raise ValueError(f"data_preprocessing_core(): The following feature columns are not present in the DataFrame: {', '.join(missing_cols)}")
-
 
     # Main Functionality
     # split data
