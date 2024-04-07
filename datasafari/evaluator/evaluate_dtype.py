@@ -15,48 +15,50 @@ def evaluate_dtype(df: pd.DataFrame, col_names: list, max_unique_values_ratio: f
     col_names : list
         A list of column names whose data types are to be evaluated.
     max_unique_values_ratio : float, optional
-        The maximum ratio of unique values to total observations for a numerical column to be considered categorical. Default is 0.05.
+        The maximum ratio of unique values to total observations for a column to be considered categorical. Default is 0.05.
     min_unique_values : int, optional
-        The minimum number of unique values for a numerical column to be considered continuous. Columns with unique values below this threshold are considered categorical. Default is 10.
+        The minimum number of unique values for a column to be considered continuous. Columns below this threshold are categorized. Default is 10.
+    string_length_threshold : int, optional
+        The average string length threshold above which a column is classified as text data. Default is 50.
     output : str, optional
         Specifies the format of the output. Options are:
-            - 'dict': returns a dictionary with columns as keys and their determined data types ('numerical' or 'categorical') as values.
-            - 'list_n': returns a list of booleans indicating whether each column in `col_names` is numerical (True) or not (False).
-            - 'list_c': returns a list of booleans indicating whether each column in `col_names` is categorical (True) or not (False).
-        Default is 'dict'.
+        - 'dict': Returns a dictionary mapping column names to their determined data types ('numerical', 'categorical', 'text', 'datetime').
+        - 'list_n': Returns a list of booleans indicating whether each column in `col_names` is numerical (True) or not (False).
+        - 'list_c': Returns a list of booleans indicating whether each column in `col_names` is categorical (True) or not (False).
+        - 'list_d': Returns a list of booleans indicating whether each column in `col_names` is datetime (True) or not (False).
+        - 'list_t': Returns a list of booleans indicating whether each column in `col_names` is text (True) or not (False).
 
     Returns
     -------
     dict or list
-        Depending on the 'output' parameter, this function returns:
-            - A dictionary mapping column names to their determined data types ('numerical' or 'categorical').
-            - A list of booleans indicating the nature (numerical or categorical) of each column in `col_names`, according to the specified 'output' parameter.
+       Depending on the 'output' parameter, this function returns:
+           - A dictionary mapping column names to their determined data types ('numerical', 'categorical', 'text' or 'datetime').
+           - A list of booleans indicating the nature of each column in `col_names`, according to the specified 'output' parameter.
 
     Raises
     ------
     TypeError
         - If `df` is not a pandas DataFrame.
-        - If `col_names` is not a list.
-        - If elements of `col_names` are not all strings.
+        - If `col_names` is not a list or if elements of `col_names` are not all strings.
         - If `max_unique_values_ratio` is not a float or an integer.
-        - If `min_unique_values` is not an integer.
+        - If `min_unique_values`, `string_length_threshold` are not integers.
         - If `output` is not a string or does not match one of the expected output format strings ('dict', 'list_n', 'list_c').
     ValueError
         - If `max_unique_values_ratio` is outside the range [0, 1].
         - If `min_unique_values` is less than 1, as at least one unique value is needed to categorize a column.
-        - If 'col_names' list is empty.
-        - If any of the specified column names in `col_names` are not present in the DataFrame.
-        - If the `output` string does not correspond to one of the valid options ('dict', 'list_n', 'list_c'), indicating a request for an unsupported output format.
+        - If `string_length_threshold` is less than or equal to 0, indicating an invalid threshold for text data classification.
+        - If 'col_names' list is empty or any specified column names in `col_names` are not present in the DataFrame.
+        - If the `output` string does not correspond to one of the valid options ('dict', 'list_n', 'list_c').
 
     Examples
     --------
     >>> import pandas as pd
     >>> import numpy as np
     >>> df = pd.DataFrame({
-            'Age': np.random.randint(18, 35, 100),
-            'Income': np.random.normal(50000, 15000, 100),
-            'Department': np.random.choice(['HR', 'Tech', 'Admin'], 100)
-        })
+           'Age': np.random.randint(18, 35, 100),
+           'Income': np.random.normal(50000, 15000, 100),
+           'Department': np.random.choice(['HR', 'Tech', 'Admin'], 100)
+       })
     >>> data_type_dict = evaluate_dtype(df, ['Age', 'Income', 'Department'], output='dict')
     >>> numerical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department'], output='list_n')
     >>> categorical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department'], output='list_c')
