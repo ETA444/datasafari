@@ -22,58 +22,79 @@ So in summary currently it seems the functionality will be:
 (or better names lol we'll see)
 
 """
-from datasafari.transformer.transform_cat import transform_cat
-from datasafari.transformer.transform_cat import transform_cat
 from datasafari.evaluator.evaluate_dtype import evaluate_dtype
+import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from sklearn.impute import SimpleImputer, KNNImputer
-from datasafari.evaluator import evaluate_dtype
-import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.preprocessing import FunctionTransformer
 
 
-def data_preprocessing_core(df: pd.DataFrame, x_cols: list, y_col: str, data_state: str = 'unprocessed', test_size: float = 0.2, random_state: int = 42, imputer=SimpleImputer(strategy='median'), scaler=StandardScaler(), categorical_na_fill_value: str = 'missing'):
+def data_preprocessing_core(
+        df: pd.DataFrame,
+        x_cols: list,
+        y_col: str,
+        data_state: str = 'unprocessed',
+        test_size: float = 0.2,
+        random_state: int = 42,
+        numeric_imputer=SimpleImputer(strategy='median'),
+        numeric_scaler=StandardScaler(),
+        categorical_imputer=SimpleImputer(strategy='constant', fill_value='missing'),
+        categorical_encoder=OneHotEncoder(handle_unknown='ignore'),
+        text_vectorizer=CountVectorizer(),
+        datetime_transformer=FunctionTransformer(lambda x: pd.to_datetime(x).apply(lambda x: [x.year, x.month, x.day]))
+):
     """
     """
-    # Split the data
+    # split data
     x_train, x_test, y_train, y_test = train_test_split(df[x_cols], df[y_col], test_size=test_size, random_state=random_state)
 
-    # Define task type used later in modeling
+    # define task type based on the target variable data type
     y_dtype = evaluate_dtype(df, [y_col], output='dict')[y_col]
     task_type = 'regression' if y_dtype == 'numerical' else 'classification'
 
     if data_state.lower() == 'unprocessed':
-        # Evaluate data types to determine preprocessing needs
+        # evaluate data types to determine preprocessing needs
         data_types = evaluate_dtype(df, x_cols, output='dict')
 
         numeric_features = [col for col, dtype in data_types.items() if dtype == 'numerical']
         categorical_features = [col for col, dtype in data_types.items() if dtype == 'categorical']
+        text_features = [col for col, dtype in data_types.items() if dtype == 'text']
+        datetime_features = [col for col, dtype in data_types.items() if dtype == 'datetime']
 
-        # Define preprocessing for numerical columns
+        # preprocessing for numerical columns
         numeric_transformer = Pipeline(steps=[
-            ('imputer', imputer),
-            ('scaler', scaler)
+            ('imputer', numeric_imputer),
+            ('scaler', numeric_scaler)
         ])
 
-        # Define preprocessing for categorical columns
+        # preprocessing for categorical columns
         categorical_transformer = Pipeline(steps=[
-            ('imputer', SimpleImputer(strategy='constant', fill_value=categorical_na_fill_value)),
-            ('onehot', OneHotEncoder(handle_unknown='ignore'))
+            ('imputer', categorical_imputer),
+            ('encoder', categorical_encoder)
         ])
 
-        # Combine preprocessing steps
+        # preprocessing for text columns
+        text_transformer = Pipeline(steps=[
+            ('vectorizer', text_vectorizer)
+        ])
+
+        # combine preprocessing steps
         preprocessor = ColumnTransformer(transformers=[
             ('num', numeric_transformer, numeric_features),
-            ('cat', categorical_transformer, categorical_features)
-        ])
+            ('cat', categorical_transformer, categorical_features),
+            ('text', text_transformer, text_features),
+            ('datetime', datetime_transformer, datetime_features)
+        ], remainder='passthrough')  # handle columns not specified in transformers
 
-        # Apply preprocessing
+        # apply preprocessing
         x_train_processed = preprocessor.fit_transform(x_train)
         x_test_processed = preprocessor.transform(x_test)
 
         return x_train_processed, x_test_processed, y_train, y_test, task_type
     else:
-        # If data is already preprocessed, simply return the splits
+        # if data is already preprocessed, simply return the splits and task type
         return x_train, x_test, y_train, y_test, task_type
