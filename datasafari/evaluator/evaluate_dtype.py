@@ -80,8 +80,11 @@ def evaluate_dtype(df: pd.DataFrame, col_names: list, max_unique_values_ratio: f
     if not isinstance(min_unique_values, int):
         raise TypeError("evaluate_dtype(): The 'min_unique_values' must be an integer.")
 
+    if not isinstance(string_length_threshold, int):
+        raise TypeError("evaluate_dtype(): The 'string_length_threshold' must be an integer.")
+
     if not isinstance(output, str):
-        raise TypeError("evaluate_dtype(): The 'output' parameter must be a string. Possible values are: 'dict', 'list_n' and 'list_c'.")
+        raise TypeError("evaluate_dtype(): The 'output' parameter must be a string. Possible values are: 'dict', 'list_n', and 'list_c'.")
 
     # ValueErrors
     if max_unique_values_ratio < 0 or max_unique_values_ratio > 1:
@@ -89,6 +92,9 @@ def evaluate_dtype(df: pd.DataFrame, col_names: list, max_unique_values_ratio: f
 
     if min_unique_values < 1:
         raise ValueError("evaluate_dtype(): The 'min_unique_values' must be at least 1.")
+
+    if string_length_threshold <= 0:
+        raise ValueError("evaluate_dtype(): The 'string_length_threshold' must be greater than 0.")
 
     # Check if list has any members
     if len(col_names) == 0:
