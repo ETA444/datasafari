@@ -58,7 +58,7 @@ def data_preprocessing_core(
         categorical_imputer=SimpleImputer(strategy='constant', fill_value='missing'),
         categorical_encoder=OneHotEncoder(handle_unknown='ignore'),
         text_vectorizer=CountVectorizer(),
-        datetime_transformer=FunctionTransformer(lambda x: pd.to_datetime(x).apply(lambda x: [x.year, x.month, x.day]))
+        datetime_transformer=FunctionTransformer(datetime_feature_extractor, validate=False)
 ):
     """
     Performs comprehensive preprocessing on a dataset containing mixed data types.
@@ -162,7 +162,7 @@ def data_preprocessing_core(
     if not hasattr(text_vectorizer, 'fit_transform'):
         raise TypeError("data_preprocessing_core(): The 'text_vectorizer' must support 'fit_transform' method.")
 
-    if not callable(datetime_transformer):
+    if not hasattr(datetime_transformer, 'fit_transform'):
         raise TypeError("data_preprocessing_core(): The 'datetime_transformer' must be callable or support a 'transform' method.")
 
     # ValueErrors
@@ -219,7 +219,30 @@ def data_preprocessing_core(
         x_train_processed = preprocessor.fit_transform(x_train)
         x_test_processed = preprocessor.transform(x_test)
 
+        # define transformer names for reporting
+        numeric_processor_name = type(numeric_imputer).__name__ + " & " + type(numeric_scaler).__name__
+        categorical_processor_name = type(categorical_imputer).__name__ + " & " + type(categorical_encoder).__name__
+        text_processor_name = type(text_vectorizer).__name__
+        datetime_processor_name = "Custom DateTime Processing"
+
+        # construct console output
+        print(f"< PREPROCESSING DATA REPORT >\n ☻ Tip: You can customize the processors using appropriate parameters, please refer to documentation. \n")
+        print(f"  ➡ Numerical features processed [using {numeric_processor_name}]: {', '.join(numeric_features) if numeric_features else 'None'}\n")
+        print(f"  ➡ Categorical features processed [using {categorical_processor_name}]: {', '.join(categorical_features) if categorical_features else 'None'}\n")
+        print(f"  ➡ Text features processed [using {text_processor_name}]: {', '.join(text_features) if text_features else 'None'}\n")
+        print(f"  ➡ Datetime features processed [using {datetime_processor_name}]: {', '.join(datetime_features) if datetime_features else 'None'}\n")
+
+        # define unprocessed features and output if any
+        processed_features = set(numeric_features + categorical_features + text_features + datetime_features)
+        all_features = set(x_cols)
+        unprocessed_features = list(all_features - processed_features)
+        if unprocessed_features:
+            print(f"  ✘ Unprocessed features: {', '.join(unprocessed_features)}\n")
+        else:
+            pass
+
         return x_train_processed, x_test_processed, y_train, y_test, task_type
     else:
-        # if data is already preprocessed, simply return the splits and task type
+        # construct console output
+        print(f"< PREPROCESSING DATA REPORT >\n  ➡ No preprocessing was done as the user indicated the data had already been preprocessed prior to using predict_ml().\n     [parameter: data_state = '{data_state}']\n")
         return x_train, x_test, y_train, y_test, task_type
