@@ -50,7 +50,7 @@ def data_preprocessing_core(
         df: pd.DataFrame,
         x_cols: list,
         y_col: str,
-        data_state: str = 'unprocessed',
+        data_state: str,
         test_size: float = 0.2,
         random_state: int = 42,
         numeric_imputer=SimpleImputer(strategy='median'),
@@ -73,7 +73,7 @@ def data_preprocessing_core(
         List of feature column names in `df` to include in the preprocessing.
     y_col : str
         The name of the target variable column in `df`.
-    data_state : str, optional
+    data_state : str
         Specifies the initial state of the data ('unprocessed' or 'preprocessed'). Default is 'unprocessed'.
     test_size : float, optional
         Proportion of the dataset to include in the test split. Default is 0.2.
@@ -137,7 +137,7 @@ def data_preprocessing_core(
     if not isinstance(y_col, str):
         raise TypeError("data_preprocessing_core(): The 'y_col' parameter must be a string representing the target column name.")
 
-    if not isinstance(data_state, str) or data_state.lower() not in ['unprocessed', 'preprocessed']:
+    if not isinstance(data_state, str):
         raise TypeError("data_preprocessing_core(): The 'data_state' parameter must be a string and one of ['unprocessed', 'preprocessed'].")
 
     if not isinstance(test_size, float) or not 0 < test_size < 1:
@@ -166,6 +166,9 @@ def data_preprocessing_core(
         raise TypeError("data_preprocessing_core(): The 'datetime_transformer' must be callable or support a 'transform' method.")
 
     # ValueErrors
+    if data_state.lower() not in ['unprocessed', 'preprocessed'] or None:
+        raise ValueError(f"data_preprocessing_core(): The data_state must be one of the following: \n- 'unprocessed': activates predict_ml() preprocessing capabilities.\n - 'preprocessed': user opts out of preprocessing (Warning: ensure your data is properly preprocessed for ML)")
+
     if y_col not in df.columns:
         raise ValueError(f"data_preprocessing_core(): The specified target column '{y_col}' is not present in the DataFrame.")
 
@@ -248,7 +251,7 @@ def data_preprocessing_core(
         return x_train, x_test, y_train, y_test, task_type
 
 
-# smoke tests
+# smoke test for data_preprocessing_core()
 df = pd.DataFrame({
     'Age': np.random.randint(18, 35, size=100),
     'Salary': np.random.normal(50000, 12000, size=100),
