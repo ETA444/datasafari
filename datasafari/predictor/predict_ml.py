@@ -246,3 +246,20 @@ def data_preprocessing_core(
         # construct console output
         print(f"< PREPROCESSING DATA REPORT >\n  ➡ No preprocessing was done as the user indicated the data had already been preprocessed prior to using predict_ml().\n     [parameter: data_state = '{data_state}']\n")
         return x_train, x_test, y_train, y_test, task_type
+
+
+# smoke tests
+df = pd.DataFrame({
+    'Age': np.random.randint(18, 35, size=100),
+    'Salary': np.random.normal(50000, 12000, size=100),
+    'Department': np.random.choice(['HR', 'Tech', 'Marketing'], size=100),
+    'Review': ['Good review']*50 + ['Bad review']*50,
+    'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
+})
+
+# Define columns
+x_cols = ['Age', 'Salary', 'Department', 'Review']
+y_col = 'Salary'
+
+# Preprocess the data
+x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(df, x_cols, y_col, data_state='preprocessed')
