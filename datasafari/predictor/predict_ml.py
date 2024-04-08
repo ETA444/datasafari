@@ -24,6 +24,7 @@ So in summary currently it seems the functionality will be:
 """
 from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -31,6 +32,18 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import FunctionTransformer
+
+
+def datetime_feature_extractor(df):
+    feature_df = pd.DataFrame()
+    for column in df.columns:
+        # Ensure the column is in datetime format
+        datetime_series = pd.to_datetime(df[column])
+        # Extract datetime features
+        feature_df[f"{column}_year"] = datetime_series.dt.year
+        feature_df[f"{column}_month"] = datetime_series.dt.month
+        feature_df[f"{column}_day"] = datetime_series.dt.day
+    return feature_df
 
 
 def data_preprocessing_core(
