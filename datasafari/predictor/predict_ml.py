@@ -278,9 +278,6 @@ y_col = 'Salary'
 x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(df, x_cols, y_col, data_state='unprocessed')
 
 
-
-
-
 def model_recommendation_core(x_train, y_train, task_type: str, n_top_models=3):
     models_classification = {
         'LogisticRegression': LogisticRegression(max_iter=10000),
@@ -304,18 +301,41 @@ def model_recommendation_core(x_train, y_train, task_type: str, n_top_models=3):
 
     scoring_classification = {
         'Accuracy': 'accuracy',
-        'Precision': 'precision_weighted',
-        'Recall': 'recall_weighted',
-        'F1': 'f1_weighted',
-        'AUC': 'roc_auc',
+        'Balanced Accuracy': 'balanced_accuracy',
+        'Average Precision': 'average_precision',
+        'Neg Brier Score': 'neg_brier_score',
+        'F1 (Micro)': 'f1_micro',
+        'F1 (Macro)': 'f1_macro',
+        'F1 (Weighted)': 'f1_weighted',
+        'Neg Log Loss': 'neg_log_loss',
+        'Precision (Micro)': 'precision_micro',
+        'Precision (Macro)': 'precision_macro',
+        'Precision (Weighted)': 'precision_weighted',
+        'Recall (Micro)': 'recall_micro',
+        'Recall (Macro)': 'recall_macro',
+        'Recall (Weighted)': 'recall_weighted',
+        'Jaccard (Micro)': 'jaccard_micro',
+        'Jaccard (Macro)': 'jaccard_macro',
+        'Jaccard (Weighted)': 'jaccard_weighted',
+        'ROC AUC (OVR)': 'roc_auc_ovr',
+        'ROC AUC (OVO)': 'roc_auc_ovo',
     }
 
     scoring_regression = {
-        'RMSE': 'neg_root_mean_squared_error',
-        'MSE': 'neg_mean_squared_error',
+        'EV': 'explained_variance',
+        'MaxError': 'max_error',
         'MAE': 'neg_mean_absolute_error',
+        'MSE': 'neg_mean_squared_error',
+        'RMSE': 'neg_root_mean_squared_error',
+        'MSLE': 'neg_mean_squared_log_error',
+        'RMSLE': 'neg_root_mean_squared_log_error',
+        'MedAE': 'neg_median_absolute_error',
         'R2': 'r2',
+        'MPD': 'neg_mean_poisson_deviance',
+        'MGD': 'neg_mean_gamma_deviance',
+        'MAPE': 'neg_mean_absolute_percentage_error',
     }
+
 
     if task_type == 'classification':
         models = models_classification
