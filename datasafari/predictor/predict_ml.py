@@ -32,6 +32,16 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import FunctionTransformer
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier, GradientBoostingRegressor
+from sklearn.svm import SVC, SVR
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.model_selection import cross_validate
+from sklearn.metrics import accuracy_score, mean_squared_error
+from statsmodels.regression.linear_model import OLS
+from statsmodels.discrete.discrete_model import Logit
+from statsmodels.regression.mixed_linear_model import MixedLM
 
 
 def datetime_feature_extractor(df):
@@ -265,4 +275,82 @@ x_cols = ['Age', 'Salary', 'Department', 'Review']
 y_col = 'Salary'
 
 # Preprocess the data
-x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(df, x_cols, y_col, data_state='preprocessed')
+x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(df, x_cols, y_col, data_state='unprocessed')
+
+
+
+
+
+def model_recommendation_core(x_train, y_train, task_type: str, n_top_models=3):
+    models_classification = {
+        'LogisticRegression': LogisticRegression(max_iter=10000),
+        'DecisionTreeClassifier': DecisionTreeClassifier(),
+        'RandomForestClassifier': RandomForestClassifier(),
+        'GradientBoostingClassifier': GradientBoostingClassifier(),
+        'SVC': SVC(probability=True),
+        'KNeighborsClassifier': KNeighborsClassifier(),
+    }
+
+    models_regression = {
+        'LinearRegression': LinearRegression(),
+        'Ridge': Ridge(),
+        'Lasso': Lasso(),
+        'DecisionTreeRegressor': DecisionTreeRegressor(),
+        'RandomForestRegressor': RandomForestRegressor(),
+        'GradientBoostingRegressor': GradientBoostingRegressor(),
+        'SVR': SVR(),
+        'KNeighborsRegressor': KNeighborsRegressor(),
+    }
+
+    scoring_classification = {
+        'Accuracy': 'accuracy',
+        'Precision': 'precision_weighted',
+        'Recall': 'recall_weighted',
+        'F1': 'f1_weighted',
+        'AUC': 'roc_auc',
+    }
+
+    scoring_regression = {
+        'RMSE': 'neg_root_mean_squared_error',
+        'MSE': 'neg_mean_squared_error',
+        'MAE': 'neg_mean_absolute_error',
+        'R2': 'r2',
+    }
+
+    if task_type == 'classification':
+        models = models_classification
+        scoring = scoring_classification
+    elif task_type == 'regression':
+        models = models_regression
+        scoring = scoring_regression
+
+    model_scores = {}
+    for name, model in models.items():
+        scores = cross_validate(model, x_train, y_train, cv=5, scoring=scoring)
+        model_scores[name] = {metric: np.mean(scores[f'test_{metric}']) for metric in scoring}
+
+    # Example to display the scores
+    for model, scores in model_scores.items():
+        print(f"{model}:")
+        for metric, score in scores.items():
+            print(f"  {metric}: {score:.4f}")
+        print()
+
+    # Further analysis for top model selection based on a primary metric can be added here
+    # For simplicity, this example just prints the scores
+
+    return model_scores
+
+
+inference_models_continuousDV = {
+    'OLS': OLS,
+    # Add more models as needed
+}
+
+inference_models_categoricalDV = {
+    'Logit': Logit,
+    # MixedLM can be used for more complex cases with mixed effects.
+    'MixedLM': MixedLM
+}
+
+model_scores = model_recommendation_core(x_train_processed, y_train, task_type)
