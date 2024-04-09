@@ -24,7 +24,9 @@ So in summary currently it seems the functionality will be:
 """
 from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 import pandas as pd
+from pandas import DataFrame, Series
 import numpy as np
+from typing import List, Dict, Any
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -336,8 +338,76 @@ def calculate_composite_score(scores: dict, metric_weights: dict) -> float:
     return composite_score
 
 
-def model_recommendation_core(x_train, y_train, task_type: str, priority_metrics: list = [], n_top_models: int = 3, tips_quiet: bool = True, focused_tips: bool = True):
-    """"""
+def model_recommendation_core(x_train: DataFrame | np.ndarray, y_train: Series | np.ndarray, task_type: str, priority_metrics: List[str] = [], n_top_models: int = 3, tips_quiet: bool = True, focused_tips: bool = True) -> Dict[str, Any]:
+    """
+    Recommends top N machine learning models based on composite scores derived from multiple evaluation metrics.
+
+    This function is part of a broader machine learning pipeline, designed to facilitate model selection by
+    automatically evaluating a range of models against a set of performance metrics, tailored to the specific
+    needs of the analysis.
+
+    Parameters
+    ----------
+    x_train : Union[pd.DataFrame, np.ndarray]
+        Training feature dataset.
+    y_train : Union[pd.Series, np.ndarray]
+        Training target variable.
+    task_type : str
+        Specifies the type of machine learning task: 'classification' or 'regression'.
+    priority_metrics : List[str], optional
+        List of metric names given priority in model scoring. Default is an empty list.
+    n_top_models : int, optional
+        Number of top models to recommend. Default is 3.
+    tips_quiet : bool, optional
+        If False, prints helpful tips for each prioritized metric. Default is True.
+    focused_tips : bool, optional
+        If True and `tips_quiet` is False, only prints tips for metrics in `priority_metrics`. Default is True.
+
+    Returns
+    -------
+    Dict[str, Any]
+        Dictionary of top N recommended models, keyed by model name with model object as value.
+
+    Raises
+    ------
+    TypeError
+        - If 'x_train' is not a pandas DataFrame or NumPy ndarray.
+        - If 'y_train' is not a pandas Series or NumPy ndarray.
+        - If 'priority_metrics' is not a list.
+        - If 'tips_quiet' or 'focused_tips' is not a boolean value.
+    ValueError
+        - If 'task_type' is not 'classification' or 'regression'.
+        - If 'n_top_models' is not an integer greater than 0.
+        - If 'x_train' and 'y_train' do not have the same number of rows.
+        - If 'x_train' or 'y_train' is empty.
+        - If 'priority_metrics' contains duplicate values or items not representing metric names as strings.
+        - If provided metric names in 'priority_metrics' are invalid or not supported, listing valid metric names for reference.
+        - If 'n_top_models' exceeds the number of available models for the specified 'task_type'.
+
+
+    Examples
+    --------
+    >>> from sklearn.datasets import load_iris
+    >>> from sklearn.model_selection import train_test_split
+    >>> X, y = load_iris(return_X_y=True)
+    >>> x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    >>> recommended_models = model_recommendation_core(x_train, y_train, task_type='classification', priority_metrics=['Accuracy'], n_top_models=2)
+    >>> print(list(recommended_models.keys()))
+
+    Notes
+    -----
+    The core leverages a composite score for model evaluation, which synthesizes scores across multiple metrics,
+    weighted by the specified priorities. This method enables a holistic and nuanced model comparison,
+    taking into account the multidimensional aspects of model performance.
+
+        - Priority Metrics: Assigning weights (default: 5 for prioritized metrics, 1 for others) allows users to emphasize metrics they find most relevant, affecting the composite score calculation.
+
+        - Composite Score: Calculated as a weighted average of metric scores, normalized by the total weight. This score serves as a basis for ranking models.
+
+        - Tips and Guidance: Optional tips provide insights on interpreting and leveraging different metrics, enhancing informed decision-making in model selection.
+
+        - Ensuring 'Higher is Better' Across All Metrics: For metrics where traditionally a lower score is better (e.g., RMSE), scores are transformed to align with the 'higher is better' principle used in composite score calculation. This transformation is inherent to the scoring configurations and does not require manual adjustment.
+    """
     # Meta data #
     models_classification = {
         'LogisticRegression': LogisticRegression(max_iter=10000),
