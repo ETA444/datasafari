@@ -653,6 +653,9 @@ x_train_processed, x_test_processed, y_train, y_test, task_type = data_preproces
 # recommend models - success!
 model_scores = model_recommendation_core(x_train_processed, y_train, task_type, tips_quiet=True, focused_tips=False)
 
-# TODO: Write everything in the issues < 2
+# TODO: Write everything in the issues < 4
+# TODO: docs .. < 3
+# TODO: error handling .. < 2
+# TODO: Continue pipeline (tuning) < 1
 
-# TODO: Continue pipeline (tuning) < 5
+# TODO: Develop inference core < 5
