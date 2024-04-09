@@ -285,6 +285,12 @@ def calculate_composite_score(scores, metric_weights):
     except Exception as e:
         raise ValueError(f"calculate_composite_score(): Error calculating composite score: {str(e)}")
 
+    return composite_score
+
+
+def model_recommendation_core(x_train, y_train, task_type: str, priority_metrics: list = [], n_top_models: int = 3, tips_quiet: bool = True, focused_tips: bool = True):
+    """"""
+    # Meta data #
     models_classification = {
         'LogisticRegression': LogisticRegression(max_iter=10000),
         'DecisionTreeClassifier': DecisionTreeClassifier(),
@@ -376,6 +382,60 @@ def calculate_composite_score(scores, metric_weights):
         'MAPE': "Percentage error, useful for comparative error measurement. Lower MAPE indicates better relative accuracy.",
     }
 
+    # Error handling #
+
+    # TypeErrors
+    if not isinstance(x_train, (pd.DataFrame, np.ndarray)):
+        raise TypeError("model_recommendation_core(): 'x_train' must be a pandas DataFrame or NumPy ndarray.")
+
+    if not isinstance(y_train, (pd.Series, np.ndarray)):
+        raise TypeError("model_recommendation_core(): 'y_train' must be a pandas Series or NumPy ndarray.")
+
+    if not isinstance(task_type, str) or task_type not in ['classification', 'regression']:
+        raise ValueError("model_recommendation_core(): 'task_type' must be either 'classification' or 'regression'.")
+
+    if not isinstance(priority_metrics, list):
+        raise TypeError("model_recommendation_core(): 'priority_metrics' must be a list of scoring metric names.")
+
+    if not isinstance(n_top_models, int) or n_top_models <= 0:
+        raise ValueError("model_recommendation_core(): 'n_top_models' must be an integer greater than 0.")
+
+    if not isinstance(tips_quiet, bool):
+        raise TypeError("model_recommendation_core(): 'tips_quiet' must be a boolean value.")
+
+    if not isinstance(focused_tips, bool):
+        raise TypeError("model_recommendation_core(): 'focused_tips' must be a boolean value.")
+
+    # ValueErrors
+    # validate if x_train and y_train have compatible shapes
+    if x_train.shape[0] != y_train.shape[0]:
+        raise ValueError("model_recommendation_core(): 'x_train' and 'y_train' must have the same number of rows.")
+    # ensure 'x_train' and 'y_train' are not empty
+    if x_train.size == 0:
+        raise ValueError("model_recommendation_core(): 'x_train' cannot be empty.")
+    if y_train.size == 0:
+        raise ValueError("model_recommendation_core(): 'y_train' cannot be empty.")
+
+    # ensure 'priority_metrics' does not contain duplicates
+    if len(priority_metrics) != len(set(priority_metrics)):
+        raise ValueError("model_recommendation_core(): 'priority_metrics' should not contain duplicate values.")
+    # ensure 'priority_metrics' list items are strings
+    if not all(isinstance(metric, str) for metric in priority_metrics):
+        raise ValueError("model_recommendation_core(): All items in 'priority_metrics' must be strings representing metric names.")
+    # check if provided metrics are valid and remind users of valid options
+    valid_metrics = set(scoring_classification.keys()) | set(scoring_regression.keys())
+    invalid_metrics = [metric for metric in priority_metrics if metric not in valid_metrics]
+    if invalid_metrics:
+        valid_metric_list = ", ".join(sorted(valid_metrics))
+        raise ValueError(f"model_recommendation_core(): Invalid metric(s) in 'priority_metrics': {', '.join(invalid_metrics)}.\n\nValid metrics are: {valid_metric_list}.")
+
+    # check if 'n_top_models' exceeds the number of available models for the task
+    if task_type == 'classification' and n_top_models > len(models_classification):
+        raise ValueError(f"model_recommendation_core(): 'n_top_models' cannot exceed the number of available classification models ({len(models_classification)}).")
+    if task_type == 'regression' and n_top_models > len(models_regression):
+        raise ValueError(f"model_recommendation_core(): 'n_top_models' cannot exceed the number of available regression models ({len(models_regression)}).")
+
+    # Main Function #
     if task_type == 'classification':
         models = models_classification
         scoring = scoring_classification
