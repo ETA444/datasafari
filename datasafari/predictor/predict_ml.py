@@ -64,20 +64,20 @@ def datetime_feature_extractor(df):
 
 
 def data_preprocessing_core(
-        df: pd.DataFrame,
-        x_cols: list,
+        df: DataFrame,
+        x_cols: List[str],
         y_col: str,
         data_state: str,
         test_size: float = 0.2,
         random_state: int = 42,
-        numeric_imputer=SimpleImputer(strategy='median'),
-        numeric_scaler=StandardScaler(),
-        categorical_imputer=SimpleImputer(strategy='constant', fill_value='missing'),
-        categorical_encoder=OneHotEncoder(handle_unknown='ignore'),
-        text_vectorizer=CountVectorizer(),
-        datetime_transformer=FunctionTransformer(datetime_feature_extractor, validate=False),
+        numeric_imputer: TransformerMixin = SimpleImputer(strategy='median'),
+        numeric_scaler: TransformerMixin = StandardScaler(),
+        categorical_imputer: TransformerMixin = SimpleImputer(strategy='constant', fill_value='missing'),
+        categorical_encoder: TransformerMixin = OneHotEncoder(handle_unknown='ignore'),
+        text_vectorizer: TransformerMixin = CountVectorizer(),
+        datetime_transformer: Callable[[DataFrame], DataFrame] = FunctionTransformer(datetime_feature_extractor, validate=False),
         tips_quiet: bool = False
-):
+) -> Tuple[ndarray, ndarray, Series, Series, str]:
     """
     Performs comprehensive preprocessing on a dataset containing mixed data types.
 
@@ -153,6 +153,14 @@ def data_preprocessing_core(
     >>> x_cols = ['Age', 'Salary', 'Department', 'Review', 'Employment Date']
     >>> y_col = 'Salary'
     >>> processed_data = data_preprocessing_core(df, x_cols, y_col, test_size=0.25, random_state=123)
+
+    Notes
+    -----
+    The `data_preprocessing_core` function is an integral part of the `predict_ml()` pipeline, designed to automate the preprocessing steps for machine learning tasks. It handles various data types, including numerical, categorical, text, and datetime, providing a streamlined process for preparing data for model training. This function uses Scikit-learn's transformers and custom functions to perform imputation, scaling, encoding, and vectorization, allowing users to customize these steps according to their needs.
+
+    This function supports flexible preprocessing, accommodating custom transformations through its parameters. By specifying transformers for different data types, users can adapt the preprocessing to fit their dataset's specific characteristics. The function also splits the data into training and test sets, facilitating model evaluation and selection later in the pipeline.
+
+    Designed with usability in mind, `data_preprocessing_core` includes console output options controlled by the `tips_quiet` parameter. This feature provides users with insights into the preprocessing steps taken, including information on processed features and tips for further customization.
     """
 
     # Error Handling
