@@ -362,7 +362,15 @@ def calculate_composite_score(scores: dict, metric_weights: dict) -> float:
     return composite_score
 
 
-def model_recommendation_core(x_train: DataFrame | np.ndarray, y_train: Series | np.ndarray, task_type: str, priority_metrics: List[str] = [], n_top_models: int = 3, tips_quiet: bool = True, focused_tips: bool = True) -> Dict[str, Any]:
+def model_recommendation_core(
+        x_train: DataFrame | np.ndarray,
+        y_train: Series | np.ndarray,
+        task_type: str,
+        priority_metrics: List[str] = [],
+        n_top_models: int = 3,
+        tips_quiet: bool = True,
+        focused_tips: bool = True
+) -> Dict[str, Any]:
     """
     Recommends top N machine learning models based on composite scores derived from multiple evaluation metrics.
 
