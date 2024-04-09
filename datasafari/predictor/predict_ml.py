@@ -23,23 +23,29 @@ So in summary currently it seems the functionality will be:
 
 """
 from datasafari.evaluator.evaluate_dtype import evaluate_dtype
+
+from typing import List, Dict, Any, Tuple, Callable
+
 import pandas as pd
 from pandas import DataFrame, Series
+
 import numpy as np
-from typing import List, Dict, Any
+from numpy import ndarray
+
+from sklearn.base import TransformerMixin
+from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, FunctionTransformer
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.preprocessing import FunctionTransformer
+from sklearn.compose import ColumnTransformer
+from sklearn.model_selection import cross_validate
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier, GradientBoostingRegressor
 from sklearn.svm import SVC, SVR
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
-from sklearn.model_selection import cross_validate
+
 from statsmodels.regression.linear_model import OLS
 from statsmodels.discrete.discrete_model import Logit
 from statsmodels.regression.mixed_linear_model import MixedLM
