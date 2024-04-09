@@ -263,18 +263,10 @@ def data_preprocessing_core(
         return x_train, x_test, y_train, y_test, task_type
 
 
-# smoke test for data_preprocessing_core()
-df = pd.DataFrame({
-    'Age': np.random.randint(18, 35, size=100),
-    'Salary': np.random.normal(50000, 12000, size=100),
-    'Department': np.random.choice(['HR', 'Tech', 'Marketing'], size=100),
-    'Review': ['Good review']*50 + ['Bad review']*50,
-    'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
-})
+def calculate_composite_score(scores, metric_weights):
+    composite_score = sum(score * metric_weights[metric] for metric, score in scores.items()) / sum(metric_weights.values())
+    return composite_score
 
-# Define columns
-x_cols = ['Age', 'Salary', 'Department', 'Review']
-y_col = 'Salary'
 
 # Preprocess the data
 x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(df, x_cols, y_col, data_state='unprocessed')
