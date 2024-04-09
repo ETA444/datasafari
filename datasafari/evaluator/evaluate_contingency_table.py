@@ -1,9 +1,15 @@
+from typing import Union
 import numpy as np
 import pandas as pd
 from scipy.stats.contingency import expected_freq
 
 
-def evaluate_contingency_table(contingency_table: pd.DataFrame, min_sample_size_yates: int = 40, pipeline: bool = False, quiet: bool = False):
+def evaluate_contingency_table(
+        contingency_table: pd.DataFrame,
+        min_sample_size_yates: int = 40,
+        pipeline: bool = False,
+        quiet: bool = False
+) -> Union[dict, tuple]:
     """
     Evaluates a contingency table to determine the viability of various statistical tests based on the table's characteristics.
 

@@ -1,8 +1,16 @@
+from typing import Union
 import pandas as pd
 from pandas.api.types import is_numeric_dtype, is_string_dtype, is_datetime64_any_dtype
 
 
-def evaluate_dtype(df: pd.DataFrame, col_names: list, max_unique_values_ratio: float = 0.05, min_unique_values: int = 10, string_length_threshold: int = 50, output: str = 'dict'):
+def evaluate_dtype(
+        df: pd.DataFrame,
+        col_names: list,
+        max_unique_values_ratio: float = 0.05,
+        min_unique_values: int = 10,
+        string_length_threshold: int = 50,
+        output: str = 'dict'
+) -> Union[dict, list]:
     """
     Evaluates and categorizes data types of specified columns in a DataFrame, with enhanced handling for numerical data that may functionally serve as categorical data.
 

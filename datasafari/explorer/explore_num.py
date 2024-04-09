@@ -1,3 +1,4 @@
+from typing import List, Optional
 import numpy as np
 from numpy.linalg import inv
 import pandas as pd
@@ -5,8 +6,8 @@ from scipy.stats import (
     shapiro, skew, kurtosis, anderson,  # used in 'distribution_analysis'
     chi2  # used in 'outliers_mahalanobis'
 )
-from datasafari.utils import calculate_mahalanobis, calculate_vif
-from datasafari.evaluator import evaluate_dtype
+from datasafari.utils.calculators import calculate_mahalanobis, calculate_vif
+from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 
 
 # explore_num todos 2.0 #
@@ -17,7 +18,13 @@ from datasafari.evaluator import evaluate_dtype
 
 
 # main function: explore_num
-def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all', output: str = 'print', threshold_z: int =3):
+def explore_num(
+        df: pd.DataFrame,
+        numerical_variables: List[str],
+        method: str = 'all',
+        output: str = 'print',
+        threshold_z: int = 3
+) -> Optional[str]:
     """
     Analyze numerical variables in a DataFrame for distribution characteristics, outlier detection using multiple methods (Z-score, IQR, Mahalanobis), normality tests, skewness, kurtosis, correlation analysis, and multicollinearity detection.
 
@@ -67,13 +74,6 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
         - If variables provided through 'numerical_variables' are not numerical variables.
         - If any specified variables in `numerical_variables` are not found in the DataFrame's columns.
 
-    Notes
-    -----
-    - Enhances interpretability by providing insights and conclusions based on the statistical tests and analyses conducted.
-    - Normality tests assess whether data distribution departs from a normal distribution, which is crucial for certain statistical analyses.
-    - Correlation analysis examines the strength and direction of relationships between numerical variables.
-    - Multicollinearity detection is essential for regression analysis, as high multicollinearity can invalidate the model.
-
     Examples
     --------
     # Generating a sample DataFrame for demonstration
@@ -112,6 +112,12 @@ def explore_num(df: pd.DataFrame, numerical_variables: list, method: str = 'all'
     # Applying all available analyses and printing the comprehensive results
     >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='all', output='print')
 
+    Notes
+    -----
+    - Enhances interpretability by providing insights and conclusions based on the statistical tests and analyses conducted.
+    - Normality tests assess whether data distribution departs from a normal distribution, which is crucial for certain statistical analyses.
+    - Correlation analysis examines the strength and direction of relationships between numerical variables.
+    - Multicollinearity detection is essential for regression analysis, as high multicollinearity can invalidate the model.
     """
 
     # Error Handling #

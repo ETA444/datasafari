@@ -2,7 +2,11 @@
 
 
 # filter_kwargs() used in: explore_df()
-def filter_kwargs(method, kwargs, valid_kwargs_dict):
+def filter_kwargs(
+        method: str,
+        kwargs: dict,
+        valid_kwargs_dict: dict
+) -> dict:
     """
     Filter keyword arguments (`kwargs`) to include only those that are valid
     for a specified method, based on a dictionary mapping methods to their

@@ -1,3 +1,4 @@
+from typing import List, Optional, Dict, Tuple
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import (
@@ -6,10 +7,18 @@ from sklearn.preprocessing import (
 from scipy.cluster.hierarchy import linkage, fcluster
 import Levenshtein as lev
 from category_encoders import BinaryEncoder
-from datasafari.evaluator import evaluate_dtype
+from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 
 
-def transform_cat(df: pd.DataFrame, categorical_variables: list, method: str, na_placeholder: str = 'Unknown', abbreviation_map: dict = None, ordinal_map: dict = None, target_variable: str = None):
+def transform_cat(
+        df: pd.DataFrame,
+        categorical_variables: List[str],
+        method: str,
+        na_placeholder: str = 'Unknown',
+        abbreviation_map: Optional[Dict[str, Dict[str, str]]] = None,
+        ordinal_map: Optional[Dict[str, List[str]]] = None,
+        target_variable: Optional[str] = None
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Transforms categorical variables in a DataFrame using various encoding and cleaning methods.
 

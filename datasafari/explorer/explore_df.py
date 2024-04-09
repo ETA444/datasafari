@@ -1,6 +1,7 @@
+from typing import Optional
 import pandas as pd
 import io
-from datasafari.utils import filter_kwargs
+from datasafari.utils.filters import filter_kwargs
 
 
 # dictionary for filter_kwargs: define which kwargs are valid for which method
@@ -12,7 +13,12 @@ valid_kwargs = {
 
 
 # main function: explore_df
-def explore_df(df: pd.DataFrame, method: str = 'all', output: str = 'print', **kwargs):
+def explore_df(
+        df: pd.DataFrame,
+        method: str = 'all',
+        output: str = 'print',
+        **kwargs
+) -> Optional[str]:
     """
     Explores a DataFrame using specified methods, with options for output control
     and method-specific parameters. The goal is to give you bird's eye view on your data.
@@ -54,7 +60,6 @@ def explore_df(df: pd.DataFrame, method: str = 'all', output: str = 'print', **k
         - If `df` is not a pandas DataFrame.
         - If `method` is not a string.
         - If `output` is not a string.
-
     ValueError
         - If `method` is not one of the valid options: 'na', 'desc', 'head', 'info', or 'all'.
         - If `output` is not either 'print' or 'return'.

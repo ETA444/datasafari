@@ -27,10 +27,8 @@ from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 from typing import List, Dict, Any, Tuple, Callable
 
 import pandas as pd
-from pandas import DataFrame, Series
 
 import numpy as np
-from numpy import ndarray
 
 from sklearn.base import TransformerMixin
 from sklearn.pipeline import Pipeline
@@ -51,7 +49,7 @@ from statsmodels.discrete.discrete_model import Logit
 from statsmodels.regression.mixed_linear_model import MixedLM
 
 
-def datetime_feature_extractor(df):
+def datetime_feature_extractor(df: pd.DataFrame) -> pd.DataFrame:
     feature_df = pd.DataFrame()
     for column in df.columns:
         # Ensure the column is in datetime format
@@ -64,7 +62,7 @@ def datetime_feature_extractor(df):
 
 
 def data_preprocessing_core(
-        df: DataFrame,
+        df: pd.DataFrame,
         x_cols: List[str],
         y_col: str,
         data_state: str,
@@ -77,7 +75,7 @@ def data_preprocessing_core(
         text_vectorizer: TransformerMixin = CountVectorizer(),
         datetime_transformer: Callable[[DataFrame], DataFrame] = FunctionTransformer(datetime_feature_extractor, validate=False),
         tips_quiet: bool = False
-) -> Tuple[ndarray, ndarray, Series, Series, str]:
+) -> Tuple[np.ndarray, np.ndarray, pd.Series, pd.Series, str]:
     """
     Performs comprehensive preprocessing on a dataset containing mixed data types.
 
@@ -363,8 +361,8 @@ def calculate_composite_score(scores: dict, metric_weights: dict) -> float:
 
 
 def model_recommendation_core(
-        x_train: DataFrame | np.ndarray,
-        y_train: Series | np.ndarray,
+        x_train: pd.DataFrame | np.ndarray,
+        y_train: pd.Series | np.ndarray,
         task_type: str,
         priority_metrics: List[str] = [],
         n_top_models: int = 3,
@@ -654,3 +652,7 @@ x_train_processed, x_test_processed, y_train, y_test, task_type = data_preproces
 
 # recommend models - success!
 model_scores = model_recommendation_core(x_train_processed, y_train, task_type, tips_quiet=True, focused_tips=False)
+
+# TODO: Write everything in the issues < 2
+
+# TODO: Continue pipeline (tuning) < 5

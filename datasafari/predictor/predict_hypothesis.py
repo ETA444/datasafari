@@ -11,7 +11,13 @@ from datasafari.evaluator import (
 
 
 # Hypothesis Predictor Cores
-def hypothesis_predictor_core_n(df: pd.DataFrame, target_variable: str, grouping_variable: str, normality_bool: bool, equal_variances_bool: bool):
+def hypothesis_predictor_core_n(
+        df: pd.DataFrame,
+        target_variable: str,
+        grouping_variable: str,
+        normality_bool: bool,
+        equal_variances_bool: bool
+) -> dict:
     """
     Conducts hypothesis testing on numerical data, choosing appropriate tests based on data characteristics.
 
@@ -32,6 +38,13 @@ def hypothesis_predictor_core_n(df: pd.DataFrame, target_variable: str, grouping
     equal_variances_bool : bool
         A boolean indicating if the groups have equal variances.
 
+    Returns
+    -------
+    output_info : dict
+        A dictionary containing the results of the hypothesis test, including test statistics, p-values,
+        conclusions regarding the differences between groups, the name of the test used, and the assumptions
+        tested (normality and equal variances).
+
     Raises
     ------
     TypeError
@@ -42,13 +55,6 @@ def hypothesis_predictor_core_n(df: pd.DataFrame, target_variable: str, grouping
         - If `target_variable` or `grouping_variable` is not found in the DataFrame's columns.
         - If `target_variable` is not numerical.
         - If `grouping_variable` is not categorical.
-
-    Returns
-    -------
-    output_info : dict
-        A dictionary containing the results of the hypothesis test, including test statistics, p-values,
-        conclusions regarding the differences between groups, the name of the test used, and the assumptions
-        tested (normality and equal variances).
     """
 
     # Error Handling
@@ -119,7 +125,15 @@ def hypothesis_predictor_core_n(df: pd.DataFrame, target_variable: str, grouping
     return output_info
 
 
-def hypothesis_predictor_core_c(contingency_table: pd.DataFrame, chi2_viability: bool, barnard_viability: bool, boschloo_viability: bool, fisher_viability: bool, yates_correction_viability: bool, alternative: str = 'two-sided'):
+def hypothesis_predictor_core_c(
+        contingency_table: pd.DataFrame,
+        chi2_viability: bool,
+        barnard_viability: bool,
+        boschloo_viability: bool,
+        fisher_viability: bool,
+        yates_correction_viability: bool,
+        alternative: str = 'two-sided'
+) -> dict:
     """
     Conducts categorical hypothesis testing using contingency tables and appropriate statistical tests.
 
@@ -142,6 +156,14 @@ def hypothesis_predictor_core_c(contingency_table: pd.DataFrame, chi2_viability:
         Specifies the alternative hypothesis for exact tests. Options include 'two-sided', 'less', or 'greater'.
         Defaults to 'two-sided'.
 
+    Returns
+    -------
+    output_info : dict
+        A comprehensive dictionary detailing the outcomes of the statistical tests performed, including test names,
+        statistics, p-values, and conclusions about the association between the categorical variables. The dictionary
+        also contains specific details about the application of Yates' correction and the chosen alternative hypothesis
+        for exact tests.
+
     Raises
     ------
     TypeError
@@ -150,14 +172,6 @@ def hypothesis_predictor_core_c(contingency_table: pd.DataFrame, chi2_viability:
         - If `alternative` is not a string indicating the alternative hypothesis ('two-sided', 'less', 'greater').
     ValueError
         - If the `alternative` specified does not match one of the expected values: 'two-sided', 'less', or 'greater'.
-
-    Returns
-    -------
-    output_info : dict
-        A comprehensive dictionary detailing the outcomes of the statistical tests performed, including test names,
-        statistics, p-values, and conclusions about the association between the categorical variables. The dictionary
-        also contains specific details about the application of Yates' correction and the chosen alternative hypothesis
-        for exact tests.
     """
 
     # Error Handling
@@ -277,7 +291,15 @@ def hypothesis_predictor_core_c(contingency_table: pd.DataFrame, chi2_viability:
 
 
 # Main function
-def predict_hypothesis(df: pd.DataFrame, var1: str, var2: str, normality_method: str = 'consensus', variance_method: str = 'consensus', exact_tests_alternative: str = 'two-sided', yates_min_sample_size: int = 40):
+def predict_hypothesis(
+        df: pd.DataFrame,
+        var1: str,
+        var2: str,
+        normality_method: str = 'consensus',
+        variance_method: str = 'consensus',
+        exact_tests_alternative: str = 'two-sided',
+        yates_min_sample_size: int = 40
+) -> dict:
     """
     Automatically selects and performs the appropriate hypothesis test based on input variables from a DataFrame.
     This function simplifies hypothesis testing to requiring only two variables and a DataFrame, intelligently

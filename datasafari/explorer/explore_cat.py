@@ -1,9 +1,15 @@
+from typing import List, Optional
 import pandas as pd
-from datasafari.utils import calculate_entropy
-from datasafari.evaluator import evaluate_dtype
+from datasafari.utils.calculators import calculate_entropy
+from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 
 
-def explore_cat(df: pd.DataFrame, categorical_variables: list, method: str = 'all', output: str = 'print'):
+def explore_cat(
+        df: pd.DataFrame,
+        categorical_variables: List[str],
+        method: str = 'all',
+        output: str = 'print'
+) -> Optional[str]:
     """
     Explores categorical variables within a DataFrame, providing insights through various methods. The exploration
     can yield unique values, counts and percentages of those values, and the entropy to quantify data diversity.

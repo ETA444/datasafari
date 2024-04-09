@@ -1,15 +1,19 @@
 """Module for any sort of calculators used throughout the main subpackages of DataSafari."""
 
 
+from typing import Union, Tuple
 import numpy as np
 import pandas as pd
-from numpy.linalg import inv, LinAlgError
+from numpy.linalg import inv
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.tools.tools import add_constant
 
 
 # calculate_vif() used in: explore_num()
-def calculate_vif(df, numerical_variables):
+def calculate_vif(
+        df: pd.DataFrame,
+        numerical_variables: list
+) -> pd.Series:
     """
     Calculates the Variance Inflation Factor (VIF) for each numerical variable in a DataFrame to assess multicollinearity.
 
@@ -56,7 +60,11 @@ def calculate_vif(df, numerical_variables):
 
 
 # calculate_mahalanobis() used in: explore_num()
-def calculate_mahalanobis(x, mean, inv_cov_matrix):
+def calculate_mahalanobis(
+        x: Union[np.ndarray, pd.Series],
+        mean: np.ndarray,
+        inv_cov_matrix: np.ndarray
+) -> float:
     """
     Calculate the Mahalanobis distance for an observation from a distribution.
 
@@ -118,7 +126,7 @@ def calculate_mahalanobis(x, mean, inv_cov_matrix):
 
 
 # calculate_entropy() used in: explore_cat()
-def calculate_entropy(series: pd.Series) -> (float, str):
+def calculate_entropy(series: pd.Series) -> Tuple[float, str]:
     """
     Calculate the entropy of a pandas Series (categorical variable) and provide an interpretation by comparing it to
     the maximum possible entropy for the given number of unique categories. This function quantifies the

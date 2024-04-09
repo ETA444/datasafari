@@ -1,12 +1,32 @@
+from typing import List, Optional, Tuple, Dict
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer, RobustScaler
 from scipy.stats import boxcox, yeojohnson
 from scipy.stats.mstats_basic import winsorize
-from datasafari.evaluator import evaluate_dtype
+from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 
 
-def transform_num(df: pd.DataFrame, numerical_variables: list, method: str, output_distribution: str = 'normal', n_quantiles: int = 1000, random_state: int = 444, with_centering: bool = True, quantile_range: tuple = (25.0, 75.0), power: float = None, power_map: dict = None, lower_percentile: float = 0.01, upper_percentile: float = 0.99, winsorization_map: dict = None, interaction_pairs: list = None, degree: int = None, degree_map: dict = None, bins: int = None, bin_map: dict = None):
+def transform_num(
+        df: pd.DataFrame,
+        numerical_variables: List[str],
+        method: str,
+        output_distribution: str = 'normal',
+        n_quantiles: int = 1000,
+        random_state: int = 444,
+        with_centering: bool = True,
+        quantile_range: Tuple[float, float] = (25.0, 75.0),
+        power: Optional[float] = None,
+        power_map: Optional[Dict[str, float]] = None,
+        lower_percentile: float = 0.01,
+        upper_percentile: float = 0.99,
+        winsorization_map: Optional[Dict[str, Tuple[float, float]]] = None,
+        interaction_pairs: Optional[List[Tuple[str, str]]] = None,
+        degree: Optional[int] = None,
+        degree_map: Optional[Dict[str, int]] = None,
+        bins: Optional[int] = None,
+        bin_map: Optional[Dict[str, List[float]]] = None
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Applies various numerical data transformations to improve machine learning model performance or data analysis.
 

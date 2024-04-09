@@ -1,11 +1,17 @@
+from typing import Union
 from scipy.stats import shapiro, anderson, normaltest
 from statsmodels.stats.diagnostic import lilliefors
 import pandas as pd
-import numpy as np
 from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 
 
-def evaluate_normality(df: pd.DataFrame, target_variable: str, grouping_variable: str, method: str = 'consensus', pipeline: bool = False):
+def evaluate_normality(
+        df: pd.DataFrame,
+        target_variable: str,
+        grouping_variable: str,
+        method: str = 'consensus',
+        pipeline: bool = False
+) -> Union[dict, bool]:
     """
     Evaluates the normality of a numeric variable within groups defined by a grouping variable.
 
