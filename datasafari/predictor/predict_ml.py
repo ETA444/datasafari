@@ -38,7 +38,6 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, Grad
 from sklearn.svm import SVC, SVR
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.model_selection import cross_validate
-from sklearn.metrics import accuracy_score, mean_squared_error
 from statsmodels.regression.linear_model import OLS
 from statsmodels.discrete.discrete_model import Logit
 from statsmodels.regression.mixed_linear_model import MixedLM
@@ -68,7 +67,8 @@ def data_preprocessing_core(
         categorical_imputer=SimpleImputer(strategy='constant', fill_value='missing'),
         categorical_encoder=OneHotEncoder(handle_unknown='ignore'),
         text_vectorizer=CountVectorizer(),
-        datetime_transformer=FunctionTransformer(datetime_feature_extractor, validate=False)
+        datetime_transformer=FunctionTransformer(datetime_feature_extractor, validate=False),
+        tips_quiet: bool = False
 ):
     """
     Performs comprehensive preprocessing on a dataset containing mixed data types.
@@ -101,7 +101,8 @@ def data_preprocessing_core(
         The vectorization transformer for text data. Default is CountVectorizer().
     datetime_transformer : callable, optional
         The transformation operation for datetime data. Default extracts year, month, and day as separate features.
-
+    tips_quiet : bool, optional
+        Users can turn console tips on (False) and off (True).
     Returns
     -------
     x_train_processed : ndarray
@@ -239,7 +240,8 @@ def data_preprocessing_core(
         datetime_processor_name = "Custom DateTime Processing"
 
         # construct console output
-        print(f"< PREPROCESSING DATA REPORT >\n ☻ Tip: You can customize the processors using appropriate parameters, please refer to documentation. \n")
+        print(f"< PREPROCESSING DATA REPORT >")
+        print(f" ☻ Tip: You can define your own SciKit preprocessors using the appropriate parameters, please refer to documentation. \n") if not tips_quiet else ''
         print(f"  ➡ Numerical features processed [using {numeric_processor_name}]: {', '.join(numeric_features) if numeric_features else 'None'}\n")
         print(f"  ➡ Categorical features processed [using {categorical_processor_name}]: {', '.join(categorical_features) if categorical_features else 'None'}\n")
         print(f"  ➡ Text features processed [using {text_processor_name}]: {', '.join(text_features) if text_features else 'None'}\n")
