@@ -121,9 +121,19 @@ def data_preprocessing_core(
     Raises
     ------
     TypeError
-        If input types are incorrect or if any transformer does not support the required methods.
+        - If 'df' is not a pandas DataFrame.
+        - If 'x_cols' is not a list of strings.
+        - If 'y_col' is not a string.
+        - If 'data_state' is not a string.
+        - If 'test_size' is not a float between 0 and 1.
+        - If 'random_state' is not an integer.
+        - If numeric_imputer, numeric_scaler, categorical_imputer, categorical_encoder, text_vectorizer, or datetime_transformer do not support the required interface.
     ValueError
-        If specified columns are not found in `df`, or if `data_state` is not one of the expected values.
+        - If 'data_state' is not 'unprocessed' or 'preprocessed'.
+        - If 'y_col' is not found in 'df'.
+        - If specified 'x_cols' are not present in 'df'.
+        - If 'df' does not contain enough data to split according to 'test_size'.
+
 
     Examples
     --------
