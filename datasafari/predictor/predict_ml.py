@@ -279,6 +279,11 @@ def calculate_composite_score(scores, metric_weights):
     if missing_metrics:
         raise ValueError(f"calculate_composite_score(): Missing metric weights for: {', '.join(missing_metrics)}. Ensure 'metric_weights' includes all necessary metrics.")
 
+    # Main Function #
+    try:
+        composite_score = sum(score * metric_weights.get(metric, 0) for metric, score in scores.items()) / sum(metric_weights.values())
+    except Exception as e:
+        raise ValueError(f"calculate_composite_score(): Error calculating composite score: {str(e)}")
 
     models_classification = {
         'LogisticRegression': LogisticRegression(max_iter=10000),
