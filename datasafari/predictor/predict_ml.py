@@ -272,7 +272,6 @@ def calculate_composite_score(scores, metric_weights):
 x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(df, x_cols, y_col, data_state='unprocessed')
 
 
-def model_recommendation_core(x_train, y_train, task_type: str, n_top_models=3):
     models_classification = {
         'LogisticRegression': LogisticRegression(max_iter=10000),
         'DecisionTreeClassifier': DecisionTreeClassifier(),
@@ -317,7 +316,6 @@ def model_recommendation_core(x_train, y_train, task_type: str, n_top_models=3):
 
     scoring_regression = {
         'EV': 'explained_variance',
-        'MaxError': 'max_error',
         'MAE': 'neg_mean_absolute_error',
         'MSE': 'neg_mean_squared_error',
         'RMSE': 'neg_root_mean_squared_error',
@@ -374,24 +372,32 @@ def model_recommendation_core(x_train, y_train, task_type: str, n_top_models=3):
         scoring = scoring_regression
         tips_scoring = tips_scoring_regression
 
+    # generate weights for priority metrics
+    metric_weights = {metric: 5 if metric in priority_metrics else 1 for metric in scoring}
+
     model_scores = {}
+    composite_scores = {}
     for name, model in models.items():
         scores = cross_validate(model, x_train, y_train, cv=5, scoring=scoring)
-        model_scores[name] = {metric: np.mean(scores[f'test_{metric}']) for metric in scoring}
 
-    # construct console output
-    print(f"< MODEL SCORING >\n")
-    [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") for scoring_metric, score_tip in tips_scoring.items()]
-    for model, scores in model_scores.items():
-        print(f"{model}:")
-        for metric, score in scores.items():
-            print(f"  {metric}: {score:.4f}")
-        print()
+        average_scores = {metric: np.mean(scores[f'test_{metric}']) for metric in scoring}
+        composite_score = calculate_composite_score(average_scores, metric_weights)
 
-    # Further analysis for top model selection based on a primary metric can be added here
-    # For simplicity, this example just prints the scores
+        model_scores[name] = average_scores
+        composite_scores[name] = composite_score
 
-    return model_scores
+    top_models = sorted(composite_scores, key=composite_scores.get, reverse=True)[:n_top_models]
+
+    print(f"< MODEL RECOMMENDATIONS >")
+    print(f"The recommendation core has prioritized the following scoring metrics while choosing the best models: {', '.join(priority_metrics)}\n") if priority_metrics else print(f"The recommendation core has not prioritized any metrics.\nTo prioritize a metric add it's name to the 'priority_metrics' list parameter. (e.g. priority_metrics=['RMSE', 'MAE']")
+    [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") if scoring_metric in priority_metrics else '' for scoring_metric, score_tip in tips_scoring.items()] if not tips_quiet and focused_tips else ''
+    [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") for scoring_metric, score_tip in tips_scoring.items()] if not tips_quiet and not focused_tips else ''
+    for model in top_models:
+        print(f"\n{model} (Composite Score: {composite_scores[model]:.4f}):")
+        for metric, average_score in model_scores[model].items():
+            print(f"  {metric}: {average_score:.4f}")
+
+    return {model: models[model] for model in top_models}
 
 
 inference_models_continuousDV = {
