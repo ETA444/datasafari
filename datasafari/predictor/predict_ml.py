@@ -264,12 +264,20 @@ def data_preprocessing_core(
 
 
 def calculate_composite_score(scores, metric_weights):
-    composite_score = sum(score * metric_weights[metric] for metric, score in scores.items()) / sum(metric_weights.values())
-    return composite_score
+    """"""
+    # Error Handling #
 
+    # TypeErrors
+    if not isinstance(scores, dict) or not isinstance(metric_weights, dict):
+        raise TypeError("calculate_composite_score(): Both 'scores' and 'metric_weights' must be dictionaries.")
 
-# Preprocess the data
-x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(df, x_cols, y_col, data_state='unprocessed')
+    # ValueErrors
+    if not scores or not metric_weights:
+        raise ValueError("calculate_composite_score(): 'scores' and 'metric_weights' dictionaries cannot be empty.")
+
+    missing_metrics = set(scores.keys()) - set(metric_weights.keys())
+    if missing_metrics:
+        raise ValueError(f"calculate_composite_score(): Missing metric weights for: {', '.join(missing_metrics)}. Ensure 'metric_weights' includes all necessary metrics.")
 
 
     models_classification = {
