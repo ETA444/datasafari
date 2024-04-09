@@ -411,4 +411,23 @@ inference_models_categoricalDV = {
     'MixedLM': MixedLM
 }
 
-model_scores = model_recommendation_core(x_train_processed, y_train, task_type)
+# smoke tests #
+# generate data for smoke tests
+df = pd.DataFrame({
+    'Age': np.random.randint(18, 35, size=100),
+    'Salary': np.random.normal(50000, 12000, size=100),
+    'Department': np.random.choice(['HR', 'Tech', 'Marketing'], size=100),
+    'Review': ['Good review']*50 + ['Bad review']*50,
+    'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
+})
+
+# smoke test for data_preprocessing_core()
+# define columns
+x_cols = ['Age', 'Salary', 'Department', 'Review']
+y_col = 'Salary'
+
+# preprocess the data - success!
+x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(df, x_cols, y_col, data_state='unprocessed')
+
+# recommend models - success!
+model_scores = model_recommendation_core(x_train_processed, y_train, task_type, tips_quiet=True, focused_tips=False)
