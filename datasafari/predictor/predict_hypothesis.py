@@ -5,9 +5,10 @@ from scipy.stats import (
     ttest_ind, mannwhitneyu, f_oneway, kruskal,  # numerical hypothesis testing
     chi2_contingency, barnard_exact, boschloo_exact, fisher_exact  # categorical hypothesis testing
 )
-from datasafari.evaluator import (
-    evaluate_normality, evaluate_variance, evaluate_dtype, evaluate_contingency_table
-)
+from datasafari.evaluator.evaluate_dtype import evaluate_dtype
+from datasafari.evaluator.evaluate_variance import evaluate_variance
+from datasafari.evaluator.evaluate_normality import evaluate_normality
+from datasafari.evaluator.evaluate_contingency_table import evaluate_contingency_table
 
 
 # Hypothesis Predictor Cores
