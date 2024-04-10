@@ -753,7 +753,8 @@ def model_tuning_core(
         final_param_grids.update(custom_param_grids)  # Custom grids override default grids
 
     # pick out only priority tuners from the available tuners
-    model_tuners = {tuner_name: tuners[tuner_name] for tuner_name in priority_tuners}
+    model_tuners = {tuner_name: tuners[tuner_name] for tuner_name in priority_tuners} if priority_tuners is not None else tuners
+
     # save the tuned models
     tuned_models = {}
     for model_name, model_object in models.items():
