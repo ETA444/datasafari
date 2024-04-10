@@ -366,6 +366,7 @@ def model_recommendation_core(
         x_train: pd.DataFrame | np.ndarray,
         y_train: pd.Series | np.ndarray,
         task_type: str,
+        cv_folds: int = None,
         priority_metrics: List[str] = [],
         n_top_models: int = 3,
         tips_quiet: bool = True,
@@ -388,6 +389,8 @@ def model_recommendation_core(
         Specifies the type of machine learning task: 'classification' or 'regression'.
     priority_metrics : List[str], optional
         List of metric names given priority in model scoring. Default is an empty list.
+    cv_folds: int, optional
+        Determines the cross-validation splitting strategy. Default is None, to use the default 5-fold cross validation.
     n_top_models : int, optional
         Number of top models to recommend. Default is 3.
     tips_quiet : bool, optional
@@ -547,6 +550,9 @@ def model_recommendation_core(
     if not isinstance(priority_metrics, list):
         raise TypeError("model_recommendation_core(): 'priority_metrics' must be a list of scoring metric names.")
 
+    if not isinstance(cv_folds, int):
+        raise TypeError("model_recommendation_core(): 'cv_folds' must be an integer.")
+
     if not isinstance(n_top_models, int) or n_top_models <= 0:
         raise ValueError("model_recommendation_core(): 'n_top_models' must be an integer greater than 0.")
 
@@ -601,7 +607,7 @@ def model_recommendation_core(
     model_scores = {}
     composite_scores = {}
     for name, model in models.items():
-        scores = cross_validate(model, x_train, y_train, cv=5, scoring=scoring)
+        scores = cross_validate(model, x_train, y_train, cv=cv_folds, scoring=scoring)
 
         average_scores = {metric: np.mean(scores[f'test_{metric}']) for metric in scoring}
         composite_score = calculate_composite_score(average_scores, metric_weights)
