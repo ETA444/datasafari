@@ -22,14 +22,12 @@ So in summary currently it seems the functionality will be:
 (or better names lol we'll see)
 
 """
-from datasafari.evaluator.evaluate_dtype import evaluate_dtype
-
+# used overall:
 from typing import List, Dict, Any, Tuple, Callable
-
 import pandas as pd
-
 import numpy as np
-
+# mostly used within data_preprocessing_core():
+from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 from sklearn.base import TransformerMixin
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
@@ -37,16 +35,20 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, FunctionTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.compose import ColumnTransformer
+# mostly used within model_recommendation_core():
 from sklearn.model_selection import cross_validate
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier, GradientBoostingRegressor
 from sklearn.svm import SVC, SVR
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
-
+# mostly used within the model_inference_core():
 from statsmodels.regression.linear_model import OLS
 from statsmodels.discrete.discrete_model import Logit
 from statsmodels.regression.mixed_linear_model import MixedLM
+# mostly used within the model_tuning_core():
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from skopt import BayesSearchCV
 
 
 def datetime_feature_extractor(df: pd.DataFrame) -> pd.DataFrame:
@@ -73,7 +75,7 @@ def data_preprocessing_core(
         categorical_imputer: TransformerMixin = SimpleImputer(strategy='constant', fill_value='missing'),
         categorical_encoder: TransformerMixin = OneHotEncoder(handle_unknown='ignore'),
         text_vectorizer: TransformerMixin = CountVectorizer(),
-        datetime_transformer: Callable[[DataFrame], DataFrame] = FunctionTransformer(datetime_feature_extractor, validate=False),
+        datetime_transformer: Callable[[pd.DataFrame], pd.DataFrame] = FunctionTransformer(datetime_feature_extractor, validate=False),
         tips_quiet: bool = False
 ) -> Tuple[np.ndarray, np.ndarray, pd.Series, pd.Series, str]:
     """
