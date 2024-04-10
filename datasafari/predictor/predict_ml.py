@@ -633,6 +633,123 @@ def model_recommendation_core(
     return {model: models[model] for model in top_models}
 
 
+def model_tuning_core(
+        x_train: Union[pd.DataFrame, np.ndarray],
+        y_train: Union[pd.Series, np.ndarray],
+        task_type: str,
+        models: dict,
+        priority_metrics: List[str] = None,
+        priority_tuners: List[str] = None,
+        custom_param_grids: dict = None,
+        n_jobs: int = -1,
+        cv: int = 5,
+        n_iter_random: int = 10,
+        n_iter_bayesian: int = 50,
+        verbose: int = 1,
+        random_state: int = 42
+):
+    """"""
+    # Meta Data #
+    tuners = {
+        'grid': GridSearchCV,
+        'random': RandomizedSearchCV,
+        'bayesian': BayesSearchCV,
+    }
+
+    default_param_grids = {
+        'LogisticRegression': {
+            'C': [0.1, 1, 10, 100],
+            'penalty': ['l1', 'l2']
+        },
+        'RandomForestClassifier': {
+            'n_estimators': [100, 200, 300],
+            'max_features': ['auto', 'sqrt', 'log2'],
+            'max_depth': [4, 6, 8, 10]
+        },
+        'GradientBoostingClassifier': {
+            'n_estimators': [100, 200, 300],
+            'learning_rate': [0.01, 0.1, 0.2],
+            'max_depth': [3, 5, 7]
+        }
+    }
+
+    # Error Handling #
+    # ...
+
+    # Main Function #
+
+    # draw from the metadata and then get only priority scorers
+    scoring = scoring_classification if task_type == 'classification' else scoring_regression
+    priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.values() if metric_func in priority_metrics}
+
+    # combine default and custom parameter grids
+    final_param_grids = default_param_grids
+    if custom_param_grids is not None:
+        final_param_grids.update(custom_param_grids)  # Custom grids override default grids
+
+    # pick out only priority tuners from the available tuners
+    model_tuners = {tuner_name: tuners[tuner_name] for tuner_name in priority_tuners}
+    # save the tuned models
+    tuned_models = {}
+    for model_name, model_object in models.items():
+        # safely get param_grid for that model
+        param_grid = final_param_grids.get(model_name, {})  # will return None if no param grid for that model
+        if not param_grid:
+            raise ValueError(f"model_tuning_core(): No parameter grid available for {model_name}")
+
+        # for each model run the appropriate tuner(s)
+        for tuner_name, tuner_class in model_tuners.items():
+            if tuner_name == 'grid':
+                tuner = tuner_class(
+                    estimator=model_object,
+                    param_grid=param_grid,
+                    scoring=priority_scoring,
+                    n_jobs=n_jobs,
+                    cv=cv,
+                    verbose=verbose
+                )
+            elif tuner_name == 'random':
+                tuner = tuner_class(
+                    estimator=model_object,
+                    param_distributions=param_grid,
+                    n_iter=n_iter_random,
+                    scoring=priority_scoring,
+                    n_jobs=n_jobs,
+                    cv=cv,
+                    verbose=verbose,
+                    random_state=random_state
+                )
+            elif tuner_name == 'bayesian':
+                tuner = tuner_class(
+                    estimator=model_object,
+                    search_spaces=param_grid,
+                    n_iter=n_iter_bayesian,
+                    scoring=priority_metrics[0],  # TODO: not sure how to make this use multiple scoring metrics
+                    n_jobs=n_jobs,
+                    cv=cv,
+                    verbose=verbose,
+                    random_state=random_state
+                )
+
+            # do the tuning & save relevant info
+            tuner.fit(x_train, y_train)
+            best_model = tuner.best_estimator_
+            best_score = tuner.best_score_
+
+            # store the best model and its score
+            if model_name not in tuned_models or best_score > tuned_models[model_name][1]:
+                tuned_models[model_name] = {'best_model': best_model, 'best_score': best_score}
+
+
+# TODO: Write everything in the issues < 4
+# TODO: docs .. < 3
+# TODO: error handling .. < 2
+# TODO: Continue pipeline (tuning) < 1
+
+# TODO: Develop inference core < 5
+
+
+
 inference_models_continuousDV = {
     'OLS': OLS,
     # Add more models as needed
