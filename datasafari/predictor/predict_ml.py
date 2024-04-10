@@ -150,6 +150,49 @@ tips_scoring_regression = {
     'MAPE': "Percentage error, useful for comparative error measurement. Lower MAPE indicates better relative accuracy.",
 }
 
+# Available Tuners
+tuners = {
+    'grid': GridSearchCV,
+    'random': RandomizedSearchCV,
+    'bayesian': BayesSearchCV,
+}
+
+# Default Parameter Grids for Classification Models
+default_param_grids_classification = {
+    'LogisticRegression': {
+        'C': [0.1, 1, 10, 100],
+        'penalty': ['l2'],
+        'solver': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
+    },
+    'DecisionTreeClassifier': {
+        'max_depth': [None, 10, 20, 30, 40, 50],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
+    },
+    'RandomForestClassifier': {
+        'n_estimators': [100, 200, 300, 400],
+        'max_features': ['auto', 'sqrt'],
+        'max_depth': [None, 10, 20, 30, 40],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
+    },
+    'GradientBoostingClassifier': {
+        'n_estimators': [100, 200, 300],
+        'learning_rate': [0.01, 0.1, 0.2, 0.5],
+        'max_depth': [3, 5, 7, 9]
+    },
+    'SVC': {
+        'C': [0.1, 1, 10, 100, 1000],
+        'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
+        'gamma': ['scale', 'auto']
+    },
+    'KNeighborsClassifier': {
+        'n_neighbors': [3, 5, 7, 9],
+        'weights': ['uniform', 'distance'],
+        'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute']
+    }
+}
+
 
 def datetime_feature_extractor(df: pd.DataFrame) -> pd.DataFrame:
     feature_df = pd.DataFrame()
@@ -654,30 +697,6 @@ def model_tuning_core(
         random_state: int = 42
 ):
     """"""
-    # Meta Data #
-    tuners = {
-        'grid': GridSearchCV,
-        'random': RandomizedSearchCV,
-        'bayesian': BayesSearchCV,
-    }
-
-    default_param_grids = {
-        'LogisticRegression': {
-            'C': [0.1, 1, 10, 100],
-            'penalty': ['l1', 'l2']
-        },
-        'RandomForestClassifier': {
-            'n_estimators': [100, 200, 300],
-            'max_features': ['auto', 'sqrt', 'log2'],
-            'max_depth': [4, 6, 8, 10]
-        },
-        'GradientBoostingClassifier': {
-            'n_estimators': [100, 200, 300],
-            'learning_rate': [0.01, 0.1, 0.2],
-            'max_depth': [3, 5, 7]
-        }
-    }
-
     # Error Handling #
     # ...
 
@@ -688,7 +707,7 @@ def model_tuning_core(
     priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.values() if metric_func in priority_metrics}
 
     # combine default and custom parameter grids
-    final_param_grids = default_param_grids
+    final_param_grids = default_param_grids_classification if task_type == 'classification' else default_param_grids_regression
     if custom_param_grids is not None:
         final_param_grids.update(custom_param_grids)  # Custom grids override default grids
 
