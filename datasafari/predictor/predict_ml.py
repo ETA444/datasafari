@@ -193,6 +193,48 @@ default_param_grids_classification = {
     }
 }
 
+# Default Parameter Grids for Regression Models
+default_param_grids_regression = {
+    'LinearRegression': {
+        # Linear Regression usually does not need hyperparameter tuning except for regularization
+    },
+    'Ridge': {
+        'alpha': [0.1, 1.0, 10.0, 100.0],
+        'solver': ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']
+    },
+    'Lasso': {
+        'alpha': [0.1, 1.0, 10.0, 100.0],
+        'selection': ['cyclic', 'random']
+    },
+    'DecisionTreeRegressor': {
+        'max_depth': [None, 10, 20, 30, 40, 50],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
+    },
+    'RandomForestRegressor': {
+        'n_estimators': [100, 200, 300, 400],
+        'max_features': ['auto', 'sqrt'],
+        'max_depth': [None, 10, 20, 30, 40],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
+    },
+    'GradientBoostingRegressor': {
+        'n_estimators': [100, 200, 300],
+        'learning_rate': [0.01, 0.1, 0.2, 0.5],
+        'max_depth': [3, 5, 7, 9]
+    },
+    'SVR': {
+        'C': [0.1, 1, 10, 100, 1000],
+        'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
+        'gamma': ['scale', 'auto']
+    },
+    'KNeighborsRegressor': {
+        'n_neighbors': [3, 5, 7, 9],
+        'weights': ['uniform', 'distance'],
+        'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute']
+    }
+}
+
 
 def datetime_feature_extractor(df: pd.DataFrame) -> pd.DataFrame:
     feature_df = pd.DataFrame()
