@@ -53,7 +53,7 @@ from skopt import BayesSearchCV
 
 # Meta data #
 
-# Available Models
+# Available Classification Models
 models_classification = {
     'LogisticRegression': LogisticRegression(),
     'DecisionTreeClassifier': DecisionTreeClassifier(),
@@ -62,6 +62,8 @@ models_classification = {
     'SVC': SVC(),
     'KNeighborsClassifier': KNeighborsClassifier(),
 }
+
+# Available Regression Models
 models_regression = {
     'LinearRegression': LinearRegression(),
     'Ridge': Ridge(),
@@ -73,7 +75,7 @@ models_regression = {
     'KNeighborsRegressor': KNeighborsRegressor(),
 }
 
-# Available scoring metrics
+# Available Scoring Metrics for Classification
 scoring_classification = {
     'Accuracy': 'accuracy',
     'Balanced Accuracy': 'balanced_accuracy',
@@ -95,6 +97,8 @@ scoring_classification = {
     'ROC AUC (OVR)': 'roc_auc_ovr',
     'ROC AUC (OVO)': 'roc_auc_ovo',
 }
+
+# Available Scoring Metrics for Regression
 scoring_regression = {
     'EV': 'explained_variance',
     'MAE': 'neg_mean_absolute_error',
@@ -108,7 +112,7 @@ scoring_regression = {
     'MAPE': 'neg_mean_absolute_percentage_error',
 }
 
-# Tips for scoring metrics (if tips_quiet = False)
+# Tips for Classification Scoring Metrics (if tips_quiet = False) - idea is to aid interpretation for non-advanced users
 tips_scoring_classification = {
     'Accuracy': "Overall correctness, suitable for balanced classes. Higher scores indicate better performance.",
     'Balanced Accuracy': "Accuracy per class, great for imbalanced data. Higher values signal balanced class prediction capability.",
@@ -131,6 +135,7 @@ tips_scoring_classification = {
     'ROC AUC (OVO)': "Area under ROC for multiclass, one-vs-one. Indicates model's discriminative power between any two classes.",
 }
 
+# Tips for Regression Scoring Metrics
 tips_scoring_regression = {
     'EV': "Explains variance, perfect for models aiming high explanation power. Closer to 1 indicates better model.",
     'MaxError': "Worst-case error, critical for risk-sensitive models. Lower values denote reliability.",
