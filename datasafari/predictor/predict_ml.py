@@ -583,7 +583,7 @@ def model_recommendation_core(
     if not all(isinstance(metric, str) for metric in priority_metrics):
         raise ValueError("model_recommendation_core(): All items in 'priority_metrics' must be strings representing metric names.")
     # check if provided metrics are valid and remind users of valid options
-    valid_metrics = set(scoring_classification.keys()) | set(scoring_regression.keys())
+    valid_metrics = set(scoring_classification.values()) | set(scoring_regression.values())
     invalid_metrics = [metric for metric in priority_metrics if metric not in valid_metrics]
     if invalid_metrics:
         valid_metric_list = ", ".join(sorted(valid_metrics))
@@ -606,12 +606,12 @@ def model_recommendation_core(
         tips_scoring = tips_scoring_regression
 
     # generate weights for priority metrics
-    metric_weights = {metric: 5 if metric in priority_metrics else 1 for metric in scoring}
+    metric_weights = {metric_name: 5 if metric_func in priority_metrics else 1 for metric_name, metric_func in scoring.items()}
 
     model_scores = {}
     composite_scores = {}
     for name, model in models.items():
-        scores = cross_validate(model, x_train, y_train, cv=cv_folds, scoring=scoring)
+        scores = cross_validate(model, x_train, y_train, cv=cv, scoring=scoring)
 
         average_scores = {metric: np.mean(scores[f'test_{metric}']) for metric in scoring}
         composite_score = calculate_composite_score(average_scores, metric_weights)
@@ -622,7 +622,7 @@ def model_recommendation_core(
     top_models = sorted(composite_scores, key=composite_scores.get, reverse=True)[:n_top_models]
 
     print(f"< MODEL RECOMMENDATIONS >")
-    print(f"The recommendation core has prioritized the following scoring metrics while choosing the best models: {', '.join(priority_metrics)}\n") if priority_metrics else print(f"The recommendation core has not prioritized any metrics.\nTo prioritize a metric add it's name to the 'priority_metrics' list parameter. (e.g. priority_metrics=['RMSE', 'MAE']")
+    print(f"The recommendation core has prioritized the following scoring metrics while choosing the best models: {', '.join([metric_name for metric_name, metric_func in scoring.items() if metric_func in priority_metrics])}\n") if priority_metrics else print(f"The recommendation core has not prioritized any metrics.\nTo prioritize a metric add it's name to the 'priority_metrics' list parameter. (e.g. priority_metrics=['explained_variance', 'neg_root_mean_squared_error']")
     [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") if scoring_metric in priority_metrics else '' for scoring_metric, score_tip in tips_scoring.items()] if not tips_quiet and focused_tips else ''
     [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") for scoring_metric, score_tip in tips_scoring.items()] if not tips_quiet and not focused_tips else ''
     for model in top_models:
