@@ -23,7 +23,7 @@ So in summary currently it seems the functionality will be:
 
 """
 # used overall:
-from typing import List, Dict, Any, Tuple, Callable, Union
+from typing import List, Dict, Any, Tuple, Callable, Union, Optional
 import pandas as pd
 import numpy as np
 # mostly used within data_preprocessing_core():
@@ -729,6 +729,7 @@ def model_tuning_core(
         task_type: str,
         models: dict,
         priority_metrics: List[str] = None,
+        refit_metric: Optional[Union[str, Callable]] = None,
         priority_tuners: List[str] = None,
         custom_param_grids: dict = None,
         n_jobs: int = -1,
@@ -746,6 +747,13 @@ def model_tuning_core(
     # draw from the metadata and then get only priority scorers
     scoring = scoring_classification if task_type == 'classification' else scoring_regression
     priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.values() if metric_func in priority_metrics} if priority_metrics is not None else scoring
+
+    # default to the first priority metric if no specific refit metric is provided
+    if refit_metric is None and priority_metrics:
+        refit_metric = priority_metrics[0]
+    elif refit_metric is None and priority_metrics is None:
+        # default to these respective metrics if nothing is provided (accuracy or MSE)
+        refit_metric = 'accuracy' if task_type == 'classification' else 'neg_mean_squared_error'
 
     # combine default and custom parameter grids
     final_param_grids = default_param_grids_classification if task_type == 'classification' else default_param_grids_regression
@@ -776,6 +784,7 @@ def model_tuning_core(
                     param_grid=param_grid,
                     scoring=priority_scoring,
                     n_jobs=n_jobs,
+                    refit=refit_metric,
                     cv=cv,
                     verbose=verbose
                 )
@@ -786,6 +795,7 @@ def model_tuning_core(
                     n_iter=n_iter_random,
                     scoring=priority_scoring,
                     n_jobs=n_jobs,
+                    refit=refit_metric,
                     cv=cv,
                     verbose=verbose,
                     random_state=random_state
@@ -795,8 +805,9 @@ def model_tuning_core(
                     estimator=model_object,
                     search_spaces=param_grid,
                     n_iter=n_iter_bayesian,
-                    scoring=priority_metrics[0],  # TODO: not sure how to make this use multiple scoring metrics
+                    scoring=priority_metrics[0],
                     n_jobs=n_jobs,
+                    refit=refit_metric,
                     cv=cv,
                     verbose=verbose,
                     random_state=random_state
