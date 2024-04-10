@@ -759,9 +759,14 @@ def model_tuning_core(
     tuned_models = {}
     for model_name, model_object in models.items():
         # safely get param_grid for that model
-        param_grid = final_param_grids.get(model_name, {})  # will return None if no param grid for that model
+        param_grid = final_param_grids.get(model_name, {})
+
+        # skip models that don't have params to tune
         if not param_grid:
-            raise ValueError(f"model_tuning_core(): No parameter grid available for {model_name}")
+            if verbose > 0:
+                print(f"model_tuning_core(): Skipping tuning for {model_name} as no parameter grid is provided.")
+            tuned_models[model_name] = {'best_model': model_object, 'best_score': None}
+            continue
 
         # for each model run the appropriate tuner(s)
         for tuner_name, tuner_class in model_tuners.items():
