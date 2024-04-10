@@ -743,10 +743,9 @@ def model_tuning_core(
     # ...
 
     # Main Function #
-
     # draw from the metadata and then get only priority scorers
     scoring = scoring_classification if task_type == 'classification' else scoring_regression
-    priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.values() if metric_func in priority_metrics}
+    priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.values() if metric_func in priority_metrics} if priority_metrics is not None else scoring
 
     # combine default and custom parameter grids
     final_param_grids = default_param_grids_classification if task_type == 'classification' else default_param_grids_regression
