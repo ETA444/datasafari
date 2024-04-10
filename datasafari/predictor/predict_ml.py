@@ -23,7 +23,7 @@ So in summary currently it seems the functionality will be:
 
 """
 # used overall:
-from typing import List, Dict, Any, Tuple, Callable
+from typing import List, Dict, Any, Tuple, Callable, Union
 import pandas as pd
 import numpy as np
 # mostly used within data_preprocessing_core():
@@ -49,6 +49,99 @@ from statsmodels.regression.mixed_linear_model import MixedLM
 # mostly used within the model_tuning_core():
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from skopt import BayesSearchCV
+
+
+# Meta data #
+models_classification = {
+    'LogisticRegression': LogisticRegression(max_iter=10000),
+    'DecisionTreeClassifier': DecisionTreeClassifier(),
+    'RandomForestClassifier': RandomForestClassifier(),
+    'GradientBoostingClassifier': GradientBoostingClassifier(),
+    'SVC': SVC(probability=True),
+    'KNeighborsClassifier': KNeighborsClassifier(),
+}
+
+models_regression = {
+    'LinearRegression': LinearRegression(),
+    'Ridge': Ridge(),
+    'Lasso': Lasso(),
+    'DecisionTreeRegressor': DecisionTreeRegressor(),
+    'RandomForestRegressor': RandomForestRegressor(),
+    'GradientBoostingRegressor': GradientBoostingRegressor(),
+    'SVR': SVR(),
+    'KNeighborsRegressor': KNeighborsRegressor(),
+}
+
+scoring_classification = {
+    'Accuracy': 'accuracy',
+    'Balanced Accuracy': 'balanced_accuracy',
+    'Average Precision': 'average_precision',
+    'Neg Brier Score': 'neg_brier_score',
+    'F1 (Micro)': 'f1_micro',
+    'F1 (Macro)': 'f1_macro',
+    'F1 (Weighted)': 'f1_weighted',
+    'Neg Log Loss': 'neg_log_loss',
+    'Precision (Micro)': 'precision_micro',
+    'Precision (Macro)': 'precision_macro',
+    'Precision (Weighted)': 'precision_weighted',
+    'Recall (Micro)': 'recall_micro',
+    'Recall (Macro)': 'recall_macro',
+    'Recall (Weighted)': 'recall_weighted',
+    'Jaccard (Micro)': 'jaccard_micro',
+    'Jaccard (Macro)': 'jaccard_macro',
+    'Jaccard (Weighted)': 'jaccard_weighted',
+    'ROC AUC (OVR)': 'roc_auc_ovr',
+    'ROC AUC (OVO)': 'roc_auc_ovo',
+}
+
+scoring_regression = {
+    'EV': 'explained_variance',
+    'MAE': 'neg_mean_absolute_error',
+    'MSE': 'neg_mean_squared_error',
+    'RMSE': 'neg_root_mean_squared_error',
+    'MSLE': 'neg_mean_squared_log_error',
+    'MedAE': 'neg_median_absolute_error',
+    'R2': 'r2',
+    'MPD': 'neg_mean_poisson_deviance',
+    'MGD': 'neg_mean_gamma_deviance',
+    'MAPE': 'neg_mean_absolute_percentage_error',
+}
+
+tips_scoring_classification = {
+    'Accuracy': "Overall correctness, suitable for balanced classes. Higher scores indicate better performance.",
+    'Balanced Accuracy': "Accuracy per class, great for imbalanced data. Higher values signal balanced class prediction capability.",
+    'Average Precision': "Precision-recall balance, ideal for ranking tasks. Higher scores suggest better model precision.",
+    'Neg Brier Score': "Probability calibration, lower is better, indicating accurate confidence in predictions.",
+    'F1 (Micro)': "Aggregated F1 score, good for unbalanced data. High score shows effective overall class prediction.",
+    'F1 (Macro)': "Mean F1 score across classes, for equal class emphasis. High values mean balanced performance across classes.",
+    'F1 (Weighted)': "F1 score weighted by class, for imbalanced data. Reflects performance weighted towards prevalent classes.",
+    'Neg Log Loss': "Model confidence, lower scores show better probability estimates.",
+    'Precision (Micro)': "Overall model precision, useful in multiclass settings. High values indicate fewer false positives.",
+    'Precision (Macro)': "Average precision, highlights class-specific performance. A high score denotes effective class differentiation.",
+    'Precision (Weighted)': "Precision accounting for class imbalance. Focuses precision assessment on more frequent classes.",
+    'Recall (Micro)': "Overall true positive rate. High scores show effectiveness in identifying positive instances.",
+    'Recall (Macro)': "Balanced true positive rate, useful for equal class focus. Reflects consistent recall across classes.",
+    'Recall (Weighted)': "Recall adjusted for class size, emphasizing larger classes. Indicates model's effectiveness on common classes.",
+    'Jaccard (Micro)': "Intersection over union, measured globally. High values indicate broad prediction alignment with truth.",
+    'Jaccard (Macro)': "Average IoU for each class, shows class-wise model agreement. High score signifies precise class predictions.",
+    'Jaccard (Weighted)': "IoU weighted by class frequency. Targets performance improvement in dominant classes.",
+    'ROC AUC (OVR)': "Area under ROC for multiclass, one-vs-rest. Higher scores mean better distinction between classes.",
+    'ROC AUC (OVO)': "Area under ROC for multiclass, one-vs-one. Indicates model's discriminative power between any two classes.",
+}
+
+tips_scoring_regression = {
+    'EV': "Explains variance, perfect for models aiming high explanation power. Closer to 1 indicates better model.",
+    'MaxError': "Worst-case error, critical for risk-sensitive models. Lower values denote reliability.",
+    'MAE': "Average error magnitude, less sensitive to outliers. Lower MAE suggests higher precision.",
+    'MSE': "Penalizes larger errors more, great for models where large errors are especially undesirable. Lower is better.",
+    'RMSE': "Square root of MSE, on the target scale. Lower values indicate fewer and smaller errors.",
+    'MSLE': "Focuses on relative errors, ideal for growth predictions. Lower scores reflect better accuracy on percentage scale.",
+    'MedAE': "Middle error value, robust to outliers. Useful for skewed data, lower MedAE indicates central tendency accuracy.",
+    'R2': "Proportion of variance explained, best for predictive models. Closer to 1, the more explanatory the model.",
+    'MPD': "For count data, penalizing under/overestimations differently. Lower scores indicate Poisson conformity.",
+    'MGD': "Assesses fit for gamma-distributed outcomes. Lower values show better adherence to gamma distribution.",
+    'MAPE': "Percentage error, useful for comparative error measurement. Lower MAPE indicates better relative accuracy.",
+}
 
 
 def datetime_feature_extractor(df: pd.DataFrame) -> pd.DataFrame:
@@ -363,10 +456,10 @@ def calculate_composite_score(scores: dict, metric_weights: dict) -> float:
 
 
 def model_recommendation_core(
-        x_train: pd.DataFrame | np.ndarray,
-        y_train: pd.Series | np.ndarray,
+        x_train: Union[pd.DataFrame, np.ndarray],
+        y_train: Union[pd.Series, np.ndarray],
         task_type: str,
-        cv_folds: int = None,
+        cv: int = 5,
         priority_metrics: List[str] = [],
         n_top_models: int = 3,
         tips_quiet: bool = True,
@@ -389,8 +482,8 @@ def model_recommendation_core(
         Specifies the type of machine learning task: 'classification' or 'regression'.
     priority_metrics : List[str], optional
         List of metric names given priority in model scoring. Default is an empty list.
-    cv_folds: int, optional
-        Determines the cross-validation splitting strategy. Default is None, to use the default 5-fold cross validation.
+    cv: int, optional
+        Determines the cross-validation splitting strategy. Default is 5, to use the default 5-fold cross validation.
     n_top_models : int, optional
         Number of top models to recommend. Default is 3.
     tips_quiet : bool, optional
@@ -443,97 +536,6 @@ def model_recommendation_core(
 
         - Ensuring 'Higher is Better' Across All Metrics: For metrics where traditionally a lower score is better (e.g., RMSE), scores are transformed to align with the 'higher is better' principle used in composite score calculation. This transformation is inherent to the scoring configurations and does not require manual adjustment.
     """
-    # Meta data #
-    models_classification = {
-        'LogisticRegression': LogisticRegression(max_iter=10000),
-        'DecisionTreeClassifier': DecisionTreeClassifier(),
-        'RandomForestClassifier': RandomForestClassifier(),
-        'GradientBoostingClassifier': GradientBoostingClassifier(),
-        'SVC': SVC(probability=True),
-        'KNeighborsClassifier': KNeighborsClassifier(),
-    }
-
-    models_regression = {
-        'LinearRegression': LinearRegression(),
-        'Ridge': Ridge(),
-        'Lasso': Lasso(),
-        'DecisionTreeRegressor': DecisionTreeRegressor(),
-        'RandomForestRegressor': RandomForestRegressor(),
-        'GradientBoostingRegressor': GradientBoostingRegressor(),
-        'SVR': SVR(),
-        'KNeighborsRegressor': KNeighborsRegressor(),
-    }
-
-    scoring_classification = {
-        'Accuracy': 'accuracy',
-        'Balanced Accuracy': 'balanced_accuracy',
-        'Average Precision': 'average_precision',
-        'Neg Brier Score': 'neg_brier_score',
-        'F1 (Micro)': 'f1_micro',
-        'F1 (Macro)': 'f1_macro',
-        'F1 (Weighted)': 'f1_weighted',
-        'Neg Log Loss': 'neg_log_loss',
-        'Precision (Micro)': 'precision_micro',
-        'Precision (Macro)': 'precision_macro',
-        'Precision (Weighted)': 'precision_weighted',
-        'Recall (Micro)': 'recall_micro',
-        'Recall (Macro)': 'recall_macro',
-        'Recall (Weighted)': 'recall_weighted',
-        'Jaccard (Micro)': 'jaccard_micro',
-        'Jaccard (Macro)': 'jaccard_macro',
-        'Jaccard (Weighted)': 'jaccard_weighted',
-        'ROC AUC (OVR)': 'roc_auc_ovr',
-        'ROC AUC (OVO)': 'roc_auc_ovo',
-    }
-
-    scoring_regression = {
-        'EV': 'explained_variance',
-        'MAE': 'neg_mean_absolute_error',
-        'MSE': 'neg_mean_squared_error',
-        'RMSE': 'neg_root_mean_squared_error',
-        'MSLE': 'neg_mean_squared_log_error',
-        'MedAE': 'neg_median_absolute_error',
-        'R2': 'r2',
-        'MPD': 'neg_mean_poisson_deviance',
-        'MGD': 'neg_mean_gamma_deviance',
-        'MAPE': 'neg_mean_absolute_percentage_error',
-    }
-
-    tips_scoring_classification = {
-        'Accuracy': "Overall correctness, suitable for balanced classes. Higher scores indicate better performance.",
-        'Balanced Accuracy': "Accuracy per class, great for imbalanced data. Higher values signal balanced class prediction capability.",
-        'Average Precision': "Precision-recall balance, ideal for ranking tasks. Higher scores suggest better model precision.",
-        'Neg Brier Score': "Probability calibration, lower is better, indicating accurate confidence in predictions.",
-        'F1 (Micro)': "Aggregated F1 score, good for unbalanced data. High score shows effective overall class prediction.",
-        'F1 (Macro)': "Mean F1 score across classes, for equal class emphasis. High values mean balanced performance across classes.",
-        'F1 (Weighted)': "F1 score weighted by class, for imbalanced data. Reflects performance weighted towards prevalent classes.",
-        'Neg Log Loss': "Model confidence, lower scores show better probability estimates.",
-        'Precision (Micro)': "Overall model precision, useful in multiclass settings. High values indicate fewer false positives.",
-        'Precision (Macro)': "Average precision, highlights class-specific performance. A high score denotes effective class differentiation.",
-        'Precision (Weighted)': "Precision accounting for class imbalance. Focuses precision assessment on more frequent classes.",
-        'Recall (Micro)': "Overall true positive rate. High scores show effectiveness in identifying positive instances.",
-        'Recall (Macro)': "Balanced true positive rate, useful for equal class focus. Reflects consistent recall across classes.",
-        'Recall (Weighted)': "Recall adjusted for class size, emphasizing larger classes. Indicates model's effectiveness on common classes.",
-        'Jaccard (Micro)': "Intersection over union, measured globally. High values indicate broad prediction alignment with truth.",
-        'Jaccard (Macro)': "Average IoU for each class, shows class-wise model agreement. High score signifies precise class predictions.",
-        'Jaccard (Weighted)': "IoU weighted by class frequency. Targets performance improvement in dominant classes.",
-        'ROC AUC (OVR)': "Area under ROC for multiclass, one-vs-rest. Higher scores mean better distinction between classes.",
-        'ROC AUC (OVO)': "Area under ROC for multiclass, one-vs-one. Indicates model's discriminative power between any two classes.",
-    }
-
-    tips_scoring_regression = {
-        'EV': "Explains variance, perfect for models aiming high explanation power. Closer to 1 indicates better model.",
-        'MaxError': "Worst-case error, critical for risk-sensitive models. Lower values denote reliability.",
-        'MAE': "Average error magnitude, less sensitive to outliers. Lower MAE suggests higher precision.",
-        'MSE': "Penalizes larger errors more, great for models where large errors are especially undesirable. Lower is better.",
-        'RMSE': "Square root of MSE, on the target scale. Lower values indicate fewer and smaller errors.",
-        'MSLE': "Focuses on relative errors, ideal for growth predictions. Lower scores reflect better accuracy on percentage scale.",
-        'MedAE': "Middle error value, robust to outliers. Useful for skewed data, lower MedAE indicates central tendency accuracy.",
-        'R2': "Proportion of variance explained, best for predictive models. Closer to 1, the more explanatory the model.",
-        'MPD': "For count data, penalizing under/overestimations differently. Lower scores indicate Poisson conformity.",
-        'MGD': "Assesses fit for gamma-distributed outcomes. Lower values show better adherence to gamma distribution.",
-        'MAPE': "Percentage error, useful for comparative error measurement. Lower MAPE indicates better relative accuracy.",
-    }
 
     # Error handling #
 
@@ -550,8 +552,8 @@ def model_recommendation_core(
     if not isinstance(priority_metrics, list):
         raise TypeError("model_recommendation_core(): 'priority_metrics' must be a list of scoring metric names.")
 
-    if not isinstance(cv_folds, int):
-        raise TypeError("model_recommendation_core(): 'cv_folds' must be an integer.")
+    if not isinstance(cv, int):
+        raise TypeError("model_recommendation_core(): 'cv' must be an integer.")
 
     if not isinstance(n_top_models, int) or n_top_models <= 0:
         raise ValueError("model_recommendation_core(): 'n_top_models' must be an integer greater than 0.")
