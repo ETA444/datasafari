@@ -52,15 +52,16 @@ from skopt import BayesSearchCV
 
 
 # Meta data #
+
+# Available Models
 models_classification = {
-    'LogisticRegression': LogisticRegression(max_iter=10000),
+    'LogisticRegression': LogisticRegression(),
     'DecisionTreeClassifier': DecisionTreeClassifier(),
     'RandomForestClassifier': RandomForestClassifier(),
     'GradientBoostingClassifier': GradientBoostingClassifier(),
-    'SVC': SVC(probability=True),
+    'SVC': SVC(),
     'KNeighborsClassifier': KNeighborsClassifier(),
 }
-
 models_regression = {
     'LinearRegression': LinearRegression(),
     'Ridge': Ridge(),
@@ -72,6 +73,7 @@ models_regression = {
     'KNeighborsRegressor': KNeighborsRegressor(),
 }
 
+# Available scoring metrics
 scoring_classification = {
     'Accuracy': 'accuracy',
     'Balanced Accuracy': 'balanced_accuracy',
@@ -93,7 +95,6 @@ scoring_classification = {
     'ROC AUC (OVR)': 'roc_auc_ovr',
     'ROC AUC (OVO)': 'roc_auc_ovo',
 }
-
 scoring_regression = {
     'EV': 'explained_variance',
     'MAE': 'neg_mean_absolute_error',
@@ -107,6 +108,7 @@ scoring_regression = {
     'MAPE': 'neg_mean_absolute_percentage_error',
 }
 
+# Tips for scoring metrics (if tips_quiet = False)
 tips_scoring_classification = {
     'Accuracy': "Overall correctness, suitable for balanced classes. Higher scores indicate better performance.",
     'Balanced Accuracy': "Accuracy per class, great for imbalanced data. Higher values signal balanced class prediction capability.",
@@ -661,11 +663,5 @@ y_col = 'Salary'
 x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(df, x_cols, y_col, data_state='unprocessed')
 
 # recommend models - success!
-model_scores = model_recommendation_core(x_train_processed, y_train, task_type, tips_quiet=True, focused_tips=False)
+model_scores = model_recommendation_core(x_train_processed, y_train, task_type, cv=5, priority_metrics=['neg_mean_gamma_deviance', 'explained_variance'], tips_quiet=True, focused_tips=False)
 
-# TODO: Write everything in the issues < 4
-# TODO: docs .. < 3
-# TODO: error handling .. < 2
-# TODO: Continue pipeline (tuning) < 1
-
-# TODO: Develop inference core < 5
