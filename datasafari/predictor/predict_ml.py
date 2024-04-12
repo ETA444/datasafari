@@ -30,13 +30,12 @@ import numpy as np
 from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 from sklearn.base import TransformerMixin
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_validate, ParameterGrid
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, FunctionTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.compose import ColumnTransformer
 # mostly used within model_recommendation_core():
-from sklearn.model_selection import cross_validate
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier, GradientBoostingRegressor
@@ -734,8 +733,8 @@ def model_tuning_core(
         custom_param_grids: dict = None,
         n_jobs: int = -1,
         cv: int = 5,
-        n_iter_random: int = 10,
-        n_iter_bayesian: int = 50,
+        n_iter_random: int = None,
+        n_iter_bayesian: int = None,
         verbose: int = 1,
         random_state: int = 42
 ):
@@ -748,8 +747,14 @@ def model_tuning_core(
     scoring = scoring_classification if task_type == 'classification' else scoring_regression
     priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.items() if metric_func in priority_metrics} if priority_metrics is not None else scoring
 
+    # define default iterations if none provided
+    if n_iter_random is None:
+        n_iter_random = 10
+    if n_iter_bayesian is None:
+        n_iter_bayesian = 50
+
     # default to the first priority metric if no specific refit metric is provided
-    if refit_metric is None and priority_metrics:
+    if refit_metric is None and priority_metrics is not None:
         refit_metric = priority_metrics[0]
     elif refit_metric is None and priority_metrics is None:
         # default to these respective metrics if nothing is provided (accuracy or MSE)
@@ -776,6 +781,21 @@ def model_tuning_core(
             tuned_models[model_name] = {'best_model': model_object, 'best_score': None}
             continue
 
+        # check parameter grid size for random and Bayesian search to warn or adjust n_iter
+        param_list = list(ParameterGrid(param_grid))
+        param_grid_size = len(param_list)
+        if n_iter_random > param_grid_size:
+            print(f"model_tuning_core() - Warning: n_iter_random={n_iter_random} is reduced to max possible iterations {param_grid_size} for {model_name}.")
+            n_iter_random_adjusted = param_grid_size
+        else:
+            n_iter_random_adjusted = n_iter_random
+
+        if n_iter_bayesian > param_grid_size:
+            print(f"model_tuning_core() - Warning: n_iter_bayesian={n_iter_bayesian} is reduced to max possible iterations {param_grid_size} for {model_name}.")
+            n_iter_bayesian_adjusted = param_grid_size
+        else:
+            n_iter_bayesian_adjusted = n_iter_bayesian
+
         # for each model run the appropriate tuner(s)
         for tuner_name, tuner_class in model_tuners.items():
             if tuner_name == 'grid':
@@ -792,7 +812,7 @@ def model_tuning_core(
                 tuner = tuner_class(
                     estimator=model_object,
                     param_distributions=param_grid,
-                    n_iter=n_iter_random,
+                    n_iter=n_iter_random_adjusted,
                     scoring=priority_scoring,
                     n_jobs=n_jobs,
                     refit=refit_metric,
@@ -804,8 +824,8 @@ def model_tuning_core(
                 tuner = tuner_class(
                     estimator=model_object,
                     search_spaces=param_grid,
-                    n_iter=n_iter_bayesian,
-                    scoring=priority_metrics[0],
+                    n_iter=n_iter_bayesian_adjusted,
+                    scoring=list(priority_scoring.values())[0],
                     n_jobs=n_jobs,
                     refit=refit_metric,
                     cv=cv,
