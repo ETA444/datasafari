@@ -746,19 +746,19 @@ def model_tuning_core(
     # Main Function #
     # draw from the metadata and then get only priority scorers
     scoring = scoring_classification if task_type == 'classification' else scoring_regression
-    priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.values() if metric_func in priority_metrics} if priority_metrics is not None else scoring
+    priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.items() if metric_func in priority_metrics} if priority_metrics is not None else scoring
 
     # default to the first priority metric if no specific refit metric is provided
     if refit_metric is None and priority_metrics:
         refit_metric = priority_metrics[0]
     elif refit_metric is None and priority_metrics is None:
         # default to these respective metrics if nothing is provided (accuracy or MSE)
-        refit_metric = 'accuracy' if task_type == 'classification' else 'neg_mean_squared_error'
+        refit_metric = 'Accuracy' if task_type == 'classification' else 'MSE'
 
     # combine default and custom parameter grids
     final_param_grids = default_param_grids_classification if task_type == 'classification' else default_param_grids_regression
     if custom_param_grids is not None:
-        final_param_grids.update(custom_param_grids)  # Custom grids override default grids
+        final_param_grids.update(custom_param_grids)  # custom grids override existing default grids
 
     # pick out only priority tuners from the available tuners
     model_tuners = {tuner_name: tuners[tuner_name] for tuner_name in priority_tuners} if priority_tuners is not None else tuners
@@ -864,3 +864,5 @@ x_train_processed, x_test_processed, y_train, y_test, task_type = data_preproces
 # recommend models - success!
 model_scores = model_recommendation_core(x_train_processed, y_train, task_type, cv=5, priority_metrics=['neg_mean_gamma_deviance', 'explained_variance'], tips_quiet=True, focused_tips=False)
 
+# tuning models
+model_tuning_core(x_train_processed, y_train, task_type, model_scores)
