@@ -740,9 +740,10 @@ def model_tuning_core(
         verbose: int = 1,
         random_state: int = 42
 ):
-    """"""
+    """TODO: write docstring"""
+
     # Error Handling #
-    # ...
+    # TODO: handle errors
 
     # Main Function #
     # initialize tracking for tested parameter combinations
@@ -802,6 +803,7 @@ def model_tuning_core(
         # for each model run the appropriate tuner(s)
         for tuner_name, tuner_class in model_tuners.items():
             if tuner_name == 'grid':
+                # TODO: Add play-by-play console output (verbose 1-3)
                 tuner = tuner_class(
                     estimator=model_object,
                     param_grid=param_grid,
@@ -812,6 +814,7 @@ def model_tuning_core(
                     verbose=verbose
                 )
             elif tuner_name == 'random':
+                # TODO: Add play-by-play console output (verbose 1-3)
                 tuner = tuner_class(
                     estimator=model_object,
                     param_distributions=param_grid,
@@ -854,16 +857,14 @@ def model_tuning_core(
             if model_name not in tuned_models or best_score > tuned_models[model_name]['best_score']:
                 tuned_models[model_name] = {'best_model': best_model, 'best_score': best_score}
 
-    print('Smoke test success')
-# TODO:
-# TODO: Write everything in the issues < 4
-# TODO: docs .. < 3
-# TODO: error handling .. < 2
-# TODO: Continue pipeline (tuning) < 1
+    if verbose > 0:
+        print('Tuning completed!')
+        # TODO: Add tuning summary (verbose 1)
+    return tuned_models
 
-# TODO: Develop inference core < 5
-
-
+# TODO: All of the above < 1
+# TODO: Write everything in the issues < 2
+# TODO: Develop inference core < 3
 
 inference_models_continuousDV = {
     'OLS': OLS,
