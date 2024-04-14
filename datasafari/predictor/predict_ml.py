@@ -770,79 +770,52 @@ def model_tuning_core(
         param_grid = final_param_grids.get(model_name, {})
         if not param_grid:
             if verbose > 0:
-                print(f"model_tuning_core(): Skipping tuning for {model_name} as no parameter grid is provided.")
-            tuned_models[model_name] = {'best_model': model_object, 'best_score': None}
+                print(f"model_tuning_core() - Notice: Skipping tuning for {model_name} as no parameter grid is provided.")
             continue
 
-        # check parameter grid size for random and Bayesian search to warn or adjust n_iter
-        param_list = list(ParameterGrid(param_grid))
-        param_grid_size = len(param_list)
-        if n_iter_random > param_grid_size:
-            print(f"model_tuning_core() - Warning: n_iter_random={n_iter_random} is reduced to max possible iterations {param_grid_size} for {model_name}.")
-            n_iter_random_adjusted = param_grid_size
-        else:
-            n_iter_random_adjusted = n_iter_random
+        total_combinations = np.prod([len(v) for v in param_grid.values()])
+        tested_fraction = len(tested_combinations[model_name]) / total_combinations if total_combinations > 0 else 0
 
-        if n_iter_bayesian > param_grid_size:
-            print(f"model_tuning_core() - Warning: n_iter_bayesian={n_iter_bayesian} is reduced to max possible iterations {param_grid_size} for {model_name}.")
-            n_iter_bayesian_adjusted = param_grid_size
-        else:
-            n_iter_bayesian_adjusted = n_iter_bayesian
+        n_iter_random_adjusted = min(n_iter_random, int((1 - tested_fraction) * total_combinations))
+        n_iter_bayesian_adjusted = min(n_iter_bayesian, int((1 - tested_fraction) * total_combinations))
+
+        if verbose > 0:
+            if n_iter_random > n_iter_random_adjusted:
+                print(f"model_tuning_core() - Notice: n_iter_random={n_iter_random} is reduced to max possible iterations {n_iter_random_adjusted} for {model_name}.")
+            if n_iter_bayesian > n_iter_bayesian_adjusted:
+                print(f"model_tuning_core() - Notice: n_iter_bayesian={n_iter_bayesian} is reduced to max possible iterations {n_iter_bayesian_adjusted} for {model_name}.")
 
         for tuner_name, tuner_class in model_tuners.items():
             if tuner_name == 'grid':
                 # TODO: Add play-by-play console output (verbose 1-3)
                 tuner = tuner_class(
-                    estimator=model_object,
-                    param_grid=param_grid,
-                    scoring=priority_scoring,
-                    n_jobs=n_jobs,
-                    refit=refit_metric,
-                    cv=cv,
-                    verbose=verbose
-                )
+                    estimator=model_object, param_grid=param_grid, scoring=priority_scoring,
+                    n_jobs=n_jobs, refit=refit_metric, cv=cv, verbose=verbose)
             elif tuner_name == 'random':
                 # TODO: Add play-by-play console output (verbose 1-3)
                 tuner = tuner_class(
-                    estimator=model_object,
-                    param_distributions=param_grid,
-                    n_iter=n_iter_random_adjusted,
-                    scoring=priority_scoring,
-                    n_jobs=n_jobs,
-                    refit=refit_metric,
-                    cv=cv,
-                    verbose=verbose,
-                    random_state=random_state
-                )
-            elif tuner_name == 'bayesian':
-
-                # track search space combination candidates and skip testing if already tried
-                for _ in range(n_iter_bayesian):
-                    candidate = {k: choice(v) for k, v in param_grid.items()}
-                    candidate_tuple = tuple((k, candidate[k]) for k in sorted(candidate))
-                    if candidate_tuple in tested_combinations[model_name]:
-                        continue  # Skip this iteration if combination was tested before
-                    tested_combinations[model_name].add(candidate_tuple)
-
+                    estimator=model_object, param_distributions=param_grid, n_iter=n_iter_random_adjusted,
+                    scoring=priority_scoring, n_jobs=n_jobs, refit=refit_metric, cv=cv, verbose=verbose,
+                    random_state=random_state)
+            elif tuner_name == 'bayesian' and n_iter_bayesian_adjusted > 0:
+                # TODO: Add play-by-play console output (verbose 1-3)
                 tuner = tuner_class(
-                    estimator=model_object,
-                    search_spaces=param_grid,
-                    n_iter=1,
-                    scoring=list(priority_scoring.values())[0],
-                    n_jobs=n_jobs,
-                    refit=refit_metric,
-                    cv=cv,
-                    verbose=verbose,
-                    random_state=random_state
-                )
+                    estimator=model_object, search_spaces=param_grid, n_iter=n_iter_bayesian_adjusted,
+                    scoring=list(priority_scoring.values())[0], n_jobs=n_jobs, refit=refit_metric, cv=cv,
+                    verbose=verbose, random_state=random_state)
 
-            # do the tuning & save relevant info
+            if tuner_name == 'bayesian' and n_iter_bayesian_adjusted == 0:
+                if verbose > 1:
+                    print(f"model_tuning_core() - Notice: All parameter combinations for {model_name} have been tested. Skipping this round of Bayesian optimization.")
+                continue
+
             tuner.fit(x_train, y_train)
             best_model = tuner.best_estimator_
             best_score = tuner.best_score_
 
             if model_name not in tuned_models or best_score > tuned_models[model_name]['best_score']:
                 tuned_models[model_name] = {'best_model': best_model, 'best_score': best_score}
+                tested_combinations[model_name].add(tuple(tuner.best_params_.values()))
 
     if verbose > 0:
         print('Tuning completed!')
