@@ -753,12 +753,11 @@ def model_tuning_core(
     n_iter_random = n_iter_random or 10
     n_iter_bayesian = n_iter_bayesian or 50
 
-    # default to the first priority metric if no specific refit metric is provided
-    if refit_metric is None and priority_metrics is not None:
-        refit_metric = priority_metrics[0]
-    elif refit_metric is None and priority_metrics is None:
-        # default to these respective metrics if nothing is provided (accuracy or MSE)
-        refit_metric = 'Accuracy' if task_type == 'classification' else 'MSE'
+    scoring = scoring_classification if task_type == 'classification' else scoring_regression
+    priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.items() if metric_func in priority_metrics} if priority_metrics else scoring
+
+    if refit_metric is None:
+        refit_metric = priority_metrics[0] if priority_metrics else 'accuracy' if task_type == 'classification' else 'neg_mean_squared_error'
 
     final_param_grids = default_param_grids_classification if task_type == 'classification' else default_param_grids_regression
     if custom_param_grids:
