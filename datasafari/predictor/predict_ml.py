@@ -749,10 +749,6 @@ def model_tuning_core(
     # initialize tracking for tested parameter combinations
     tested_combinations = defaultdict(set)
 
-    # draw from the metadata and then get only priority scorers
-    scoring = scoring_classification if task_type == 'classification' else scoring_regression
-    priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.items() if metric_func in priority_metrics} if priority_metrics is not None else scoring
-
     # define default iterations if none provided
     n_iter_random = n_iter_random or 10
     n_iter_bayesian = n_iter_bayesian or 50
@@ -764,21 +760,15 @@ def model_tuning_core(
         # default to these respective metrics if nothing is provided (accuracy or MSE)
         refit_metric = 'Accuracy' if task_type == 'classification' else 'MSE'
 
-    # combine default and custom parameter grids
     final_param_grids = default_param_grids_classification if task_type == 'classification' else default_param_grids_regression
-    if custom_param_grids is not None:
-        final_param_grids.update(custom_param_grids)  # custom grids override existing default grids
+    if custom_param_grids:
+        final_param_grids.update(custom_param_grids)
 
-    # pick out only priority tuners from the available tuners
-    model_tuners = {tuner_name: tuners[tuner_name] for tuner_name in priority_tuners} if priority_tuners is not None else tuners
+    model_tuners = {tuner_name: tuners[tuner_name] for tuner_name in priority_tuners} if priority_tuners else tuners
 
-    # save the tuned models
     tuned_models = {}
     for model_name, model_object in models.items():
-        # safely get param_grid for that model
         param_grid = final_param_grids.get(model_name, {})
-
-        # skip models that don't have params to tune
         if not param_grid:
             if verbose > 0:
                 print(f"model_tuning_core(): Skipping tuning for {model_name} as no parameter grid is provided.")
@@ -800,7 +790,6 @@ def model_tuning_core(
         else:
             n_iter_bayesian_adjusted = n_iter_bayesian
 
-        # for each model run the appropriate tuner(s)
         for tuner_name, tuner_class in model_tuners.items():
             if tuner_name == 'grid':
                 # TODO: Add play-by-play console output (verbose 1-3)
@@ -853,7 +842,6 @@ def model_tuning_core(
             best_model = tuner.best_estimator_
             best_score = tuner.best_score_
 
-            # store the best model and its score
             if model_name not in tuned_models or best_score > tuned_models[model_name]['best_score']:
                 tuned_models[model_name] = {'best_model': best_model, 'best_score': best_score}
 
