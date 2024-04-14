@@ -24,6 +24,8 @@ So in summary currently it seems the functionality will be:
 """
 # used overall:
 from typing import List, Dict, Any, Tuple, Callable, Union, Optional
+from collections import defaultdict
+from random import choice
 import pandas as pd
 import numpy as np
 # mostly used within data_preprocessing_core():
@@ -743,15 +745,16 @@ def model_tuning_core(
     # ...
 
     # Main Function #
+    # initialize tracking for tested parameter combinations
+    tested_combinations = defaultdict(set)
+
     # draw from the metadata and then get only priority scorers
     scoring = scoring_classification if task_type == 'classification' else scoring_regression
     priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.items() if metric_func in priority_metrics} if priority_metrics is not None else scoring
 
     # define default iterations if none provided
-    if n_iter_random is None:
-        n_iter_random = 10
-    if n_iter_bayesian is None:
-        n_iter_bayesian = 50
+    n_iter_random = n_iter_random or 10
+    n_iter_bayesian = n_iter_bayesian or 50
 
     # default to the first priority metric if no specific refit metric is provided
     if refit_metric is None and priority_metrics is not None:
@@ -821,10 +824,19 @@ def model_tuning_core(
                     random_state=random_state
                 )
             elif tuner_name == 'bayesian':
+
+                # track search space combination candidates and skip testing if already tried
+                for _ in range(n_iter_bayesian):
+                    candidate = {k: choice(v) for k, v in param_grid.items()}
+                    candidate_tuple = tuple((k, candidate[k]) for k in sorted(candidate))
+                    if candidate_tuple in tested_combinations[model_name]:
+                        continue  # Skip this iteration if combination was tested before
+                    tested_combinations[model_name].add(candidate_tuple)
+
                 tuner = tuner_class(
                     estimator=model_object,
                     search_spaces=param_grid,
-                    n_iter=n_iter_bayesian_adjusted,
+                    n_iter=1,
                     scoring=list(priority_scoring.values())[0],
                     n_jobs=n_jobs,
                     refit=refit_metric,
@@ -839,10 +851,11 @@ def model_tuning_core(
             best_score = tuner.best_score_
 
             # store the best model and its score
-            if model_name not in tuned_models or best_score > tuned_models[model_name][1]:
+            if model_name not in tuned_models or best_score > tuned_models[model_name]['best_score']:
                 tuned_models[model_name] = {'best_model': best_model, 'best_score': best_score}
 
-
+    print('Smoke test success')
+# TODO:
 # TODO: Write everything in the issues < 4
 # TODO: docs .. < 3
 # TODO: error handling .. < 2
@@ -885,4 +898,4 @@ x_train_processed, x_test_processed, y_train, y_test, task_type = data_preproces
 model_scores = model_recommendation_core(x_train_processed, y_train, task_type, cv=5, priority_metrics=['neg_mean_gamma_deviance', 'explained_variance'], tips_quiet=True, focused_tips=False)
 
 # tuning models
-model_tuning_core(x_train_processed, y_train, task_type, model_scores)
+model_tuning_core(x_train_processed, y_train, task_type, model_scores, priority_tuners=['bayesian'], verbose=3)
