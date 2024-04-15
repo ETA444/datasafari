@@ -555,8 +555,7 @@ def model_recommendation_core(
         cv: int = 5,
         priority_metrics: List[str] = [],
         n_top_models: int = 3,
-        tips_quiet: bool = True,
-        focused_tips: bool = True
+        verbose: int = 1
 ) -> Dict[str, Any]:
     """
     Recommends top N machine learning models based on composite scores derived from multiple evaluation metrics.
@@ -579,10 +578,8 @@ def model_recommendation_core(
         Determines the cross-validation splitting strategy. Default is 5, to use the default 5-fold cross validation.
     n_top_models : int, optional
         Number of top models to recommend. Default is 3.
-    tips_quiet : bool, optional
-        If False, prints helpful tips for each prioritized metric. Default is True.
-    focused_tips : bool, optional
-        If True and `tips_quiet` is False, only prints tips for metrics in `priority_metrics`. Default is True.
+    verbose : int, optional
+        The higher value the more output and information the user receives. Default is 1.
 
     Returns
     -------
@@ -651,11 +648,8 @@ def model_recommendation_core(
     if not isinstance(n_top_models, int) or n_top_models <= 0:
         raise ValueError("model_recommendation_core(): 'n_top_models' must be an integer greater than 0.")
 
-    if not isinstance(tips_quiet, bool):
-        raise TypeError("model_recommendation_core(): 'tips_quiet' must be a boolean value.")
-
-    if not isinstance(focused_tips, bool):
-        raise TypeError("model_recommendation_core(): 'focused_tips' must be a boolean value.")
+    if not isinstance(verbose, int):
+        raise TypeError("model_recommendation_core(): 'verbose' must be an integer value.")
 
     # ValueErrors
     # validate if x_train and y_train have compatible shapes
@@ -712,16 +706,19 @@ def model_recommendation_core(
 
     top_models = sorted(composite_scores, key=composite_scores.get, reverse=True)[:n_top_models]
 
-    print(f"< MODEL RECOMMENDATIONS >")
-    print(f"The recommendation core has prioritized the following scoring metrics while choosing the best models: {', '.join([metric_name for metric_name, metric_func in scoring.items() if metric_func in priority_metrics])}\n") if priority_metrics else print(f"The recommendation core has not prioritized any metrics.\nTo prioritize a metric add it's name to the 'priority_metrics' list parameter. (e.g. priority_metrics=['explained_variance', 'neg_root_mean_squared_error']")
-    [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") if scoring_metric in priority_metrics else '' for scoring_metric, score_tip in tips_scoring.items()] if not tips_quiet and focused_tips else ''
-    [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") for scoring_metric, score_tip in tips_scoring.items()] if not tips_quiet and not focused_tips else ''
-    for model in top_models:
-        print(f"\n{model} (Composite Score: {composite_scores[model]:.4f}):")
-        for metric, average_score in model_scores[model].items():
-            print(f"  {metric}: {average_score:.4f}")
+    if verbose > 0:
+        print(f"< MODEL RECOMMENDATIONS >")
+        print(f"The recommendation core has prioritized the following scoring metrics while choosing the best models: {', '.join([metric_name for metric_name, metric_func in scoring.items() if metric_func in priority_metrics])}\n") if priority_metrics else print(f"The recommendation core has not prioritized any metrics.\nTo prioritize a metric add it's name to the 'priority_metrics' list parameter. (e.g. priority_metrics=['explained_variance', 'neg_root_mean_squared_error']")
+        [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") if scoring_metric in priority_metrics else '' for scoring_metric, score_tip in tips_scoring.items()] if verbose == 2 else ''
+        [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") for scoring_metric, score_tip in tips_scoring.items()] if verbose == 3 else ''
+        [print(f"  ➡ {model_name}()") for model_name in top_models]
+        for model_name in top_models:
+            print(f"\n{model_name} (Composite Score: {composite_scores[model_name]:.4f}):")
+            for metric, average_score in model_scores[model_name].items():
+                print(f"  {metric}: {average_score:.4f}")
 
-    return {model: models[model] for model in top_models}
+    best_untuned_models = {model: models[model] for model in top_models}
+    return best_untuned_models
 
 
 def model_tuning_core(
