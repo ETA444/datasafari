@@ -868,7 +868,8 @@ def model_tuning_core(
         print('\n< TUNING COMPLETED >')
         print("✔ Tuning summary:")
         for model, details in tuned_models.items():
-            print(f"  ➡ Best model: {model} (score: {details['best_score']})")
+            params_str = ', '.join(f"{key}={value}" for key, value in details['best_model'].get_params().items())
+            print(f"  ➡ Best tuned version of {model} is {model}({params_str}) with score: {details['best_score']}")
 
     return tuned_models
 
