@@ -849,13 +849,19 @@ def model_tuning_core(
 
     Notes
     -----
-    The function integrates with scikit-learn's GridSearchCV, RandomizedSearchCV, and skopt's BayesSearchCV to perform
-    the hyperparameter tuning. The type of search ('grid', 'random', 'bayesian') is determined by the 'priority_tuners' list.
+        - **Integration with Tuning Methods**: This function utilizes scikit-learn's `GridSearchCV` and `RandomizedSearchCV`, along with scikit-optimize's `BayesSearchCV` for hyperparameter tuning. The choice of tuning method (`grid`, `random`, or `bayesian`) depends on the entries provided in the `priority_tuners` list.
 
-    For Bayesian optimization, repeated parameter combinations are skipped to enhance performance and reduce computation time.
+        - **Skipping Repeated Combinations**: For Bayesian optimization (`BayesSearchCV`), the function is designed to skip evaluations of previously tested parameter combinations. This approach aims to enhance the efficiency and performance of the tuning process by reducing redundant computations.
 
-    The effectiveness of the tuning process is highly dependent on the quality of the input parameter grids. Custom parameter
-    grids provided via 'custom_param_grids' should be carefully constructed to explore meaningful combinations. Otherwise default parameters are available.
+        - **Parameter Grids Importance**: The quality and range of the parameter grids significantly influence the effectiveness of the tuning process. While default parameter grids are provided for convenience, it is recommended to supply customized parameter grids via `custom_param_grids` to ensure a thorough exploration of meaningful parameter combinations.
+
+        - **Handling of User Warnings**: The `BayesSearchCV` from scikit-optimize occasionally emits warnings about the evaluation of repeated parameter points. This is a known issue within the library, unresolved for several years, which pertains to its internal handling of random state and the stochastic nature of the search algorithm. Although the function attempts to mitigate this by filtering out previously tested combinations, some warnings might still appear, especially under constraints of limited parameter grids or high `n_iter_bayesian` values.
+
+        - **Refit Consideration**: The refit process, which re-trains the best estimator on the full dataset using the best-found parameters, is governed by the `refit_metric`. This metric should be carefully chosen to align with the overall objective and the specifics of the task at hand (classification or regression).
+
+        - **Random State Usage**: The `random_state` parameter ensures reproducibility in the results of randomized search methods and Bayesian optimization, making the tuning outputs deterministic and easier to debug or review.
+
+        - **Parallel Processing Capability**: Setting `n_jobs=-1` enables the function to use all available CPU cores for parallel processing, speeding up the computation especially beneficial when dealing with large datasets or complex models.
     """
 
     # Error Handling #
