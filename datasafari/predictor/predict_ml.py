@@ -849,9 +849,13 @@ def model_tuning_core(
                 tested_combinations[model_name].add(tuple(tuner.best_params_.values()))
 
     if verbose > 0:
-        print('Tuning completed!')
-        # TODO: Add tuning summary (verbose 1)
+        print('\n< TUNING COMPLETED >')
+        print("✔ Tuning summary:")
+        for model, details in tuned_models.items():
+            print(f"  ➡ Best model: {model} (score: {details['best_score']})")
+
     return tuned_models
+
 
 # TODO: All of the above < 1
 # TODO: Write everything in the issues < 2
