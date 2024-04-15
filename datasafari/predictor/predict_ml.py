@@ -798,7 +798,7 @@ def model_tuning_core(
         param_grid = final_param_grids.get(model_name, {})
         if not param_grid:
             if verbose > 0:
-                print(f"model_tuning_core() - Notice: Skipping tuning for {model_name} as no parameter grid is provided.")
+                print(f"\nNotice: Skipping tuning for {model_name} as no parameter grid is provided.")
             continue
 
         total_combinations = np.prod([len(v) for v in param_grid.values()])
@@ -807,35 +807,38 @@ def model_tuning_core(
         n_iter_random_adjusted = min(n_iter_random, int((1 - tested_fraction) * total_combinations))
         n_iter_bayesian_adjusted = min(n_iter_bayesian, int((1 - tested_fraction) * total_combinations))
 
-        if verbose > 0:
-            if n_iter_random > n_iter_random_adjusted:
-                print(f"model_tuning_core() - Notice: n_iter_random={n_iter_random} is reduced to max possible iterations {n_iter_random_adjusted} for {model_name}.")
-            if n_iter_bayesian > n_iter_bayesian_adjusted:
-                print(f"model_tuning_core() - Notice: n_iter_bayesian={n_iter_bayesian} is reduced to max possible iterations {n_iter_bayesian_adjusted} for {model_name}.")
-
         for tuner_name, tuner_class in model_tuners.items():
+            if verbose > 0:
+                print(f"\n► Tuning model: {model_name}")
+                print(f"  ➡ Total possible combinations: {total_combinations}\n  ➡ Tested combinations: {len(tested_combinations[model_name])}\n")
+                print(f"Notice: Adjusting n_iter_random to {n_iter_random_adjusted} and n_iter_bayesian to {n_iter_bayesian_adjusted} due to previously tested combinations.\n")
+                # TODO: ^ Change above Notice, to how it was before. ^
+
             if tuner_name == 'grid':
-                # TODO: Add play-by-play console output (verbose 1-3)
                 tuner = tuner_class(
                     estimator=model_object, param_grid=param_grid, scoring=priority_scoring,
                     n_jobs=n_jobs, refit=refit_metric, cv=cv, verbose=verbose)
+                if verbose > 1:
+                    print(f"► Running GridSearchCV for {model_name}.")
             elif tuner_name == 'random':
-                # TODO: Add play-by-play console output (verbose 1-3)
                 tuner = tuner_class(
                     estimator=model_object, param_distributions=param_grid, n_iter=n_iter_random_adjusted,
                     scoring=priority_scoring, n_jobs=n_jobs, refit=refit_metric, cv=cv, verbose=verbose,
                     random_state=random_state)
-            elif tuner_name == 'bayesian' and n_iter_bayesian_adjusted > 0:
-                # TODO: Add play-by-play console output (verbose 1-3)
-                tuner = tuner_class(
-                    estimator=model_object, search_spaces=param_grid, n_iter=n_iter_bayesian_adjusted,
-                    scoring=list(priority_scoring.values())[0], n_jobs=n_jobs, refit=refit_metric, cv=cv,
-                    verbose=verbose, random_state=random_state)
-
-            if tuner_name == 'bayesian' and n_iter_bayesian_adjusted == 0:
                 if verbose > 1:
-                    print(f"model_tuning_core() - Notice: All parameter combinations for {model_name} have been tested. Skipping this round of Bayesian optimization.")
-                continue
+                    print(f"► Running RandomizedSearchCV for {model_name}.")
+            elif tuner_name == 'bayesian':
+                if n_iter_bayesian_adjusted > 0:
+                    tuner = tuner_class(
+                        estimator=model_object, search_spaces=param_grid, n_iter=n_iter_bayesian_adjusted,
+                        scoring=list(priority_scoring.values())[0], n_jobs=n_jobs, refit=refit_metric, cv=cv,
+                        verbose=verbose, random_state=random_state)
+                    if verbose > 1:
+                        print(f"► Running BayesianSearchCV for {model_name}.")
+                else:
+                    if verbose > 1:
+                        print(f"Notice: All parameter combinations for {model_name} have been tested. Skipping Bayesian optimization.")
+                    continue
 
             tuner.fit(x_train, y_train)
             best_model = tuner.best_estimator_
