@@ -155,7 +155,14 @@ tips_scoring_regression = {
 tuners = {
     'grid': GridSearchCV,
     'random': RandomizedSearchCV,
-    'bayesian': BayesSearchCV,
+    'bayesian': BayesSearchCV
+}
+
+# User-friendly tuner names for outputs
+tuner_names = {
+    'grid': 'GridSearchCV',
+    'random': 'RandomizedSearchCV',
+    'bayesian': 'BayesSearchCV'
 }
 
 # Default Parameter Grids for Classification Models
@@ -742,7 +749,7 @@ def model_tuning_core(
         verbose: int = 1,
         random_state: int = 42
 ):
-    """# TODO: write docstring"""
+    """TODO: write docstring"""
 
     # Error Handling #
     # TODO: implement error handling
@@ -772,9 +779,9 @@ def model_tuning_core(
         print(f"Starting model tuning for {task_type} modelling.\n")
 
         if priority_tuners:
-            print(f"  ➡ Priority tuner(s): {', '.join([f'{tuner_func}' for tuner_name, tuner_func in model_tuners.items()])}")
-        else:  # TODO: ^ Fix priority tuners to show the tuner name not the <class ... >
-            print(f"  ➡ Priority tuners: None (using default: {', '.join([tuner_func for tuner_name, tuner_func in model_tuners])})")
+            print(f"  ➡ Priority tuner(s): {', '.join([f'{tuner_names[tuner_short_name]}' for tuner_short_name in model_tuners.keys()])}")
+        else:
+            print(f"  ➡ Priority tuners: None (using default: {', '.join([f'{tuner_names[tuner_short_name]}' for tuner_short_name in model_tuners.keys()])}")
 
         if priority_metrics:
             print(f"  ➡ Priority metrics: {', '.join(priority_metrics)}")
@@ -809,38 +816,44 @@ def model_tuning_core(
         n_iter_random_adjusted = min(n_iter_random, int((1 - tested_fraction) * total_combinations))
         n_iter_bayesian_adjusted = min(n_iter_bayesian, int((1 - tested_fraction) * total_combinations))
 
-        for tuner_name, tuner_class in model_tuners.items():
+        for tuner_short_name, tuner_class in model_tuners.items():
+
             if verbose > 0:
                 print(f"\n► Tuning model: {model_name}")
-                print(f"  ➡ Total possible combinations: {total_combinations}\n  ➡ Tested combinations: {len(tested_combinations[model_name])}\n")
-                print(f"Notice: Adjusting n_iter_random to {n_iter_random_adjusted} and n_iter_bayesian to {n_iter_bayesian_adjusted} due to previously tested combinations.\n")
-                # TODO: ^ Change above Notice, to how it was before. ^
+                print(f"  ➡ Total possible param grid combinations: {total_combinations}\n") if verbose > 1 else ''
 
-            if tuner_name == 'grid':
+            if tuner_short_name == 'grid':
                 tuner = tuner_class(
                     estimator=model_object, param_grid=param_grid, scoring=priority_scoring,
                     n_jobs=n_jobs, refit=refit_metric, cv=cv, verbose=verbose)
-                if verbose > 1:
-                    print(f"► Running GridSearchCV for {model_name}.")
-            elif tuner_name == 'random':
+                if verbose > 0:
+                    print(f"⬥ Running {tuner_names[tuner_short_name]} for {model_name}.")
+
+            elif tuner_short_name == 'random':
                 tuner = tuner_class(
                     estimator=model_object, param_distributions=param_grid, n_iter=n_iter_random_adjusted,
                     scoring=priority_scoring, n_jobs=n_jobs, refit=refit_metric, cv=cv, verbose=verbose,
                     random_state=random_state)
-                if verbose > 1:
-                    print(f"► Running RandomizedSearchCV for {model_name}.")
-            elif tuner_name == 'bayesian':
+                if verbose > 0:
+                    print(f"⬥ Running {tuner_names[tuner_short_name]} for {model_name}.")
+                    if n_iter_random > n_iter_random_adjusted:
+                        print(f"Notice: n_iter_random={n_iter_random} is reduced to max possible iterations {n_iter_random_adjusted} for {model_name}.\n")
+
+            elif tuner_short_name == 'bayesian':
                 if n_iter_bayesian_adjusted > 0:
                     tuner = tuner_class(
                         estimator=model_object, search_spaces=param_grid, n_iter=n_iter_bayesian_adjusted,
                         scoring=list(priority_scoring.values())[0], n_jobs=n_jobs, refit=refit_metric, cv=cv,
                         verbose=verbose, random_state=random_state)
-                    if verbose > 1:
-                        print(f"► Running BayesianSearchCV for {model_name}.")
-                else:
-                    if verbose > 1:
-                        print(f"Notice: All parameter combinations for {model_name} have been tested. Skipping Bayesian optimization.")
-                    continue
+                    if verbose > 0:
+                        print(f"⬥ Running {tuner_names[tuner_short_name]} for {model_name}.")
+                        if n_iter_bayesian > n_iter_bayesian_adjusted:
+                            print(f"Notice: n_iter_bayesian={n_iter_bayesian} is reduced to max possible iterations {n_iter_bayesian_adjusted} for {model_name}.\n")
+
+            else:
+                if verbose > 1:
+                    print(f"Notice: All parameter combinations for {model_name} have been tested. Skipping Bayesian optimization.")
+                continue
 
             tuner.fit(x_train, y_train)
             best_model = tuner.best_estimator_
