@@ -740,12 +740,12 @@ def model_tuning_core(
         verbose: int = 1,
         random_state: int = 42
 ):
-    """TODO: write docstring"""
+    """# TODO: write docstring"""
 
     # Error Handling #
-    # TODO: handle errors
+    # TODO: implement error handling
 
-    # Main Function #
+    # Main Functionality #
     # initialize tracking for tested parameter combinations
     tested_combinations = defaultdict(set)
 
@@ -764,6 +764,34 @@ def model_tuning_core(
         final_param_grids.update(custom_param_grids)
 
     model_tuners = {tuner_name: tuners[tuner_name] for tuner_name in priority_tuners} if priority_tuners else tuners
+
+    if verbose > 0:
+        print("< TUNING INITIATED >")
+        print(f"Starting model tuning for {task_type} modelling.\n")
+
+        if priority_tuners:
+            print(f"  ➡ Priority tuner(s): {', '.join([f'{tuner_func}' for tuner_name, tuner_func in model_tuners.items()])}")
+        else:  # TODO: ^ Fix priority tuners to show the tuner name not the <class ... >
+            print(f"  ➡ Priority tuners: None (using default: {', '.join([tuner_func for tuner_name, tuner_func in model_tuners])})")
+
+        if priority_metrics:
+            print(f"  ➡ Priority metrics: {', '.join(priority_metrics)}")
+        else:
+            print("  ➡ Priority metrics: None (using default scoring criteria)")
+
+        print(f"  ➡ Refit metric: {refit_metric}")
+
+        if custom_param_grids:
+            print(f"  ➡ Parameter grid: Custom (defined by user)")
+        else:
+            print("  ➡ Parameter grid: Default")
+
+        if n_jobs == -1:
+            print(f"  ➡ Parallel processing: ON")
+        else:
+            print(f"  ➡ Parallel processing: OFF (n_jobs = {n_jobs})")
+
+        print(f"  ➡ Random state: {random_state}")
 
     tuned_models = {}
     for model_name, model_object in models.items():
