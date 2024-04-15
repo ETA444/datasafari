@@ -612,6 +612,7 @@ def model_recommendation_core(
         - If 'x_train' or 'y_train' is empty.
         - If 'priority_metrics' contains duplicate values or items not representing metric names as strings.
         - If provided metric names in 'priority_metrics' are invalid or not supported, listing valid metric names for reference.
+        - If provided metric names in 'priority_metrics' are not suitable for the 'task_type', listing valid metrics names for reference.
         - If 'n_top_models' exceeds the number of available models for the specified 'task_type'.
 
 
@@ -685,6 +686,19 @@ def model_recommendation_core(
     if invalid_metrics:
         valid_metric_list = ", ".join(sorted(valid_metrics))
         raise ValueError(f"model_recommendation_core(): Invalid metric(s) in 'priority_metrics': {', '.join(invalid_metrics)}.\n\nValid metrics are: {valid_metric_list}.")
+    # check for valid metrics in relation to task type
+    c_valid_metrics = set(scoring_classification.values())
+    r_valid_metrics = set(scoring_regression.values())
+    if task_type == 'classification':
+        invalid_metrics = [metric for metric in priority_metrics if metric not in c_valid_metrics]
+        if invalid_metrics:
+            valid_metric_list = ", ".join(sorted(c_valid_metrics))
+            raise ValueError(f"model_recommendation_core(): The following priority metrics are not valid for {task_type}: {', '.join(invalid_metrics)}.\n\nValid metrics for {task_type} are: {valid_metric_list}")
+    elif task_type == 'regression':
+        invalid_metrics = [metric for metric in priority_metrics if metric not in r_valid_metrics]
+        if invalid_metrics:
+            valid_metric_list = ", ".join(sorted(c_valid_metrics))
+            raise ValueError(f"model_recommendation_core(): The following priority metrics are not valid for {task_type}: {', '.join(invalid_metrics)}.\n\nValid metrics for {task_type} are: {valid_metric_list}")
 
     # check if 'n_top_models' exceeds the number of available models for the task
     if task_type == 'classification' and n_top_models > len(models_classification):
