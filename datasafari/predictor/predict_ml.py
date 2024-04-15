@@ -763,8 +763,80 @@ def model_tuning_core(
         n_iter_bayesian: int = None,
         verbose: int = 1,
         random_state: int = 42
-):
-    """TODO: write docstring"""
+) -> Dict[str, Any]:
+    """
+    Conducts hyperparameter tuning on a set of models using specified tuning methods and parameter grids,
+    and returns the best tuned models along with their scores.
+
+    This function systematically applies grid search, random search, or Bayesian optimization to explore the
+    hyperparameter space of given models. It supports customization of the tuning process through various parameters
+    and outputs the best found configurations.
+
+    Parameters
+    ----------
+    x_train : Union[pd.DataFrame, np.ndarray]
+        Training feature dataset.
+    y_train : Union[pd.Series, np.ndarray]
+        Training target variable.
+    task_type : str
+        Specifies the type of machine learning task: 'classification' or 'regression'.
+    models : dict
+        Dictionary with model names as keys and model instances as values.
+    priority_metrics : List[str], optional
+        List of metric names given priority in model scoring. Default is None, which uses default metrics.
+    refit_metric : Optional[Union[str, Callable]], optional
+        Metric to use for refitting the models. A string (name of the metric) or a scorer callable object/function
+        with signature scorer(estimator, X, y). If None, the first metric listed in priority_metrics is used.
+    priority_tuners : List[str], optional
+        List of tuner names to use for hyperparameter tuning. Valid tuners are 'grid', 'random', 'bayesian'.
+    custom_param_grids : dict, optional
+        Custom parameter grids to use, overriding the default grids if provided. Each entry should be a model name
+        mapped to its corresponding parameter grid.
+    n_jobs : int, optional
+        Number of jobs to run in parallel. -1 means using all processors. Default is -1.
+    cv : int, optional
+        Number of cross-validation folds. Default is 5.
+    n_iter_random : int, optional
+        Number of iterations for random search. If None, default is set to 10.
+    n_iter_bayesian : int, optional
+        Number of iterations for Bayesian optimization. If None, default is set to 50.
+    verbose : int, optional
+        Level of verbosity. The higher the number, the more detailed the logging. Default is 1.
+    random_state : int, optional
+        Seed used by the random number generator. Default is 42.
+
+    Returns
+    -------
+    Dict[str, Any]
+        A dictionary containing the best models under each provided model name as keys. Values are dictionaries
+        with 'best_model' storing the model object of the best estimator and 'best_score' storing the corresponding score.
+
+    Raises
+    ------
+    TypeError
+        If any input parameters are of incorrect type.
+    ValueError
+        If any input parameters have invalid values or combinations.
+
+    Examples
+    --------
+    >>> from sklearn.datasets import load_iris
+    >>> from sklearn.model_selection import train_test_split
+    >>> X, y = load_iris(return_X_y=True)
+    >>> x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    >>> models = {'logistic_regression': LogisticRegression(), 'random_forest': RandomForestClassifier()}
+    >>> tuned_models = model_tuning_core(x_train, y_train, 'classification', models, priority_metrics=['accuracy', 'f1'], priority_tuners=['bayesian'], n_iter_random=20, verbose=2)
+
+    Notes
+    -----
+    The function integrates with scikit-learn's GridSearchCV, RandomizedSearchCV, and skopt's BayesSearchCV to perform
+    the hyperparameter tuning. The type of search ('grid', 'random', 'bayesian') is determined by the 'priority_tuners' list.
+
+    For Bayesian optimization, repeated parameter combinations are skipped to enhance performance and reduce computation time.
+
+    The effectiveness of the tuning process is highly dependent on the quality of the input parameter grids. Custom parameter
+    grids provided via 'custom_param_grids' should be carefully constructed to explore meaningful combinations. Otherwise default parameters are available.
+    """
 
     # Error Handling #
 
