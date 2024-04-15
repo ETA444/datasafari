@@ -809,14 +809,34 @@ def model_tuning_core(
     -------
     Dict[str, Any]
         A dictionary containing the best models under each provided model name as keys. Values are dictionaries
-        with 'best_model' storing the model object of the best estimator and 'best_score' storing the corresponding score.
+        with keys: 'best_model' storing the model object of the best estimator and 'best_score' storing the corresponding score.
 
     Raises
     ------
     TypeError
-        If any input parameters are of incorrect type.
+        - If 'x_train' is not a pandas DataFrame or NumPy ndarray.
+        - If 'y_train' is not a pandas Series or NumPy ndarray.
+        - If 'task_type' is not a string.
+        - If 'models' is not a dictionary with model names as keys and model instances as values.
+        - If 'priority_metrics' is not None and is not a list of strings.
+        - If 'priority_tuners' is not None and is not a list of strings.
+        - If 'custom_param_grids' is not None and is not a dictionary.
+        - If 'n_jobs', 'cv', 'n_iter_random', 'n_iter_bayesian', 'verbose', or 'random_state' are not integers.
+        - If 'cv' is less than 1.
+        - If 'n_iter_random' or 'n_iter_bayesian' is less than 1 when not None.
+        - If 'refit_metric' is provided as a string but is not a callable or recognized metric name.
+
     ValueError
-        If any input parameters have invalid values or combinations.
+        - If 'task_type' is not 'classification' or 'regression'.
+        - If 'x_train' and 'y_train' do not have the same number of rows.
+        - If 'x_train' or 'y_train' is empty (has zero elements).
+        - If any element in 'priority_metrics' or 'priority_tuners' is not a string.
+        - If 'priority_metrics' contains duplicate values.
+        - If 'priority_tuners' contains unrecognized tuner names, not part of the expected tuners ('grid', 'random', 'bayesian').
+        - If the specified 'refit_metric' is not applicable to the provided 'task_type' (e.g., using a regression metric for classification).
+        - If 'n_iter_random_adjusted' or 'n_iter_bayesian_adjusted' becomes zero due to all combinations being previously tested, implying there are no new combinations to explore.
+        - If 'n_iter_random' or 'n_iter_bayesian' is set to zero or a negative number.
+
 
     Examples
     --------
