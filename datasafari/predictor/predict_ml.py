@@ -767,7 +767,86 @@ def model_tuning_core(
     """TODO: write docstring"""
 
     # Error Handling #
-    # TODO: implement error handling
+
+    # TypeErrors
+    if not isinstance(x_train, (pd.DataFrame, np.ndarray)):
+        raise TypeError("model_tuning_core(): 'x_train' must be a pandas DataFrame or NumPy ndarray.")
+
+    if not isinstance(y_train, (pd.Series, np.ndarray)):
+        raise TypeError("model_tuning_core(): 'y_train' must be a pandas Series or NumPy ndarray.")
+
+    if not isinstance(task_type, str):
+        raise TypeError("model_tuning_core(): 'task_type' must be a string.")
+
+    if task_type not in ['classification', 'regression']:
+        raise ValueError("model_tuning_core(): 'task_type' must be either 'classification' or 'regression'.")
+
+    if models is None or not isinstance(models, dict):
+        raise TypeError("model_tuning_core(): 'models' must be a dictionary with model names as keys and model instances as values.")
+
+    if priority_metrics is not None and not isinstance(priority_metrics, list):
+        raise TypeError("model_tuning_core(): 'priority_metrics' must be a list of strings.")
+
+    if priority_tuners is not None and not isinstance(priority_tuners, list):
+        raise TypeError("model_tuning_core(): 'priority_tuners' must be a list of strings.")
+
+    if custom_param_grids is not None and not isinstance(custom_param_grids, dict):
+        raise TypeError("model_tuning_core(): 'custom_param_grids' must be a dictionary of parameter grids.")
+
+    if not isinstance(n_jobs, int):
+        raise TypeError("model_tuning_core(): 'n_jobs' must be an integer.")
+
+    if not isinstance(cv, int) or cv < 1:
+        raise ValueError("model_tuning_core(): 'cv' must be an integer greater than 0.")
+
+    if n_iter_random is not None and (not isinstance(n_iter_random, int) or n_iter_random < 1):
+        raise ValueError("model_tuning_core(): 'n_iter_random' must be a non-negative integer.")
+
+    if n_iter_bayesian is not None and (not isinstance(n_iter_bayesian, int) or n_iter_bayesian < 1):
+        raise ValueError("model_tuning_core(): 'n_iter_bayesian' must be a non-negative integer.")
+
+    if not isinstance(verbose, int):
+        raise TypeError("model_tuning_core(): 'verbose' must be an integer.")
+
+    if not isinstance(random_state, int):
+        raise TypeError("model_tuning_core(): 'random_state' must be an integer.")
+
+    # ValueErrors
+    if x_train.shape[0] != y_train.shape[0]:
+        raise ValueError("model_tuning_core(): 'x_train' and 'y_train' must have the same number of rows.")
+
+    if x_train.size == 0:
+        raise ValueError("model_tuning_core(): 'x_train' cannot be empty.")
+
+    if y_train.size == 0:
+        raise ValueError("model_tuning_core(): 'y_train' cannot be empty.")
+
+    if priority_metrics and any(not isinstance(metric, str) for metric in priority_metrics):
+        raise ValueError("model_tuning_core(): All elements in 'priority_metrics' must be strings.")
+
+    if priority_tuners and any(not isinstance(tuner, str) for tuner in priority_tuners):
+        raise ValueError("model_tuning_core(): All elements in 'priority_tuners' must be strings representing the tuners' short names.")
+
+    if priority_metrics and len(priority_metrics) != len(set(priority_metrics)):
+        raise ValueError("model_tuning_core(): 'priority_metrics' contains duplicate entries.")
+
+    # Check valid metrics based on task_type
+    valid_metrics = set(scoring_classification.keys()) if task_type == 'classification' else set(scoring_regression.keys())
+    invalid_metrics = set(priority_metrics) - valid_metrics if priority_metrics else set()
+
+    if invalid_metrics:
+        raise ValueError(f"model_tuning_core(): The following metrics are not valid for {task_type}: {', '.join(invalid_metrics)}. Valid metrics are: {', '.join(valid_metrics)}.")
+
+    # Checking valid tuners
+    valid_tuners = {'grid', 'random', 'bayesian'}  # Example of possible tuner names
+    invalid_tuners = set(priority_tuners) - valid_tuners if priority_tuners else set()
+
+    if invalid_tuners:
+        raise ValueError(f"model_tuning_core(): The following tuners are not recognized: {', '.join(invalid_tuners)}. Valid tuners are: {', '.join(valid_tuners)}.")
+
+    # Check refit_metric validity
+    if isinstance(refit_metric, str) and refit_metric not in valid_metrics:
+        raise ValueError(f"model_tuning_core(): 'refit_metric' {refit_metric} is not a valid metric. Choose from {', '.join(valid_metrics)}.")
 
     # Main Functionality #
     # initialize tracking for tested parameter combinations
