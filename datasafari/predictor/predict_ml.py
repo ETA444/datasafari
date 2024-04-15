@@ -113,7 +113,7 @@ scoring_regression = {
     'MAPE': 'neg_mean_absolute_percentage_error',
 }
 
-# Tips for Classification Scoring Metrics (if tips_quiet = False) - idea is to aid interpretation for non-advanced users
+# Tips for Classification Scoring Metrics (if verbose > 1) - idea is to aid interpretation for non-advanced users
 tips_scoring_classification = {
     'Accuracy': "Overall correctness, suitable for balanced classes. Higher scores indicate better performance.",
     'Balanced Accuracy': "Accuracy per class, great for imbalanced data. Higher values signal balanced class prediction capability.",
@@ -355,7 +355,7 @@ def data_preprocessing_core(
 
     This function supports flexible preprocessing, accommodating custom transformations through its parameters. By specifying transformers for different data types, users can adapt the preprocessing to fit their dataset's specific characteristics. The function also splits the data into training and test sets, facilitating model evaluation and selection later in the pipeline.
 
-    Designed with usability in mind, `data_preprocessing_core` includes console output options controlled by the `tips_quiet` parameter. This feature provides users with insights into the preprocessing steps taken, including information on processed features and tips for further customization.
+    Designed with usability in mind, `data_preprocessing_core` includes console output options controlled by 'verbose' parameter. This feature provides users with insights into the preprocessing steps taken (verbose > 0), including information on processed features and tips for further customization (verbose > 1).
     """
 
     # Error Handling
@@ -723,11 +723,12 @@ def model_recommendation_core(
         print(f"The recommendation core has prioritized the following scoring metrics while choosing the best models: {', '.join([metric_name for metric_name, metric_func in scoring.items() if metric_func in priority_metrics])}\n") if priority_metrics else print(f"The recommendation core has not prioritized any metrics.\nTo prioritize a metric add it's name to the 'priority_metrics' list parameter. (e.g. priority_metrics=['explained_variance', 'neg_root_mean_squared_error']")
         [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") if scoring_metric in priority_metrics else '' for scoring_metric, score_tip in tips_scoring.items()] if verbose == 2 else ''
         [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") for scoring_metric, score_tip in tips_scoring.items()] if verbose == 3 else ''
+        print(f"Best untuned models:")
         [print(f"  ➡ {model_name}()") for model_name in top_models]
         for model_name in top_models:
-            print(f"\n{model_name} (Composite Score: {composite_scores[model_name]:.4f}):")
+            print(f"\n► {model_name} (Composite Score: {composite_scores[model_name]:.4f}):")
             for metric, average_score in model_scores[model_name].items():
-                print(f"  {metric}: {average_score:.4f}")
+                print(f"  ⬥ {metric}: {average_score:.4f}")
 
     best_untuned_models = {model: models[model] for model in top_models}
     return best_untuned_models
@@ -906,7 +907,7 @@ y_col = 'Salary'
 x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(df, x_cols, y_col, data_state='unprocessed')
 
 # recommend models - success!
-model_scores = model_recommendation_core(x_train_processed, y_train, task_type, cv=5, priority_metrics=['neg_mean_gamma_deviance', 'explained_variance'], tips_quiet=True, focused_tips=False)
+model_scores = model_recommendation_core(x_train_processed, y_train, task_type, cv=5, priority_metrics=['neg_mean_gamma_deviance', 'explained_variance'])
 
 # tuning models
-model_tuning_core(x_train_processed, y_train, task_type, model_scores, priority_tuners=['bayesian'], verbose=3)
+best_tuned_models = model_tuning_core(x_train_processed, y_train, task_type, model_scores, priority_tuners=['bayesian'], verbose=3)
