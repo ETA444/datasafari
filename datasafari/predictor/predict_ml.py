@@ -697,7 +697,7 @@ def model_recommendation_core(
     elif task_type == 'regression':
         invalid_metrics = [metric for metric in priority_metrics if metric not in r_valid_metrics]
         if invalid_metrics:
-            valid_metric_list = ", ".join(sorted(c_valid_metrics))
+            valid_metric_list = ", ".join(sorted(r_valid_metrics))
             raise ValueError(f"model_recommendation_core(): The following priority metrics are not valid for {task_type}: {', '.join(invalid_metrics)}.\n\nValid metrics for {task_type} are: {valid_metric_list}")
 
     # check if 'n_top_models' exceeds the number of available models for the task
@@ -888,7 +888,7 @@ def model_tuning_core(
     return tuned_models
 
 
-# TODO: All of the above < 1
+# TODO: Test with other params < 1
 # TODO: Write everything in the issues < 2
 # TODO: Develop inference core < 3
 
@@ -925,4 +925,40 @@ x_train_processed, x_test_processed, y_train, y_test, task_type = data_preproces
 model_scores = model_recommendation_core(x_train_processed, y_train, task_type, cv=5, priority_metrics=['neg_mean_gamma_deviance', 'explained_variance'])
 
 # tuning models
-best_tuned_models = model_tuning_core(x_train_processed, y_train, task_type, model_scores, priority_tuners=['bayesian'], verbose=3)
+
+# x_train: Union[pd.DataFrame, np.ndarray], > ✔ TESTED <
+# y_train: Union[pd.Series, np.ndarray], > ✔ TESTED <
+# task_type: str, > ✔ TESTED <
+# models: dict, > ✔ TESTED <
+# priority_metrics: List[str] = None, > ✔ TESTED <
+# refit_metric: Optional[Union[str, Callable]] = None,
+# priority_tuners: List[str] = None, > ✔ TESTED <
+# custom_param_grids: dict = None, > ✔ TESTED <
+# n_jobs: int = -1, > ✔ TESTED <
+# cv: int = 5, > ✔ TESTED <
+# n_iter_random: int = None, > ✔ TESTED <
+# n_iter_bayesian: int = None, > ✔ TESTED <
+# verbose: int = 1, > ✔ TESTED <
+# random_state: int = 42 > ✔ TESTED <
+
+custom_param_grid_regression = {
+    'Ridge': {
+        'alpha': [0.1, 1.0, 2.0, 3.0, 4.2, 5.0, 10.0, 100.0],
+        'solver': ['auto', 'svd', 'cholesky', 'lsqr']
+    },
+    'Lasso': {
+        'alpha': [0.1, 1.0, 2.0, 4.2, 10.0, 100.0],
+        'selection': ['cyclic', 'random']
+    },
+    'DecisionTreeRegressor': {
+        'max_depth': [None, 10, 20, 30, 40, 50],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
+    }
+}
+
+best_tuned_models = model_tuning_core(
+    x_train_processed, y_train, task_type, model_scores,
+    priority_tuners=['bayesian'], priority_metrics=['explained_variance', 'neg_mean_absolute_error', 'r2'],
+    custom_param_grids=custom_param_grid_regression, cv=10, verbose=3)
+
