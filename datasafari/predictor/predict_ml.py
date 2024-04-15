@@ -262,7 +262,7 @@ def data_preprocessing_core(
         categorical_encoder: TransformerMixin = OneHotEncoder(handle_unknown='ignore'),
         text_vectorizer: TransformerMixin = CountVectorizer(),
         datetime_transformer: Callable[[pd.DataFrame], pd.DataFrame] = FunctionTransformer(datetime_feature_extractor, validate=False),
-        tips_quiet: bool = False
+        verbose: int = 1
 ) -> Tuple[np.ndarray, np.ndarray, pd.Series, pd.Series, str]:
     """
     Performs comprehensive preprocessing on a dataset containing mixed data types.
@@ -295,8 +295,9 @@ def data_preprocessing_core(
         The vectorization transformer for text data. Default is CountVectorizer().
     datetime_transformer : callable, optional
         The transformation operation for datetime data. Default extracts year, month, and day as separate features.
-    tips_quiet : bool, optional
-        Users can turn console tips on (False) and off (True).
+    verbose : int, optional
+        The higher value the more output and information the user receives. Default is 1.
+
     Returns
     -------
     x_train_processed : ndarray
@@ -319,6 +320,7 @@ def data_preprocessing_core(
         - If 'data_state' is not a string.
         - If 'test_size' is not a float between 0 and 1.
         - If 'random_state' is not an integer.
+        - If 'verbose' is not an integer
         - If numeric_imputer, numeric_scaler, categorical_imputer, categorical_encoder, text_vectorizer, or datetime_transformer do not support the required interface.
     ValueError
         - If 'data_state' is not 'unprocessed' or 'preprocessed'.
@@ -368,6 +370,9 @@ def data_preprocessing_core(
 
     if not isinstance(random_state, int):
         raise TypeError("data_preprocessing_core(): The 'random_state' parameter must be an integer.")
+
+    if not isinstance(verbose, int):
+        raise TypeError("data_preprocessing_core(): 'verbose' must be an integer value.")
 
     # Checking for the essential methods in imputers, scalers, encoders, and vectorizers
     if not (hasattr(numeric_imputer, 'fit_transform') or (hasattr(numeric_imputer, 'fit') and hasattr(numeric_imputer, 'transform'))):
@@ -452,26 +457,26 @@ def data_preprocessing_core(
         datetime_processor_name = "Custom DateTime Processing"
 
         # construct console output
-        print(f"< PREPROCESSING DATA REPORT >")
-        print(f" ☻ Tip: You can define your own SciKit preprocessors using the appropriate parameters, please refer to documentation. \n") if not tips_quiet else ''
-        print(f"  ➡ Numerical features processed [using {numeric_processor_name}]: {', '.join(numeric_features) if numeric_features else 'None'}\n")
-        print(f"  ➡ Categorical features processed [using {categorical_processor_name}]: {', '.join(categorical_features) if categorical_features else 'None'}\n")
-        print(f"  ➡ Text features processed [using {text_processor_name}]: {', '.join(text_features) if text_features else 'None'}\n")
-        print(f"  ➡ Datetime features processed [using {datetime_processor_name}]: {', '.join(datetime_features) if datetime_features else 'None'}\n")
+        if verbose > 0:
+            print(f"< PREPROCESSING DATA REPORT >")
+            print(f" ☻ Tip: You can define your own SciKit preprocessors using the appropriate parameters, please refer to documentation. \n") if verbose > 1 else ''
+            print(f"  ➡ Numerical features processed [using {numeric_processor_name}]: {', '.join(numeric_features) if numeric_features else 'None'}\n")
+            print(f"  ➡ Categorical features processed [using {categorical_processor_name}]: {', '.join(categorical_features) if categorical_features else 'None'}\n")
+            print(f"  ➡ Text features processed [using {text_processor_name}]: {', '.join(text_features) if text_features else 'None'}\n")
+            print(f"  ➡ Datetime features processed [using {datetime_processor_name}]: {', '.join(datetime_features) if datetime_features else 'None'}\n")
 
         # define unprocessed features and output if any
         processed_features = set(numeric_features + categorical_features + text_features + datetime_features)
         all_features = set(x_cols)
         unprocessed_features = list(all_features - processed_features)
         if unprocessed_features:
-            print(f"  ✘ Unprocessed features: {', '.join(unprocessed_features)}\n")
+            print(f"  ✘ Unprocessed features: {', '.join(unprocessed_features)}\n") if verbose > 0 else ''
         else:
             pass
 
         return x_train_processed, x_test_processed, y_train, y_test, task_type
     else:
-        # construct console output
-        print(f"< PREPROCESSING DATA REPORT >\n  ➡ No preprocessing was done as the user indicated the data had already been preprocessed prior to using predict_ml().\n     [parameter: data_state = '{data_state}']\n")
+        print(f"< PREPROCESSING DATA REPORT >\n  ➡ No preprocessing was done as the user indicated the data had already been preprocessed prior to using predict_ml().\n     [parameter: data_state = '{data_state}']\n") if verbose > 0 else ''
         return x_train, x_test, y_train, y_test, task_type
 
 
@@ -592,7 +597,7 @@ def model_recommendation_core(
         - If 'x_train' is not a pandas DataFrame or NumPy ndarray.
         - If 'y_train' is not a pandas Series or NumPy ndarray.
         - If 'priority_metrics' is not a list.
-        - If 'tips_quiet' or 'focused_tips' is not a boolean value.
+        - If 'verbose' is not an integer.
     ValueError
         - If 'task_type' is not 'classification' or 'regression'.
         - If 'n_top_models' is not an integer greater than 0.
