@@ -1094,7 +1094,7 @@ def model_tuning_core(
 def model_recommendation_core_inference(
         df: pd.DataFrame,
         formula: str,
-        models: dict,
+        priority_models: List[str] = None,
         priority_metrics: List[str] = ['AIC', 'BIC'],
         n_top_models: int = 3,
         verbose: int = 1
@@ -1105,9 +1105,15 @@ def model_recommendation_core_inference(
     y_dtype = evaluate_dtype(df, [y_col], output='dict')[y_col]
     task_type = 'regression' if y_dtype == 'numerical' else 'classification'
 
+    # define models to choose from based on task type
+    models = models_classification_inference if task_type == 'classification' else models_regression_inference
+
+    # consider priority models if any
+    models = {model_name: model_func for model_name, model_func in models.items() if model_name in priority_models} if priority_models is not None else models
+
     model_results = {}
     for name, model_func in models.items():
-        model = model_func(formula_str, data).fit()
+        model = model_func(formula, df).fit()
         metrics = {
             'AIC': model.aic,
             'BIC': model.bic,
