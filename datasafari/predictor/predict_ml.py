@@ -1231,3 +1231,5 @@ best_tuned_models = model_tuning_core(
     priority_tuners=['bayesian'], priority_metrics=['explained_variance', 'neg_mean_absolute_error', 'r2'],
     custom_param_grids=custom_param_grid_regression, cv=10, verbose=3)
 
+# inference core testing -
+best_inference_models = model_recommendation_core_inference(df, 'Salary ~ Age + Department', verbose=3)
