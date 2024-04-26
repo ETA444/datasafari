@@ -1112,6 +1112,69 @@ def model_recommendation_core_inference(
         model_kwargs: dict = None,
         verbose: int = 1
 ) -> Dict[str, Any]:
+    """
+    Recommends top statistical models for inference based on user-specified preferences and formula.
+    This function evaluates various statistical models from statsmodels, each suitable for either
+    regression or classification tasks determined dynamically by the nature of the target variable.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame containing the data to fit the models.
+    formula : str
+        A patsy formula specifying the model. The target variable is on the left of '~'.
+    priority_models : List[str], optional
+        A list of model names to restrict the evaluation to specific models, otherwise all applicable models are evaluated.
+    n_top_models : int, optional
+        Number of top-performing models to return based on sorted metrics. Defaults to 3.
+    model_kwargs : dict, optional
+        Dictionary mapping model names to dictionaries of additional keyword arguments to pass to the model constructors.
+        This can be used to pass additional parameters required by specific models.
+    verbose : int, optional
+        The verbosity level: 0 means silent, 1 outputs summary results, 2 includes detailed model summaries.
+
+    Returns
+    -------
+    Dict[str, Any]
+        A dictionary with model names as keys and dictionaries as values. Each dictionary contains the 'model' object,
+        'metrics' dictionary with performance metrics, and potentially 'summary' if verbose > 1.
+
+    Examples
+    --------
+    >>> df = pd.DataFrame({
+    ...     'Age': np.random.randint(18, 35, size=100),
+    ...     'Salary': np.random.normal(50000, 12000, size=100),
+    ...     'Department': np.random.choice(['HR', 'Tech', 'Marketing'], size=100),
+    ...     'Review': ['Good review']*50 + ['Bad review']*50,
+    ...     'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
+    ... })
+    >>> best_inference_models = model_recommendation_core_inference(
+    ...     df,
+    ...     'Salary ~ Age + Department',
+    ...     verbose=2
+    ... )
+    >>> for name, info in best_inference_models.items():
+    ...     print(f"Model: {name}, AIC: {info['metrics']['AIC']}")
+
+    Notes
+    -----
+    - **Dynamic Model Evaluation**: Depending on the datatype of the target variable specified in the formula,
+      the function dynamically decides whether to treat the problem as a regression or classification task,
+      using appropriate metrics and models for each.
+
+    - **Handling Model Specific Requirements**: This function allows passing custom arguments to model constructors
+      to handle models that require specific parameters via `model_kwargs`.
+
+    - **Metric Adjustments**: For metrics where a lower value is better (e.g., AIC, BIC), these are adjusted
+      to be compared directly alongside higher-is-better metrics like R-squared, by negating their values during sorting.
+
+    - **Verbose Output**: The function provides different levels of output detail which can help in diagnosing model fit
+      or understanding model performance.
+
+    - **Error Handling**: The function will report and skip models that encounter errors during fitting, allowing for
+      robust execution even if some models are not applicable to the provided data or formula.
+    """
+
     # define task type based on the target variable data type
     y_col = formula.split('~')[0].strip()
     y_dtype = evaluate_dtype(df, [y_col], output='dict')[y_col]
