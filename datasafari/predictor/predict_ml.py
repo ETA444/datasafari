@@ -1133,6 +1133,22 @@ def model_recommendation_core_inference(
     verbose : int, optional
         The verbosity level: 0 means silent, 1 outputs summary results, 2 includes detailed model summaries.
 
+    Raises
+    ------
+    TypeError
+        - If 'df' is not a pandas DataFrame, ensuring that the input data structure is correct for model fitting.
+        - If 'formula' is not a string, verifying that the model formula is correctly specified as a string.
+        - If 'priority_models' is provided and is not a list of strings, ensuring the user specifies a proper list of model names.
+        - If 'model_kwargs' is provided and is not a dictionary, ensuring the correct format for passing additional keyword arguments to model constructors.
+        - If 'verbose' is not an integer, verifying that the verbosity level is specified as an integer.
+
+    ValueError
+        - If 'formula' does not contain exactly one '~', which is necessary to separate the dependent and independent variables in the model specification.
+        - If the specified target variable from 'formula' is not found in the DataFrame, ensuring the formula correctly references a column in the DataFrame.
+        - If any variables specified in the 'formula' for independent variables are not found in the DataFrame, checking for the presence of all required variables in the DataFrame.
+        - If 'n_top_models' is not a positive integer, ensuring that the number of models to return is specified correctly.
+        - If the input DataFrame is empty, ensuring that there is data available for model fitting.
+
     Returns
     -------
     Dict[str, Any]
