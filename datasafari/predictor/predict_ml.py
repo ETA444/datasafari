@@ -1126,24 +1126,27 @@ def model_recommendation_core_inference(
     model_results = {}
     for name, model_func in models.items():
         model = model_func(formula, df).fit()
-        metrics = {
-            metric: getattr(model, attr)
-            for metric, attr in scoring.items()
-            if hasattr(model, attr)
-        }
-        model_results[name] = {
-            'model': model,
-            'metrics': metrics,
-            'adjusted_metrics': {
-                metric: (-value if metric in ['AIC', 'BIC'] else value)
-                for metric, value in metrics.items()
+        metrics = {}
+        for metric, attr in scoring.items():
+            try:
+                metrics[metric] = getattr(model, attr)
+            except (NotImplementedError, AttributeError):
+                print(f"Warning: {metric} is not supported by the model {name}.")
+
+        if metrics:
+            model_results[name] = {
+                'model': model,
+                'metrics': metrics,
+                'adjusted_metrics': {
+                    metric: (-value if metric in ['AIC', 'BIC'] else value)
+                    for metric, value in metrics.items()
+                }
             }
-        }
 
     # sorting models based on adjusted metrics
     sorted_models = sorted(
         model_results.items(),
-        key=lambda x: tuple(x[1]['adjusted_metrics'][metric] for metric in scoring.keys()),
+        key=lambda x: tuple(x[1]['adjusted_metrics'][metric] for metric in scoring.keys() if metric in x[1]['adjusted_metrics']),
         reverse=True
     )[:n_top_models]
 
@@ -1153,10 +1156,10 @@ def model_recommendation_core_inference(
             print(f"\nModel: {name}")
             for metric, value in details['metrics'].items():
                 print(f"  {metric}: {value:.4f}")
-            if verbose > 1:
+            if verbose > 1 and 'model' in details:
                 print(details['model'].summary())
 
-    return {name: details['model'] for name, details in sorted_models}
+    return {name: details for name, details in sorted_models}
 
 
 # smoke tests #
