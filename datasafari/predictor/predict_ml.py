@@ -1207,6 +1207,21 @@ def model_recommendation_core_inference(
         raise ValueError("model_recommendation_core_inference(): 'formula' must include exactly one '~' to separate dependent and independent variables.")
 
     y_col = formula.split('~')[0].strip()
+    if y_col not in df.columns:
+        raise ValueError(f"model_recommendation_core_inference(): Specified target variable '{y_col}' is not in DataFrame.")
+
+    # Check for presence of all variables specified in the formula in the DataFrame
+    independent_vars = formula.split('~')[1]
+    missing_vars = [var.strip() for var in independent_vars.replace('+', ' ').split() if var.strip() not in df.columns]
+    if missing_vars:
+        raise ValueError(f"model_recommendation_core_inference(): The following independent variables are not in DataFrame: {', '.join(missing_vars)}.")
+
+    # Ensure non-empty DataFrame
+    if df.empty:
+        raise ValueError("model_recommendation_core_inference(): The input DataFrame is empty.")
+
+    # Main Functionality #
+    # define task type based on the target variable data type
     y_dtype = evaluate_dtype(df, [y_col], output='dict')[y_col]
     task_type = 'regression' if y_dtype == 'numerical' else 'classification'
 
