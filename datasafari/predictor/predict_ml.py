@@ -1141,20 +1141,27 @@ def model_recommendation_core_inference(
 
     Examples
     --------
+    >>> import numpy as np
+    >>> import pandas as pd
     >>> df = pd.DataFrame({
-    ...     'Age': np.random.randint(18, 35, size=100),
-    ...     'Salary': np.random.normal(50000, 12000, size=100),
-    ...     'Department': np.random.choice(['HR', 'Tech', 'Marketing'], size=100),
-    ...     'Review': ['Good review']*50 + ['Bad review']*50,
-    ...     'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
+    ...     'Age': np.random.randint(18, 70, size=100),
+    ...     'Salary': np.random.normal(50000, 15000, size=100),
+    ...     'Experience': np.random.randint(1, 30, size=100)
     ... })
+    >>> formula = 'Salary ~ Age + Experience'
     >>> best_inference_models = model_recommendation_core_inference(
     ...     df,
-    ...     'Salary ~ Age + Department',
+    ...     formula,
     ...     verbose=2
     ... )
-    >>> for name, info in best_inference_models.items():
-    ...     print(f"Model: {name}, AIC: {info['metrics']['AIC']}")
+    >>> # Accessing the best model's object
+    >>> best_model_name = list(best_inference_models.keys())[0]
+    >>> best_model = best_inference_models[best_model_name]['model']
+    >>> # Viewing the summary of the best model
+    >>> print(best_model.summary())
+    >>> # Extracting AIC of the best model
+    >>> best_model_aic = best_inference_models[best_model_name]['metrics']['AIC']
+    >>> print(f"The best model according to AIC is {best_model_name} with an AIC of {best_model_aic:.2f}")
 
     Notes
     -----
