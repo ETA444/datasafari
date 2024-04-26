@@ -1109,6 +1109,7 @@ def model_recommendation_core_inference(
         formula: str,
         priority_models: List[str] = None,
         n_top_models: int = 3,
+        model_kwargs: dict = None,
         verbose: int = 1
 ) -> Dict[str, Any]:
     # define task type based on the target variable data type
@@ -1121,27 +1122,35 @@ def model_recommendation_core_inference(
     scoring = scoring_classification_inference if task_type == 'classification' else scoring_regression_inference
 
     # consider priority models if any
-    models = {model_name: model_func for model_name, model_func in models.items() if model_name in priority_models} if priority_models is not None else models
+    models = {model_name: model_func for model_name, model_func in models.items() if (priority_models and model_name in priority_models) or not priority_models}
 
     model_results = {}
     for name, model_func in models.items():
-        model = model_func(formula, df).fit()
-        metrics = {}
-        for metric, attr in scoring.items():
-            try:
-                metrics[metric] = getattr(model, attr)
-            except (NotImplementedError, AttributeError):
-                print(f"Warning: {metric} is not supported by the model {name}.")
+        try:
+            # use provided kwargs if applicable for the model
+            kwargs = model_kwargs.get(name, {}) if model_kwargs is not None else None
+            model = model_func(formula, df, **kwargs).fit() if kwargs else model_func(formula, df).fit()
+            metrics = {}
+            for metric, attr in scoring.items():
+                try:
+                    metrics[metric] = getattr(model, attr)
+                except (NotImplementedError, AttributeError):
+                    if verbose > 1:
+                        print(f"Warning: {metric} is not supported by the model {name}.")
 
-        if metrics:
-            model_results[name] = {
-                'model': model,
-                'metrics': metrics,
-                'adjusted_metrics': {
-                    metric: (-value if metric in ['AIC', 'BIC'] else value)
-                    for metric, value in metrics.items()
+            if metrics:
+                model_results[name] = {
+                    'model': model,
+                    'metrics': metrics,
+                    'adjusted_metrics': {
+                        metric: (-value if metric in ['AIC', 'BIC'] else value)
+                        for metric, value in metrics.items()
+                    }
                 }
-            }
+        except Exception as e:
+            if verbose > 0:
+                print(f"Warning: Error fitting model {name}: {str(e)}")
+            continue
 
     # sorting models based on adjusted metrics
     sorted_models = sorted(
