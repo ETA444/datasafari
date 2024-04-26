@@ -83,9 +83,7 @@ models_classification_inference = {
     'NegativeBinomial': smf.negativebinomial,  # Negative Binomial Regression for over-dispersed count data
     'GEE': smf.gee,  # Generalized Estimating Equations for repeated measurements
     'NominalGEE': smf.nominal_gee,  # GEE for nominal response
-    'OrdinalGEE': smf.ordinal_gee,  # GEE for ordinal response
-    'ConditionalLogit': smf.conditional_logit,  # Conditional Logistic Regression for matched pairs
-    'ConditionalMNLogit': smf.conditional_mnlogit  # Conditional Multinomial Logistic Regression
+    'OrdinalGEE': smf.ordinal_gee  # GEE for ordinal response
 }
 
 # Available Regression Models (inference)
@@ -97,9 +95,7 @@ models_regression_inference = {
     'QuantReg': smf.quantreg,  # Quantile Regression
     'GLSAR': smf.glsar,  # GLS with autoregressive errors
     'MixedLM': smf.mixedlm,  # Mixed Linear Model for hierarchical or longitudinal data
-    'PHReg': smf.phreg,  # Proportional Hazards Regression for survival analysis
-    'GLMGam': smf.glm_gam,  # Generalized Linear Models with Generalized Additive Models
-    'ConditionalPoisson': smf.conditional_poisson  # Conditional Poisson Regression
+    'PHReg': smf.phreg  # Proportional Hazards Regression for survival analysis
 }
 
 # Available Scoring Metrics for Classification using Scikit
@@ -1115,7 +1111,6 @@ def model_recommendation_core_inference(
         n_top_models: int = 3,
         verbose: int = 1
 ) -> Dict[str, Any]:
-
     # define task type based on the target variable data type
     y_col = formula.split('~')[0].strip()
     y_dtype = evaluate_dtype(df, [y_col], output='dict')[y_col]
@@ -1132,19 +1127,24 @@ def model_recommendation_core_inference(
     for name, model_func in models.items():
         model = model_func(formula, df).fit()
         metrics = {
-            'AIC': model.aic,
-            'BIC': model.bic,
-            'Log-Likelihood': model.llf
+            metric: getattr(model, attr)
+            for metric, attr in scoring.items()
+            if hasattr(model, attr)
         }
         model_results[name] = {
             'model': model,
-            'metrics': metrics
+            'metrics': metrics,
+            'adjusted_metrics': {
+                metric: (-value if metric in ['AIC', 'BIC'] else value)
+                for metric, value in metrics.items()
+            }
         }
 
-    # Sorting models based on priority metrics
+    # sorting models based on adjusted metrics
     sorted_models = sorted(
         model_results.items(),
-        key=lambda x: tuple(x[1]['metrics'][metric] for metric in priority_metrics)
+        key=lambda x: tuple(x[1]['adjusted_metrics'][metric] for metric in scoring.keys()),
+        reverse=True
     )[:n_top_models]
 
     if verbose > 0:
@@ -1156,7 +1156,7 @@ def model_recommendation_core_inference(
             if verbose > 1:
                 print(details['model'].summary())
 
-    return {name: details for name, details in sorted_models}
+    return {name: details['model'] for name, details in sorted_models}
 
 
 # smoke tests #
