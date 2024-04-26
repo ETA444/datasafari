@@ -1154,7 +1154,7 @@ def model_recommendation_core_inference(
 
     # sorting models based on adjusted metrics
     sorted_models = sorted(
-        model_results.items(),
+        [(name, details) for name, details in model_results.items() if not all(pd.isna(value) for value in details['metrics'].values())],
         key=lambda x: tuple(x[1]['adjusted_metrics'][metric] for metric in scoring.keys() if metric in x[1]['adjusted_metrics']),
         reverse=True
     )[:n_top_models]
