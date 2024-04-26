@@ -102,7 +102,7 @@ models_regression_inference = {
     'ConditionalPoisson': smf.conditional_poisson  # Conditional Poisson Regression
 }
 
-# Available Scoring Metrics for Classification
+# Available Scoring Metrics for Classification using Scikit
 scoring_classification = {
     'Accuracy': 'accuracy',
     'Balanced Accuracy': 'balanced_accuracy',
@@ -125,7 +125,7 @@ scoring_classification = {
     'ROC AUC (OVO)': 'roc_auc_ovo',
 }
 
-# Available Scoring Metrics for Regression
+# Available Scoring Metrics for Regression using Scikit
 scoring_regression = {
     'EV': 'explained_variance',
     'MAE': 'neg_mean_absolute_error',
@@ -137,6 +137,23 @@ scoring_regression = {
     'MPD': 'neg_mean_poisson_deviance',
     'MGD': 'neg_mean_gamma_deviance',
     'MAPE': 'neg_mean_absolute_percentage_error',
+}
+
+# Available Inference Metrics for Regression using Statsmodels
+scoring_regression_inference = {
+    'AIC': 'aic',
+    'BIC': 'bic',
+    'R-squared': 'rsquared',
+    'Adjusted R-squared': 'rsquared_adj',
+    'Log-Likelihood': 'llf'
+}
+
+# Available Inference Metrics for Classification using Statsmodels
+scoring_classification_inference = {
+    'AIC': 'aic',
+    'BIC': 'bic',
+    'Pseudo R-squared': 'prsquared',
+    'Log-Likelihood': 'llf'
 }
 
 # Tips for Classification Scoring Metrics (if verbose > 1) - idea is to aid interpretation for non-advanced users
@@ -1095,7 +1112,6 @@ def model_recommendation_core_inference(
         df: pd.DataFrame,
         formula: str,
         priority_models: List[str] = None,
-        priority_metrics: List[str] = ['AIC', 'BIC'],
         n_top_models: int = 3,
         verbose: int = 1
 ) -> Dict[str, Any]:
@@ -1107,6 +1123,7 @@ def model_recommendation_core_inference(
 
     # define models to choose from based on task type
     models = models_classification_inference if task_type == 'classification' else models_regression_inference
+    scoring = scoring_classification_inference if task_type == 'classification' else scoring_regression_inference
 
     # consider priority models if any
     models = {model_name: model_func for model_name, model_func in models.items() if model_name in priority_models} if priority_models is not None else models
