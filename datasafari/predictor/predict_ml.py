@@ -1160,11 +1160,12 @@ def model_recommendation_core_inference(
     )[:n_top_models]
 
     if verbose > 0:
-        print("< Model Recommendation Summary >")
+        print(f"\n< MODEL RECOMMENDATIONS >")
+        print(f" ☻ Tip: Use verbose = 2 to see model summaries, or access the models directly in the returned dictionary object.") if verbose < 2 else ''
         for name, details in sorted_models:
-            print(f"\nModel: {name}")
+            print(f"\n\n ➡ Model: {name}")
             for metric, value in details['metrics'].items():
-                print(f"  {metric}: {value:.4f}")
+                print(f"  ⬥ {metric}: {value:.4f}")
             if verbose > 1 and 'model' in details:
                 print(details['model'].summary())
 
