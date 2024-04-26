@@ -1182,7 +1182,30 @@ def model_recommendation_core_inference(
       robust execution even if some models are not applicable to the provided data or formula.
     """
 
-    # define task type based on the target variable data type
+    # Error handling #
+    # TypeErrors
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError("model_recommendation_core_inference(): 'df' must be a pandas DataFrame.")
+
+    if not isinstance(formula, str):
+        raise TypeError("model_recommendation_core_inference(): 'formula' must be a string.")
+
+    if priority_models is not None and not isinstance(priority_models, list):
+        raise TypeError("model_recommendation_core_inference(): 'priority_models' must be a list of strings.")
+
+    if not isinstance(n_top_models, int) or n_top_models < 1:
+        raise ValueError("model_recommendation_core_inference(): 'n_top_models' must be an integer greater than 0.")
+
+    if model_kwargs is not None and not isinstance(model_kwargs, dict):
+        raise TypeError("model_recommendation_core_inference(): 'model_kwargs' must be a dictionary.")
+
+    if not isinstance(verbose, int):
+        raise TypeError("model_recommendation_core_inference(): 'verbose' must be an integer.")
+
+    # ValueErrors
+    if formula.count('~') != 1:
+        raise ValueError("model_recommendation_core_inference(): 'formula' must include exactly one '~' to separate dependent and independent variables.")
+
     y_col = formula.split('~')[0].strip()
     y_dtype = evaluate_dtype(df, [y_col], output='dict')[y_col]
     task_type = 'regression' if y_dtype == 'numerical' else 'classification'
