@@ -1091,20 +1091,50 @@ def model_tuning_core(
     return tuned_models
 
 
-# TODO: Test with other params < 1
-# TODO: Write everything in the issues < 2
-# TODO: Develop inference core < 3
+def model_recommendation_core_inference(
+        df: pd.DataFrame,
+        formula: str,
+        models: dict,
+        priority_metrics: List[str] = ['AIC', 'BIC'],
+        n_top_models: int = 3,
+        verbose: int = 1
+) -> Dict[str, Any]:
 
-inference_models_continuousDV = {
-    'OLS': OLS,
-    # Add more models as needed
-}
+    # define task type based on the target variable data type
+    y_col = formula.split('~')[0].strip()
+    y_dtype = evaluate_dtype(df, [y_col], output='dict')[y_col]
+    task_type = 'regression' if y_dtype == 'numerical' else 'classification'
 
-inference_models_categoricalDV = {
-    'Logit': Logit,
-    # MixedLM can be used for more complex cases with mixed effects.
-    'MixedLM': MixedLM
-}
+    model_results = {}
+    for name, model_func in models.items():
+        model = model_func(formula_str, data).fit()
+        metrics = {
+            'AIC': model.aic,
+            'BIC': model.bic,
+            'Log-Likelihood': model.llf
+        }
+        model_results[name] = {
+            'model': model,
+            'metrics': metrics
+        }
+
+    # Sorting models based on priority metrics
+    sorted_models = sorted(
+        model_results.items(),
+        key=lambda x: tuple(x[1]['metrics'][metric] for metric in priority_metrics)
+    )[:n_top_models]
+
+    if verbose > 0:
+        print("< Model Recommendation Summary >")
+        for name, details in sorted_models:
+            print(f"\nModel: {name}")
+            for metric, value in details['metrics'].items():
+                print(f"  {metric}: {value:.4f}")
+            if verbose > 1:
+                print(details['model'].summary())
+
+    return {name: details for name, details in sorted_models}
+
 
 # smoke tests #
 # generate data for smoke tests
