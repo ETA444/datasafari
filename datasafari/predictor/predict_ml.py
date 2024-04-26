@@ -44,9 +44,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, Grad
 from sklearn.svm import SVC, SVR
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 # mostly used within the model_inference_core():
-from statsmodels.regression.linear_model import OLS
-from statsmodels.discrete.discrete_model import Logit
-from statsmodels.regression.mixed_linear_model import MixedLM
+import statsmodels.formula.api as smf
 # mostly used within the model_tuning_core():
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from skopt import BayesSearchCV
@@ -74,6 +72,34 @@ models_regression = {
     'GradientBoostingRegressor': GradientBoostingRegressor(),
     'SVR': SVR(),
     'KNeighborsRegressor': KNeighborsRegressor(),
+}
+
+# Available Classification Models (inference)
+models_classification_inference = {
+    'Logit': smf.logit,  # Logistic Regression
+    'Probit': smf.probit,  # Probit Regression
+    'MNLogit': smf.mnlogit,  # Multinomial Logistic Regression
+    'Poisson': smf.poisson,  # Poisson Regression for count data
+    'NegativeBinomial': smf.negativebinomial,  # Negative Binomial Regression for over-dispersed count data
+    'GEE': smf.gee,  # Generalized Estimating Equations for repeated measurements
+    'NominalGEE': smf.nominal_gee,  # GEE for nominal response
+    'OrdinalGEE': smf.ordinal_gee,  # GEE for ordinal response
+    'ConditionalLogit': smf.conditional_logit,  # Conditional Logistic Regression for matched pairs
+    'ConditionalMNLogit': smf.conditional_mnlogit  # Conditional Multinomial Logistic Regression
+}
+
+# Available Regression Models (inference)
+models_regression_inference = {
+    'OLS': smf.ols,  # Ordinary Least Squares Linear Regression
+    'WLS': smf.wls,  # Weighted Least Squares Linear Regression
+    'GLS': smf.gls,  # Generalized Least Squares Linear Regression
+    'RLM': smf.rlm,  # Robust Linear Models
+    'QuantReg': smf.quantreg,  # Quantile Regression
+    'GLSAR': smf.glsar,  # GLS with autoregressive errors
+    'MixedLM': smf.mixedlm,  # Mixed Linear Model for hierarchical or longitudinal data
+    'PHReg': smf.phreg,  # Proportional Hazards Regression for survival analysis
+    'GLMGam': smf.glm_gam,  # Generalized Linear Models with Generalized Additive Models
+    'ConditionalPoisson': smf.conditional_poisson  # Conditional Poisson Regression
 }
 
 # Available Scoring Metrics for Classification
