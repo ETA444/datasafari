@@ -1298,31 +1298,32 @@ def model_recommendation_core_inference(
 
 
 # Main Function (front-end) #
-def predict_ml(df: pd.DataFrame,
-               x_cols: List[str] = None,
-               y_col: str = None,
-               formula: str = None,
-               data_state: str = 'unprocessed',
-               n_top_models: int = 3,
-               test_size: float = 0.2,
-               cv: int = 5,
-               random_state: int = 42,
-               priority_metrics: List[str] = None,
-               refit_metric: Optional[Union[str, Callable]] = None,
-               priority_tuners: List[str] = None,
-               custom_param_grids: dict = None,
-               n_jobs: int = -1,
-               n_iter_random: int = None,
-               n_iter_bayesian: int = None,
-               priority_models: List[str] = None,
-               model_kwargs: dict = None,
-               verbose: int = 1,
-               numeric_imputer: TransformerMixin = SimpleImputer(strategy='median'),
-               numeric_scaler: TransformerMixin = StandardScaler(),
-               categorical_imputer: TransformerMixin = SimpleImputer(strategy='constant', fill_value='missing'),
-               categorical_encoder: TransformerMixin = OneHotEncoder(handle_unknown='ignore'),
-               text_vectorizer: TransformerMixin = CountVectorizer(),
-               datetime_transformer: Callable[[pd.DataFrame], pd.DataFrame] = FunctionTransformer(datetime_feature_extractor, validate=False),
+def predict_ml(
+        df: pd.DataFrame,
+        x_cols: List[str] = None,
+        y_col: str = None,
+        formula: str = None,
+        data_state: str = 'unprocessed',
+        n_top_models: int = 3,
+        test_size: float = 0.2,
+        cv: int = 5,
+        random_state: int = 42,
+        priority_metrics: List[str] = None,
+        refit_metric: Optional[Union[str, Callable]] = None,
+        priority_tuners: List[str] = None,
+        custom_param_grids: dict = None,
+        n_jobs: int = -1,
+        n_iter_random: int = None,
+        n_iter_bayesian: int = None,
+        priority_models: List[str] = None,
+        model_kwargs: dict = None,
+        verbose: int = 1,
+        numeric_imputer: TransformerMixin = SimpleImputer(strategy='median'),
+        numeric_scaler: TransformerMixin = StandardScaler(),
+        categorical_imputer: TransformerMixin = SimpleImputer(strategy='constant', fill_value='missing'),
+        categorical_encoder: TransformerMixin = OneHotEncoder(handle_unknown='ignore'),
+        text_vectorizer: TransformerMixin = CountVectorizer(),
+        datetime_transformer: Callable[[pd.DataFrame], pd.DataFrame] = FunctionTransformer(datetime_feature_extractor, validate=False)
 ) -> Dict[str, Any]:
 
     if formula and df is not None:
@@ -1332,13 +1333,48 @@ def predict_ml(df: pd.DataFrame,
     elif x_cols is not None and y_col is not None and df is not None:
         # ML pipeline
         x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(
-            df, x_cols, y_col, data_state, test_size, random_state, numeric_imputer, numeric_scaler,
-            categorical_imputer, categorical_encoder, text_vectorizer, datetime_transformer, verbose
+            df=df,
+            x_cols=x_cols,
+            y_col=y_col,
+            data_state=data_state,
+            test_size=test_size,
+            random_state=random_state,
+            numeric_imputer=numeric_imputer,
+            numeric_scaler=numeric_scaler,
+            categorical_imputer=categorical_imputer,
+            categorical_encoder=categorical_encoder,
+            text_vectorizer=text_vectorizer,
+            datetime_transformer=datetime_transformer,
+            verbose=verbose
         )
-        recommended_models = model_recommendation_core(x_train_processed, y_train, task_type, cv,
-                                                       priority_metrics, n_top_models, verbose)
-        tuned_models = model_tuning_core(x_train_processed, y_train, task_type, recommended_models, priority_metrics,
-                                         None, ['grid', 'random', 'bayesian'], None, -1, cv, None, None, verbose, random_state)
+
+        recommended_models = model_recommendation_core(
+            x_train=x_train_processed,
+            y_train=y_train,
+            task_type=task_type,
+            cv=cv,
+            priority_metrics=priority_metrics,
+            n_top_models=n_top_models,
+            verbose=verbose
+        )
+
+        tuned_models = model_tuning_core(
+            x_train=x_train_processed,
+            y_train=y_train,
+            task_type=task_type,
+            models=recommended_models,
+            priority_metrics=priority_metrics,
+            refit_metric=refit_metric,
+            priority_tuners=priority_tuners,
+            custom_param_grids=custom_param_grids,
+            n_jobs=n_jobs,
+            cv=cv,
+            n_iter_random=n_iter_random,
+            n_iter_bayesian=n_iter_bayesian,
+            verbose=verbose,
+            random_state=random_state
+        )
+
         return tuned_models
     else:
         raise ValueError("Invalid input: Either provide a formula for inference or x_cols and y_col for machine learning.")
