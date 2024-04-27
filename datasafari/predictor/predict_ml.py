@@ -969,7 +969,7 @@ def model_tuning_core(
         raise ValueError("model_tuning_core(): 'priority_metrics' contains duplicate entries.")
 
     # Check valid metrics based on task_type
-    valid_metrics = set(scoring_classification.keys()) if task_type == 'classification' else set(scoring_regression.keys())
+    valid_metrics = set(scoring_classification.values()) if task_type == 'classification' else set(scoring_regression.values())
     invalid_metrics = set(priority_metrics) - valid_metrics if priority_metrics else set()
 
     if invalid_metrics:
@@ -998,7 +998,7 @@ def model_tuning_core(
     priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.items() if metric_func in priority_metrics} if priority_metrics else scoring
 
     if refit_metric is None:
-        refit_metric = priority_metrics[0] if priority_metrics else 'accuracy' if task_type == 'classification' else 'neg_mean_squared_error'
+        refit_metric = priority_metrics[0] if priority_metrics else 'Accuracy' if task_type == 'classification' else 'MSE'
 
     final_param_grids = default_param_grids_classification if task_type == 'classification' else default_param_grids_regression
     if custom_param_grids:
@@ -1308,7 +1308,7 @@ def predict_ml(
         test_size: float = 0.2,
         cv: int = 5,
         random_state: int = 42,
-        priority_metrics: List[str] = None,
+        priority_metrics: List[str] = [],
         refit_metric: Optional[Union[str, Callable]] = None,
         priority_tuners: List[str] = None,
         custom_param_grids: dict = None,
@@ -1535,5 +1535,18 @@ best_tuned_models = model_tuning_core(
     priority_tuners=['bayesian'], priority_metrics=['explained_variance', 'neg_mean_absolute_error', 'r2'],
     custom_param_grids=custom_param_grid_regression, cv=10, verbose=3)
 
-# inference core testing -
+# inference core testing - success!
 best_inference_models = model_recommendation_core_inference(df, 'Salary ~ Age + Department', verbose=3)
+
+# predict_ml ml pipeline testing - success!
+best_models_ml = predict_ml(
+    df=df,
+    x_cols=x_cols,
+    y_col=y_col
+)
+
+# predict_ml inference pipeline testing - success!
+best_models_inf = predict_ml(
+    df=df,
+    formula='Salary ~ Age + Department'
+)
