@@ -1322,8 +1322,26 @@ def predict_ml(df: pd.DataFrame,
                categorical_imputer: TransformerMixin = SimpleImputer(strategy='constant', fill_value='missing'),
                categorical_encoder: TransformerMixin = OneHotEncoder(handle_unknown='ignore'),
                text_vectorizer: TransformerMixin = CountVectorizer(),
-               datetime_transformer: TransformerMixin = FunctionTransformer(datetime_feature_extractor, validate=False)
+               datetime_transformer: Callable[[pd.DataFrame], pd.DataFrame] = FunctionTransformer(datetime_feature_extractor, validate=False),
 ) -> Dict[str, Any]:
+
+    if formula and df is not None:
+        # Inference pipeline
+        return model_recommendation_core_inference(df, formula, priority_models=priority_models, n_top_models=n_top_models,
+                                                   model_kwargs=model_kwargs, verbose=verbose)
+    elif x_cols is not None and y_col is not None and df is not None:
+        # ML pipeline
+        x_train_processed, x_test_processed, y_train, y_test, task_type = data_preprocessing_core(
+            df, x_cols, y_col, data_state, test_size, random_state, numeric_imputer, numeric_scaler,
+            categorical_imputer, categorical_encoder, text_vectorizer, datetime_transformer, verbose
+        )
+        recommended_models = model_recommendation_core(x_train_processed, y_train, task_type, cv,
+                                                       priority_metrics, n_top_models, verbose)
+        tuned_models = model_tuning_core(x_train_processed, y_train, task_type, recommended_models, priority_metrics,
+                                         None, ['grid', 'random', 'bayesian'], None, -1, cv, None, None, verbose, random_state)
+        return tuned_models
+    else:
+        raise ValueError("Invalid input: Either provide a formula for inference or x_cols and y_col for machine learning.")
 
 
 # smoke tests #
