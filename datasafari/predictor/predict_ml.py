@@ -1332,6 +1332,65 @@ def predict_ml(
         - **Machine Learning Pipeline**: Focuses on predictive model selection and hyperparameter tuning using scikit-learn. It includes preprocessing, model recommendation based on specified metrics, and tuning using grid search, random search, or Bayesian optimization.
         - **Inference Pipeline**: Utilizes statsmodels for detailed statistical analysis and model fitting based on a specified formula. This pipeline is tailored for users seeking statistical inference, providing metrics such as AIC, BIC, and R-squared.
 
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing the dataset to be analyzed.
+    x_cols : List[str], optional
+        List of column names to be used as features for machine learning model recommendation.
+    y_col : str, optional
+        Column name to be used as the target for machine learning model recommendation.
+    formula : str, optional
+        A Patsy formula for specifying the model in the case of statistical inference.
+    data_state : str, optional
+        Specifies the initial state of the data ('unprocessed' or 'preprocessed'). Default is 'unprocessed'.
+    test_size : float, optional
+        Proportion of the dataset to be used as the test set. Default is 0.2.
+    cv : int, optional
+        Number of cross-validation folds. Default is 5.
+    random_state : int, optional
+        Controls the shuffling applied to the data before applying the split.
+    priority_metrics : List[str], optional
+        Metrics to prioritize in model evaluation in the machine learning pipeline.
+    refit_metric : Optional[Union[str, Callable]], optional
+        Metric to use for refitting the models in the machine learning pipeline.
+    priority_tuners : List[str], optional
+        Tuners to use for hyperparameter tuning in the machine learning pipeline.
+    custom_param_grids : dict, optional
+        Custom parameter grids for tuning in the machine learning pipeline.
+    n_jobs : int, optional
+        Number of jobs to run in parallel. -1 means using all processors. Default is -1.
+    n_iter_random : int, optional
+        Number of iterations for random search tuning in the machine learning pipeline.
+    n_iter_bayesian : int, optional
+        Number of iterations for Bayesian optimization in the machine learning pipeline.
+    n_top_models : int, optional
+        Number of top models to recommend from the evaluation.
+    priority_models : List[str], optional
+        Specific models to evaluate in the inference pipeline.
+    model_kwargs : dict, optional
+        Keyword arguments to pass to model constructors in the inference pipeline.
+    verbose : int, optional
+        Level of verbosity in output.
+    numeric_imputer : TransformerMixin, optional
+        Imputer for handling missing values in numerical data.
+    numeric_scaler : TransformerMixin, optional
+        Scaler for numerical data.
+    categorical_imputer : TransformerMixin, optional
+        Imputer for handling missing values in categorical data.
+    categorical_encoder : TransformerMixin, optional
+        Encoder for categorical data.
+    text_vectorizer : TransformerMixin, optional
+        Vectorizer for text data.
+    datetime_transformer : callable, optional
+        Transformer for datetime data.
+
+    Returns
+    -------
+    Dict[str, Any]
+        Depending on the operation mode, returns either:
+        - a dictionary of top machine learning models and their evaluation metrics,
+        - a dictionary of statistical models along with their fit statistics.
 
     Examples
     --------
