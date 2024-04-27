@@ -1325,6 +1325,43 @@ def predict_ml(
         text_vectorizer: TransformerMixin = CountVectorizer(),
         datetime_transformer: Callable[[pd.DataFrame], pd.DataFrame] = FunctionTransformer(datetime_feature_extractor, validate=False)
 ) -> Dict[str, Any]:
+    """
+    Automates and simplifies data preprocessing, model selection and model tuning, culminating in a recommendation of the best model given the user's data.
+
+    Depending on the inputs, this function can either perform statistical inference or predictive model selection using machine learning.
+        - **Machine Learning Pipeline**: Focuses on predictive model selection and hyperparameter tuning using scikit-learn. It includes preprocessing, model recommendation based on specified metrics, and tuning using grid search, random search, or Bayesian optimization.
+        - **Inference Pipeline**: Utilizes statsmodels for detailed statistical analysis and model fitting based on a specified formula. This pipeline is tailored for users seeking statistical inference, providing metrics such as AIC, BIC, and R-squared.
+
+
+    Examples
+    --------
+    >>> df = pd.DataFrame({
+    ...     'Age': np.random.randint(18, 35, size=100),
+    ...     'Salary': np.random.normal(50000, 12000, size=100),
+    ...     'Department': np.random.choice(['HR', 'Tech', 'Marketing'], size=100),
+    ...     'Review': ['Good review']*50 + ['Bad review']*50,
+    ...     'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
+    ... })
+    >>> # Machine Learning Pipeline
+    >>> x_cols = ['Age', 'Salary', 'Department', 'Review', 'Employment Date']
+    >>> y_col = 'Salary'
+    >>> ml_models = predict_ml(df, x_cols=x_cols, y_col=y_col, verbose=2)
+    >>> # Inference Pipeline
+    >>> formula = 'Salary ~ Age + C(Department)'
+    >>> inference_models = predict_ml(df, formula=formula, verbose=2)
+
+    Notes
+    -----
+        1. Machine Learning Pipeline
+            1.1. Data Preprocessing (optional): prepares a dataset for machine learning by handling numerical, categorical, text, and datetime data. It supports flexible imputation, scaling, encoding, and vectorization methods to cater to a wide range of preprocessing needs. The function automatically splits the data into training and test sets and applies the preprocessing steps defined by the user. It accommodates custom preprocessing steps for various data types, enhancing flexibility and control over the preprocessing pipeline.
+            1.2. Evaluation of Untuned models: leverages a composite score for model evaluation, which synthesizes scores across multiple metrics, weighted by the specified priorities. This method enables a holistic and nuanced model comparison, taking into account the multidimensional aspects of model performance.
+                - Priority Metrics: Assigning weights (default: 5 for prioritized metrics, 1 for others) allows users to emphasize metrics they find most relevant, affecting the composite score calculation.
+                - Composite Score: Calculated as a weighted average of metric scores, normalized by the total weight. This score serves as a basis for ranking models.
+            1.3. Model Tuning: Uses top N untuned models to tune. Systematically applies grid search, random search, or Bayesian optimization to explore the hyperparameter space of given models. It supports customization of the tuning process through various parameters and outputs the best found configurations.
+        2. Statistical Inference Pipeline
+            - Recommends top statistical models for inference based on user-specified preferences and formula.
+            - This function evaluates various statistical models from statsmodels, each suitable for either regression or classification tasks determined dynamically by the nature of the target variable.
+    """
 
     if formula and df is not None:
         # Inference pipeline
