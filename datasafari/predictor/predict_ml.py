@@ -283,6 +283,7 @@ default_param_grids_regression = {
 }
 
 
+# Utility Functions (predict_ml() back-end) #
 def datetime_feature_extractor(df: pd.DataFrame) -> pd.DataFrame:
     feature_df = pd.DataFrame()
     for column in df.columns:
@@ -1294,6 +1295,35 @@ def model_recommendation_core_inference(
                 print(details['model'].summary())
 
     return {name: details for name, details in sorted_models}
+
+
+# Main Function (front-end) #
+def predict_ml(df: pd.DataFrame,
+               x_cols: List[str] = None,
+               y_col: str = None,
+               formula: str = None,
+               data_state: str = 'unprocessed',
+               n_top_models: int = 3,
+               test_size: float = 0.2,
+               cv: int = 5,
+               random_state: int = 42,
+               priority_metrics: List[str] = None,
+               refit_metric: Optional[Union[str, Callable]] = None,
+               priority_tuners: List[str] = None,
+               custom_param_grids: dict = None,
+               n_jobs: int = -1,
+               n_iter_random: int = None,
+               n_iter_bayesian: int = None,
+               priority_models: List[str] = None,
+               model_kwargs: dict = None,
+               verbose: int = 1,
+               numeric_imputer: TransformerMixin = SimpleImputer(strategy='median'),
+               numeric_scaler: TransformerMixin = StandardScaler(),
+               categorical_imputer: TransformerMixin = SimpleImputer(strategy='constant', fill_value='missing'),
+               categorical_encoder: TransformerMixin = OneHotEncoder(handle_unknown='ignore'),
+               text_vectorizer: TransformerMixin = CountVectorizer(),
+               datetime_transformer: TransformerMixin = FunctionTransformer(datetime_feature_extractor, validate=False)
+) -> Dict[str, Any]:
 
 
 # smoke tests #
