@@ -1,1 +1,1 @@
-"""Unit test package for datasafari."""
+"""Unit testing of DataSafari."""
