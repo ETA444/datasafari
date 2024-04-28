@@ -52,6 +52,7 @@ def evaluate_dtype(
         - If `min_unique_values`, `string_length_threshold` are not integers.
         - If `output` is not a string or does not match one of the expected output format strings ('dict', 'list_n', 'list_c').
     ValueError
+        - If the `df` is empty, indicating that there's no data to evaluate.
         - If `max_unique_values_ratio` is outside the range [0, 1].
         - If `min_unique_values` is less than 1, as at least one unique value is needed to categorize a column.
         - If `string_length_threshold` is less than or equal to 0, indicating an invalid threshold for text data classification.
@@ -95,6 +96,9 @@ def evaluate_dtype(
         raise TypeError("evaluate_dtype(): The 'output' parameter must be a string. Possible values are: 'dict', 'list_n', and 'list_c'.")
 
     # ValueErrors
+    if df.empty:
+        raise ValueError("evaluate_dtype(): The input DataFrame is empty.")
+
     if max_unique_values_ratio < 0 or max_unique_values_ratio > 1:
         raise ValueError("evaluate_dtype(): The 'max_unique_values_ratio' must be between 0 and 1.")
 

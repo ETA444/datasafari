@@ -50,6 +50,7 @@ def evaluate_normality(
         - If `method` is not a string.
         - If `pipeline` is not a boolean.
     ValueError
+        - If the `df` is empty, indicating that there's no data to evaluate.
         - If the `target_variable` or `grouping_variable` does not exist in the DataFrame.
         - If the `method` specified is not supported. Allowed methods are: 'shapiro', 'anderson', 'normaltest', 'lilliefors', 'consensus'.
         - If the `target_variable` is not numerical.
@@ -88,6 +89,10 @@ def evaluate_normality(
         raise TypeError("evaluate_normality(): The 'pipeline' parameter must be a boolean.")
 
     # ValueErrors
+    # Check if df is empty
+    if df.empty:
+        raise ValueError("evaluate_normality(): The input DataFrame is empty.")
+
     # Check if the specified columns exist in the DataFrame
     if target_variable not in df.columns:
         raise ValueError(f"evaluate_normality(): The target variable '{target_variable}' was not found in the DataFrame.")
