@@ -31,15 +31,10 @@ def calculate_vif(
     pd.Series
         A pandas Series where each index corresponds to the column names provided in `numerical_variables` (including a constant term "const" that accounts for the intercept), and each value is the VIF for that column.
 
-    Raises
-    ------
-    ValueError
-        If `numerical_variables` does not contain valid column names of `df`.
-
     Notes
     -----
-    - It is crucial to include a constant term in the model for intercept when calculating VIFs. This function automatically adds a constant to the set of variables.
-    - High VIFs can indicate a high multicollinearity among independent variables, which can affect the stability and interpretability of regression coefficients in linear regression models.
+        - It is crucial to include a constant term in the model for intercept when calculating VIFs. This function automatically adds a constant to the set of variables.
+        - High VIFs can indicate a high multicollinearity among independent variables, which can affect the stability and interpretability of regression coefficients in linear regression models.
 
     Examples
     --------

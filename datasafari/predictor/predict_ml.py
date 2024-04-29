@@ -370,6 +370,7 @@ def data_preprocessing_core(
         - If 'verbose' is not an integer
         - If numeric_imputer, numeric_scaler, categorical_imputer, categorical_encoder, text_vectorizer, or datetime_transformer do not support the required interface.
     ValueError
+        - If the `df` is empty, indicating that there's no data to evaluate.
         - If 'data_state' is not 'unprocessed' or 'preprocessed'.
         - If 'y_col' is not found in 'df'.
         - If specified 'x_cols' are not present in 'df'.
@@ -441,6 +442,9 @@ def data_preprocessing_core(
         raise TypeError("data_preprocessing_core(): The 'datetime_transformer' must be callable or support a 'transform' method.")
 
     # ValueErrors
+    if df.empty:
+        raise ValueError("explore_num(): The input DataFrame is empty.")
+
     if data_state.lower() not in ['unprocessed', 'preprocessed'] or None:
         raise ValueError(f"data_preprocessing_core(): The data_state must be one of the following: \n- 'unprocessed': activates predict_ml() preprocessing capabilities.\n - 'preprocessed': user opts out of preprocessing (Warning: ensure your data is properly preprocessed for ML)")
 
@@ -1144,11 +1148,11 @@ def model_recommendation_core_inference(
         - If 'verbose' is not an integer, verifying that the verbosity level is specified as an integer.
 
     ValueError
+        - If the input DataFrame is empty, ensuring that there is data available for model fitting.
         - If 'formula' does not contain exactly one '~', which is necessary to separate the dependent and independent variables in the model specification.
         - If the specified target variable from 'formula' is not found in the DataFrame, ensuring the formula correctly references a column in the DataFrame.
         - If any variables specified in the 'formula' for independent variables are not found in the DataFrame, checking for the presence of all required variables in the DataFrame.
         - If 'n_top_models' is not a positive integer, ensuring that the number of models to return is specified correctly.
-        - If the input DataFrame is empty, ensuring that there is data available for model fitting.
 
     Returns
     -------
@@ -1220,6 +1224,10 @@ def model_recommendation_core_inference(
         raise TypeError("model_recommendation_core_inference(): 'verbose' must be an integer.")
 
     # ValueErrors
+    # Ensure non-empty DataFrame
+    if df.empty:
+        raise ValueError("model_recommendation_core_inference(): The input DataFrame is empty.")
+
     if formula.count('~') != 1:
         raise ValueError("model_recommendation_core_inference(): 'formula' must include exactly one '~' to separate dependent and independent variables.")
 
@@ -1232,10 +1240,6 @@ def model_recommendation_core_inference(
     missing_vars = [var.strip() for var in independent_vars.replace('+', ' ').split() if var.strip() not in df.columns]
     if missing_vars:
         raise ValueError(f"model_recommendation_core_inference(): The following independent variables are not in DataFrame: {', '.join(missing_vars)}.")
-
-    # Ensure non-empty DataFrame
-    if df.empty:
-        raise ValueError("model_recommendation_core_inference(): The input DataFrame is empty.")
 
     # Main Functionality #
     # define task type based on the target variable data type

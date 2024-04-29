@@ -106,6 +106,7 @@ def transform_num(
         - If `degree` is provided but not an integer.
         - If `bins` is provided but not an integer.
     ValueError
+        - If the input DataFrame is empty, ensuring that there is data available for model fitting.
         - If 'numerical_variables' list is empty.
         - If variables provided through 'numerical_variables' are not numerical variables.
         - If any of the specified `numerical_variables` are not found in the DataFrame's columns.
@@ -252,6 +253,10 @@ def transform_num(
         raise TypeError("transform_num(): The 'bin_map' parameter must be a dictionary or None.")
 
     # ValueErrors
+    # Check if df is empty
+    if df.empty:
+        raise ValueError("explore_num(): The input DataFrame is empty.")
+
     # Check if list has any members
     if len(numerical_variables) == 0:
         raise ValueError("transform_num(): The 'numerical_variables' list must contain at least one column name.")

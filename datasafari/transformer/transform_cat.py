@@ -62,6 +62,7 @@ def transform_cat(
         - If `method`, `na_placeholder`, or `target_variable` (if provided) is not a string.
         - If `abbreviation_map` or `ordinal_map` (if provided) is not a dictionary.
     ValueError
+        - If the input DataFrame is empty, ensuring that there is data available for model fitting.
         - If 'categorical_variables' list is empty.
         - If variables provided through 'categorical_variables' are not categorical variables.
         - If any variable specified in `categorical_variables` is not found in the DataFrame's columns.
@@ -155,6 +156,10 @@ def transform_cat(
         raise TypeError("transform_cat(): The 'target_variable' parameter must be a string if provided.")
 
     # ValueErrors
+    # Check if df is empty
+    if df.empty:
+        raise ValueError("explore_num(): The input DataFrame is empty.")
+
     # Check if list has any members
     if len(categorical_variables) == 0:
         raise ValueError("transform_cat(): The 'categorical_variables' list must contain at least one column name.")

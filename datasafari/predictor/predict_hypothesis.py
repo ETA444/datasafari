@@ -53,6 +53,7 @@ def hypothesis_predictor_core_n(
         - If `target_variable` or `grouping_variable` is not a string.
         - If `normality_bool` or `equal_variances_bool` is not a boolean.
     ValueError
+        - If the `df` is empty, indicating that there's no data to evaluate.
         - If `target_variable` or `grouping_variable` is not found in the DataFrame's columns.
         - If `target_variable` is not numerical.
         - If `grouping_variable` is not categorical.
@@ -76,6 +77,9 @@ def hypothesis_predictor_core_n(
         raise TypeError("predictor_core_numerical(): The 'equal_variances_bool' must be a boolean.")
 
     # ValueErrors
+    if df.empty:
+        raise ValueError("predictor_core_n(): The input DataFrame is empty.")
+
     if target_variable not in df.columns:
         raise ValueError(f"predictor_core_n(): The target variable '{target_variable}' was not found in the DataFrame.")
 
@@ -172,6 +176,7 @@ def hypothesis_predictor_core_c(
         - If `chi2_viability`, `barnard_viability`, `boschloo_viability`, `fisher_viability`, or `yates_correction_viability` is not a boolean.
         - If `alternative` is not a string indicating the alternative hypothesis ('two-sided', 'less', 'greater').
     ValueError
+        - If the `contingency_table` is empty, indicating that there's no data to evaluate.
         - If the `alternative` specified does not match one of the expected values: 'two-sided', 'less', or 'greater'.
     """
 
@@ -199,6 +204,9 @@ def hypothesis_predictor_core_c(
         raise TypeError("predictor_core_c(): The 'alternative' parameter must be a string.")
 
     # ValueErrors
+    if contingency_table.empty:
+        raise ValueError("predictor_core_c(): The input contingency table is empty.")
+
     valid_alternatives = ['two-sided', 'less', 'greater']
     if alternative not in valid_alternatives:
         raise ValueError(f"predictor_core_c(): Invalid 'alternative' value. Expected one of {valid_alternatives}, got '{alternative}'.")
@@ -371,6 +379,7 @@ def predict_hypothesis(
         - If `normality_method`, `variance_method`, or `exact_tests_alternative` is not a string.
         - If `yates_min_sample_size` is not an integer.
     ValueError
+        - If the `df` is empty, indicating that there's no data to evaluate.
         - If `normality_method` is not one of the valid options: 'shapiro', 'anderson', 'normaltest', 'lilliefors', 'consensus'.
         - If `variance_method` is not one of the valid options: 'levene', 'bartlett', 'fligner', 'consensus'.
         - If `exact_tests_alternative` is not one of the valid options: 'two-sided', 'less', 'greater'.
@@ -468,6 +477,9 @@ def predict_hypothesis(
         raise TypeError("predict_hypothesis(): The 'yates_min_sample_size' parameter must be an integer.")
 
     # ValueErrors
+    if df.empty:
+        raise ValueError("model_recommendation_core_inference(): The input DataFrame is empty.")
+
     valid_normality_methods = ['shapiro', 'anderson', 'normaltest', 'lilliefors', 'consensus']
     if normality_method.lower() not in valid_normality_methods:
         raise ValueError(f"predict_hypothesis(): Invalid 'normality_method' value. Expected one of {valid_normality_methods}, got '{normality_method}'.")

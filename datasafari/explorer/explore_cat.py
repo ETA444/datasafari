@@ -47,6 +47,7 @@ def explore_cat(
         - If `categorical_variables` is not a list or contains non-string elements.
         - If `method` or `output` is not a string.
     ValueError
+        - If the `df` is empty, indicating that there's no data to evaluate.
         - If `method` is not one of the valid options ('unique_values', 'counts_percentage', 'entropy', 'all').
         - If `output` is not one of the valid options ('print', 'return').
         - If 'categorical_variables' list is empty.
@@ -108,6 +109,10 @@ def explore_cat(
         raise TypeError(f"explore_cat(): The output parameter must be a string. \n Example: output = 'return'")
 
     # ValueErrors
+
+    # Check if df is empty
+    if df.empty:
+        raise ValueError("explore_cat(): The input DataFrame is empty.")
 
     # Check if method is valid
     valid_methods = ['unique_values', 'counts_percentage', 'entropy', 'all']

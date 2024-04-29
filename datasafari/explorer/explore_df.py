@@ -61,6 +61,7 @@ def explore_df(
         - If `method` is not a string.
         - If `output` is not a string.
     ValueError
+        - If the `df` is empty, indicating that there's no data to evaluate.
         - If `method` is not one of the valid options: 'na', 'desc', 'head', 'info', or 'all'.
         - If `output` is not either 'print' or 'return'.
         - If 'buf' parameter is used in the 'info' method, as it is not supported within `explore_df`.
@@ -118,16 +119,21 @@ def explore_df(
     if not isinstance(output, str):
         raise TypeError(f"explore_df(): The output parameter must be a string.\nExample: output = 'print'")
 
-    # ValueError checks for 'method'
+    # ValueErrors
+    # Check if df is empty
+    if df.empty:
+        raise ValueError("explore_df(): The input DataFrame is empty.")
+
+    # Check for correct method
     valid_methods = ['na', 'desc', 'head', 'info', 'all']
     if method.lower() not in valid_methods:
         raise ValueError(f"explore_df(): Invalid method '{method}'. Valid options are: {', '.join(valid_methods)}.")
 
-    # ValueError check for 'output'
+    # Check for 'output'
     if output.lower() not in ['print', 'return']:
         raise ValueError("explore_df(): Invalid output method. Choose 'print' or 'return'.")
 
-    # ValueError check for unsupported 'info' kwargs
+    # Check for unsupported 'info' kwargs
     if 'buf' in kwargs and method.lower() == 'info':
         raise ValueError("explore_df(): 'buf' parameter is not supported in the 'info' method within explore_df.")
 

@@ -68,6 +68,7 @@ def explore_num(
         - If `output` is not a string.
         - If `threshold_z` is not a float or an int.
     ValueError
+        - If the `df` is empty, indicating that there's no data to evaluate.
         - If `method` is not one of the specified valid methods ('correlation_analysis', 'distribution_analysis', 'outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis', 'multicollinearity', 'all').
         - If `output` is not 'print' or 'return'.
         - If 'numerical_variables' list is empty.
@@ -141,6 +142,9 @@ def explore_num(
         raise TypeError(f"explore_num(): The value of threshold_z must be a float or int.\nExample: threshold_z = 3")
 
     # ValueErrors
+    # Check if df is empty
+    if df.empty:
+        raise ValueError("explore_num(): The input DataFrame is empty.")
 
     # Check if method is valid
     valid_methods = ['correlation_analysis', 'distribution_analysis', 'outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis', 'multicollinearity', 'all']
