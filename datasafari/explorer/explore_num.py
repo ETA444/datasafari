@@ -488,7 +488,7 @@ def explore_num(
 
     elif output.lower() == 'return':
         # normal functionality of output: return
-        if method.lower() == 'all':
+        if method.lower() in ['all', 'multicollinearity']:
             return combined_result
 
         # extended functionality of output: return (method-specific)
