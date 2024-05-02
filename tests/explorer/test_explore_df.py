@@ -84,6 +84,7 @@ def test_explore_df_na(sample_df):
 
 
 def test_explore_df_all_methods_with_kwargs(sample_df):
+    """Test output correctness with kwargs."""
     result = explore_df(sample_df, 'all', n=3, percentiles=[0.1, 0.9], verbose=False, output='return')
     assert '5%' not in result  # Check that no default percentiles are applied
     assert '90%' in result  # Check that passed percentiles are applied
