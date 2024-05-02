@@ -93,7 +93,7 @@ def evaluate_dtype(
         raise TypeError("evaluate_dtype(): The 'string_length_threshold' must be an integer.")
 
     if not isinstance(output, str):
-        raise TypeError("evaluate_dtype(): The 'output' parameter must be a string. Possible values are: 'dict', 'list_n', and 'list_c'.")
+        raise TypeError("evaluate_dtype(): The 'output' parameter must be a string. Possible values are: 'dict', 'list_n', 'list_c', 'list_d' and 'list_t'.")
 
     # ValueErrors
     if df.empty:
@@ -116,7 +116,7 @@ def evaluate_dtype(
     if missing_cols:
         raise ValueError(f"evaluate_dtype(): The following columns were not found in the DataFrame: {', '.join(missing_cols)}")
 
-    valid_outputs = ['dict', 'list_n', 'list_c']
+    valid_outputs = ['dict', 'list_n', 'list_c', 'list_d', 'list_t']
     if output not in valid_outputs:
         raise ValueError(f"evaluate_dtype(): Invalid output '{output}'. Valid options are: {', '.join(valid_outputs)}")
 
