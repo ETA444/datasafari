@@ -2,6 +2,7 @@ import pytest
 import pandas as pd
 from datasafari.explorer.explore_df import explore_df
 
+
 @pytest.fixture
 def sample_df():
     """Create a sample DataFrame to use in the tests."""
