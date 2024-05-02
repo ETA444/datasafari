@@ -86,3 +86,45 @@ def test_evaluate_variance_invalid_grouping_variable_type(sample_data):
     sample_data['Group'] = np.linspace(0, 1, 100)
     with pytest.raises(ValueError, match="The grouping variable 'Group' must be a categorical variable."):
         evaluate_variance(sample_data, 'Data', 'Group')
+
+
+# TESTING FUNCTIONALITY #
+
+def test_evaluate_variance_levene(sample_data):
+    """ Test the Levene test functionality in evaluate_variance. """
+    result = evaluate_variance(sample_data, 'Data', 'Group', method='levene')
+    assert 'levene' in result
+    assert isinstance(result['levene'], dict)
+    assert 'stat' in result['levene'] and 'p' in result['levene']
+
+
+def test_evaluate_variance_bartlett(sample_data):
+    """ Test the Bartlett test functionality in evaluate_variance with normality assumed. """
+    result = evaluate_variance(sample_data, 'Data', 'Group', normality_info=True, method='bartlett')
+    assert 'bartlett' in result
+    assert isinstance(result['bartlett'], dict)
+    assert 'stat' in result['bartlett'] and 'p' in result['bartlett']
+
+
+def test_evaluate_variance_fligner(sample_data):
+    """ Test the Fligner-Killeen test functionality in evaluate_variance. """
+    result = evaluate_variance(sample_data, 'Data', 'Group', method='fligner')
+    assert 'fligner' in result
+    assert isinstance(result['fligner'], dict)
+    assert 'stat' in result['fligner'] and 'p' in result['fligner']
+
+
+def test_evaluate_variance_consensus_all_agree(sample_data):
+    """ Test the consensus method when all tests agree on the result. """
+    sample_data['Data'] = np.random.normal(0, 1, 100)  # Ensure data is normal for consistency
+    result = evaluate_variance(sample_data, 'Data', 'Group', normality_info=True, method='consensus')
+    assert isinstance(result, dict)
+    assert all(test in result for test in ['levene', 'bartlett', 'fligner'])
+    consensus = [result[test]['equal_variances'] for test in result]
+    assert all(consensus) or not any(consensus)  # Check if all are True or all are False
+
+
+def test_evaluate_variance_pipeline_mode(sample_data):
+    """ Test the pipeline mode returns a simple boolean for consensus. """
+    result = evaluate_variance(sample_data, 'Data', 'Group', pipeline=True)
+    assert isinstance(result, bool)
