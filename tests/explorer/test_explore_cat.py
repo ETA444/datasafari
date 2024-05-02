@@ -20,6 +20,12 @@ def test_empty_dataframe():
         explore_cat(df, ['Category'])
 
 
+def test_non_dataframe_input():
+    """Test that a non-DataFrame input raises a TypeError."""
+    with pytest.raises(TypeError, match="The df parameter must be a pandas DataFrame."):
+        explore_cat("not a dataframe", ['Department'])
+
+
 def test_non_existent_column(complex_categorical_df):
     """ Test handling of non-existent column names """
     with pytest.raises(ValueError):
@@ -30,6 +36,24 @@ def test_non_categorical_column(complex_categorical_df):
     """ Test handling of non-categorical columns """
     with pytest.raises(ValueError, match="The 'categorical_variables' list must contain only names"):
         explore_cat(complex_categorical_df, ['Age', 'Department'])
+
+
+def test_empty_categorical_variables_list(complex_categorical_df):
+    """Test that an empty list for categorical_variables raises a ValueError."""
+    with pytest.raises(ValueError):
+        explore_cat(complex_categorical_df, [])
+
+
+def test_non_list_categorical_variables(complex_categorical_df):
+    """Test that non-list categorical_variables input raises a TypeError."""
+    with pytest.raises(TypeError, match="The categorical_variables parameter must be a list of variable names."):
+        explore_cat(complex_categorical_df, 'Department')  # Incorrect type
+
+
+def test_non_string_in_categorical_variables(complex_categorical_df):
+    """Test that non-string entries in categorical_variables list raise a TypeError."""
+    with pytest.raises(TypeError, match="All items in the categorical_variables list must be strings"):
+        explore_cat(complex_categorical_df, [123, 'Department'])  # Non-string element
 
 
 def test_entropy_method(complex_categorical_df):
