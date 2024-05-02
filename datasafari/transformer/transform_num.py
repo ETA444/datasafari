@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer, RobustScaler
 from scipy.stats import boxcox, yeojohnson
-from scipy.stats.mstats_basic import winsorize
+from scipy.stats.mstats import winsorize
 from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 
 
