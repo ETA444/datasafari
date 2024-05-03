@@ -90,3 +90,71 @@ def test_categorical_variables_empty_list(sample_data):
     """ Test handling of empty categorical_variables list. """
     with pytest.raises(ValueError, match="The 'categorical_variables' list must contain at least one column name."):
         transform_cat(sample_data, [], method='uniform_simple')
+
+
+# TESTING FUNCTIONALITY #
+
+def test_transform_cat_uniform_simple(sample_data):
+    """ Test uniform simple transformation for categorical data. """
+    transformed_df, transformed_columns = transform_cat(sample_data, ['Category'], method='uniform_simple')
+    assert 'Category' in transformed_df.columns
+    assert transformed_df['Category'].isna().sum() == 0  # Check no NaN values
+    assert transformed_df['Category'].str.islower().all()  # Check all values are lowercase
+
+
+def test_transform_cat_uniform_smart(sample_data):
+    """ Test uniform smart transformation with textual similarity clustering. """
+    transformed_df, transformed_columns = transform_cat(sample_data, ['Category'], method='uniform_smart')
+    assert 'Category' in transformed_df.columns
+    # Verify transformation maintains data integrity
+    unique_original = len(sample_data['Category'].unique())
+    unique_transformed = len(transformed_df['Category'].unique())
+    assert unique_transformed <= unique_original  # Should be less or equal due to clustering
+
+
+def test_transform_cat_uniform_mapping(sample_data):
+    """ Test manual mapping of categories. """
+    abbreviation_map = {'Category': {'A': 'Alpha', 'B': 'Beta', 'C': 'Charlie'}}
+    transformed_df, transformed_columns = transform_cat(sample_data, ['Category'], method='uniform_mapping', abbreviation_map=abbreviation_map)
+    expected_values = set(['Alpha', 'Beta', 'Charlie'])
+    assert set(transformed_df['Category'].unique()).issubset(expected_values)
+
+
+def test_transform_cat_encode_onehot(sample_data):
+    """ Test one-hot encoding of categories. """
+    transformed_df, transformed_columns = transform_cat(sample_data, ['Category'], method='encode_onehot')
+    # Check for the presence of new columns
+    expected_columns = ['Category_A', 'Category_B', 'Category_C']
+    for col in expected_columns:
+        assert col in transformed_columns.columns
+
+
+def test_transform_cat_encode_ordinal(sample_data):
+    """ Test ordinal encoding of categories. """
+    ordinal_map = {'Category': ['A', 'B', 'C']}
+    transformed_df, transformed_columns = transform_cat(sample_data, ['Category'], method='encode_ordinal', ordinal_map=ordinal_map)
+    assert transformed_df['Category'].dtype == 'int'  # Check if encoded to integers
+    assert set(transformed_df['Category'].unique()).issubset({0, 1, 2})
+
+
+def test_transform_cat_encode_freq(sample_data):
+    """ Test frequency encoding of categories. """
+    transformed_df, transformed_columns = transform_cat(sample_data, ['Category'], method='encode_freq')
+    # Verify that frequency counts replace category names
+    assert transformed_df['Category'].dtype == 'int'
+    assert transformed_df['Category'].min() > 0  # Frequency should be positive integers
+
+
+def test_transform_cat_encode_target(sample_data):
+    """ Test target encoding based on the mean of the target variable. """
+    transformed_df, transformed_columns = transform_cat(sample_data, ['Category'], method='encode_target', target_variable='Target')
+    # Verify that target means replace category names and are floats
+    assert transformed_df['Category'].dtype == float
+
+
+def test_transform_cat_encode_binary(sample_data):
+    """ Test binary encoding of categories. """
+    transformed_df, transformed_columns = transform_cat(sample_data, ['Category'], method='encode_binary')
+    # Check if the binary encoding added the expected columns
+    assert 'Category_0' in transformed_columns.columns
+    assert 'Category_1' in transformed_columns.columns
