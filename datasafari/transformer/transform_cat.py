@@ -164,15 +164,15 @@ def transform_cat(
     if len(categorical_variables) == 0:
         raise ValueError("transform_cat(): The 'categorical_variables' list must contain at least one column name.")
 
-    # Check if variables are categorical
-    categorical_types = evaluate_dtype(df, categorical_variables, output='list_c')
-    if not all(categorical_types):
-        raise ValueError(f"transform_cat(): The 'categorical_variables' list must contain only names of categorical variables.")
-
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in categorical_variables if var not in df.columns]
     if missing_vars:
         raise ValueError(f"transform_cat(): The following variables were not found in the DataFrame: {', '.join(missing_vars)}")
+
+    # Check if variables are categorical
+    categorical_types = evaluate_dtype(df, categorical_variables, output='list_c')
+    if not all(categorical_types):
+        raise ValueError(f"transform_cat(): The 'categorical_variables' list must contain only names of categorical variables.")
 
     # Check if method is valid
     valid_methods = ['uniform_simple', 'uniform_smart', 'uniform_mapping', 'encode_onehot', 'encode_ordinal', 'encode_freq', 'encode_target', 'encode_binary']
