@@ -3,12 +3,14 @@ import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
-from datasafari.predictor.predict_ml import data_preprocessing_core
+from datasafari.predictor.predict_ml import (
+    data_preprocessing_core, calculate_composite_score, model_recommendation_core
+)
 
 
 @pytest.fixture
 def sample_data_dpc():
-    """ Provides sample data for tests related to data_preprocessing_core. """
+    """ Provides sample data for tests related to data_preprocessing_core(). """
     return pd.DataFrame({
         'Age': np.random.randint(18, 35, size=100),
         'Salary': np.random.normal(50000, 12000, size=100),
@@ -16,6 +18,14 @@ def sample_data_dpc():
         'Review': ['Good review']*50 + ['Bad review']*50,
         'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
     })
+
+
+@pytest.fixture
+def sample_data_ccs():
+    """ Provides sample data for tests related to calculate_composite_score(). """
+    scores = {'Accuracy': 0.95, 'Precision': 0.90, 'Recall': 0.85}
+    metric_weights = {'Accuracy': 5, 'Precision': 3, 'Recall': 2}
+    return scores, metric_weights
 
 
 # TESTING ERROR-HANDLING of data_preprocessing_core() #
@@ -193,3 +203,32 @@ def test_data_preprocessing_text_features(sample_data_dpc):
         sample_data_dpc, ["Review"], "Salary", "unprocessed")
     assert x_train.shape[1] == x_test.shape[1], "Mismatch in number of columns between training and test sets"
     assert task_type == "regression", "Incorrect task type detected"
+
+
+# TESTING ERROR-HANDLING of calculate_composite_score() #
+
+def test_calculate_composite_score_invalid_types():
+    """ Test calculate_composite_score with invalid types. """
+    with pytest.raises(TypeError, match="Both 'scores' and 'metric_weights' must be dictionaries."):
+        calculate_composite_score("invalid", {'Accuracy': 5})
+
+
+def test_calculate_composite_score_empty_dict():
+    """ Test calculate_composite_score with empty dictionary inputs. """
+    with pytest.raises(ValueError, match="'scores' and 'metric_weights' dictionaries cannot be empty."):
+        calculate_composite_score({}, {'Accuracy': 5})
+
+
+def test_calculate_composite_score_missing_weights(sample_data_ccs):
+    """ Test calculate_composite_score with missing weights for some metrics. """
+    scores, metric_weights = sample_data_ccs
+    del metric_weights['Recall']
+    with pytest.raises(ValueError, match="Missing metric weights for: Recall"):
+        calculate_composite_score(scores, metric_weights)
+
+
+def test_calculate_composite_score_zero_weights():
+    """ Test calculate_composite_score with all zero weights. """
+    with pytest.raises(ValueError):
+        calculate_composite_score({'Accuracy': 0.95}, {'Accuracy': 0})
+
