@@ -215,9 +215,9 @@ def transform_num(
     if not (isinstance(quantile_range, tuple) and len(quantile_range) == 2 and all(isinstance(num, float) for num in quantile_range)):
         raise TypeError("transform_num(): The 'quantile_range' parameter must be a tuple containing two float values.")
 
-    # Check if 'power' is None or a float
-    if power is not None and not isinstance(power, float):
-        raise TypeError("transform_num(): The 'power' parameter must be a float or None.")
+    # Check if 'power' is None, int, or float
+    if power is not None and not isinstance(power, (int, float)):
+        raise TypeError("transform_num(): The 'power' parameter must be a float, integer, or None.")
 
     # Check if 'power_map' is None or a dictionary
     if power_map is not None and not isinstance(power_map, dict):
@@ -294,8 +294,8 @@ def transform_num(
 
     # For 'power' method specific checks
     if method.lower() == 'power':
-        if power is not None and not isinstance(power, float):
-            raise ValueError("transform_num(): The 'power' must be a float value or None.")
+        if power is not None and not isinstance(power, (float, int)):
+            raise ValueError("transform_num(): The 'power' parameter must be a float, integer, or None.")
         if power_map is not None and not isinstance(power_map, dict):
             raise ValueError("transform_num(): The 'power_map' must be a dictionary mapping variables to powers or None.")
 
