@@ -133,7 +133,7 @@ def test_transform_cat_encode_ordinal(sample_data):
     """ Test ordinal encoding of categories. """
     ordinal_map = {'Category': ['A', 'B', 'C']}
     transformed_df, transformed_columns = transform_cat(sample_data, ['Category'], method='encode_ordinal', ordinal_map=ordinal_map)
-    assert transformed_df['Category'].dtype == 'int'  # Check if encoded to integers
+    assert transformed_df['Category'].dtype == 'int8'  # Check if encoded to integers
     assert set(transformed_df['Category'].unique()).issubset({0, 1, 2})
 
 
@@ -141,7 +141,7 @@ def test_transform_cat_encode_freq(sample_data):
     """ Test frequency encoding of categories. """
     transformed_df, transformed_columns = transform_cat(sample_data, ['Category'], method='encode_freq')
     # Verify that frequency counts replace category names
-    assert transformed_df['Category'].dtype == 'int'
+    assert transformed_df['Category'].dtype == 'int64'
     assert transformed_df['Category'].min() > 0  # Frequency should be positive integers
 
 
