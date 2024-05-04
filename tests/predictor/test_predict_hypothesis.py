@@ -348,3 +348,60 @@ def test_predict_hypothesis_both_variables_numerical(sample_data_ph):
     """ Test handling of both variables being numerical. """
     with pytest.raises(ValueError, match="Both of the provided variables are numerical."):
         predict_hypothesis(sample_data_ph, 'Score', 'Feature2')
+
+
+# TESTING FUNCTIONALITY #
+
+def test_predict_hypothesis_ttest(sample_data_ph):
+    """ Test independent T-test is selected for two-group numerical hypothesis testing with normal distribution and equal variances. """
+    output = predict_hypothesis(sample_data_ph, 'Group', 'Score')
+    assert 'ttest_ind' in output
+    assert output['ttest_ind']['test_name'] == 'Independent Samples T-Test'
+
+
+def test_predict_hypothesis_mannwhitneyu(sample_data_ph):
+    """ Test Mann-Whitney U test is selected for two-group numerical hypothesis testing with non-normal distribution. """
+    output = predict_hypothesis(sample_data_ph, 'Group', 'Feature2')
+    assert 'mannwhitneyu' in output
+    assert output['mannwhitneyu']['test_name'] == 'Mann-Whitney U Rank Test (Two Independent Samples)'
+
+
+def test_predict_hypothesis_anova(sample_data_ph):
+    """ Test one-way ANOVA is selected for multi-group numerical hypothesis testing with normal distribution and equal variances. """
+    sample_data_ph['Group'] = np.random.choice(['Group1', 'Group2', 'Group3'], size=100)
+    output = predict_hypothesis(sample_data_ph, 'Group', 'Score')
+    assert 'f_oneway' in output
+    assert output['f_oneway']['test_name'] == 'One-way ANOVA (with 3 groups)'
+
+
+def test_predict_hypothesis_kruskal(sample_data_ph):
+    """ Test Kruskal-Wallis test is selected for multi-group numerical hypothesis testing with non-normal distribution. """
+    sample_data_ph['Group'] = np.random.choice(['Group1', 'Group2', 'Group3'], size=100)
+    output = predict_hypothesis(sample_data_ph, 'Group', 'Feature2')
+    assert 'kruskal' in output
+    assert output['kruskal']['test_name'] == 'Kruskal-Wallis H-test (with 3 groups)'
+
+
+def test_predict_hypothesis_chi2(sample_data_ph):
+    """ Test Chi-square test is selected for categorical hypothesis testing with viable expected frequencies. """
+    output = predict_hypothesis(sample_data_ph, 'Group', 'Category')
+    assert 'chi2_contingency' in output
+    assert 'test_name' in output['chi2_contingency']
+    assert 'chi-square' in output['chi2_contingency']['test_name'].lower()
+
+
+def test_predict_hypothesis_fisher_exact(sample_data_ph):
+    """ Test Fisher's exact test is selected for categorical hypothesis testing with small sample sizes. """
+    sample_data_ph_small = sample_data_ph.sample(20)
+    output = predict_hypothesis(sample_data_ph_small, 'Group', 'Category')
+    assert 'fisher_exact' in output
+    assert 'test_name' in output['fisher_exact']
+    assert 'fisher' in output['fisher_exact']['test_name'].lower()
+
+
+def test_predict_hypothesis_alternative_greater(sample_data_ph):
+    """ Test Boschloo's exact test is selected with 'greater' alternative for categorical hypothesis testing. """
+    sample_data_ph_small = sample_data_ph.sample(20)
+    output = predict_hypothesis(sample_data_ph_small, 'Group', 'Category', exact_tests_alternative='greater')
+    assert 'boschloo_exact' in output
+    assert output['boschloo_exact']['alternative'] == 'greater'
