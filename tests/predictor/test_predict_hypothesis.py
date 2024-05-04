@@ -76,3 +76,55 @@ def test_hypothesis_predictor_core_n_non_categorical_grouping_variable(sample_da
     sample_data['NonCategorical'] = np.linspace(0, 1, 100)
     with pytest.raises(ValueError, match="must be a categorical variable"):
         hypothesis_predictor_core_n(sample_data, 'Value', 'NonCategorical', True, True)
+
+
+# TESTING FUNCTIONALITY for hypothesis_predictor_core_n() #
+
+def test_hypothesis_predictor_core_n_ttest(sample_data):
+    """ Test independent samples t-test for two groups. """
+    sample_data['Group'] = np.random.choice(['A', 'B'], 100)
+    result = hypothesis_predictor_core_n(sample_data, 'Value', 'Group', True, True)
+    assert 'ttest_ind' in result
+    assert 'stat' in result['ttest_ind']
+    assert 'p_val' in result['ttest_ind']
+    assert result['ttest_ind']['test_name'] == 'Independent Samples T-Test'
+
+
+def test_hypothesis_predictor_core_n_mannwhitney(sample_data):
+    """ Test Mann-Whitney U test for two groups. """
+    sample_data['Group'] = np.random.choice(['A', 'B'], 100)
+    result = hypothesis_predictor_core_n(sample_data, 'Value', 'Group', False, False)
+    assert 'mannwhitneyu' in result
+    assert 'stat' in result['mannwhitneyu']
+    assert 'p_val' in result['mannwhitneyu']
+    assert result['mannwhitneyu']['test_name'] == 'Mann-Whitney U Rank Test (Two Independent Samples)'
+
+
+def test_hypothesis_predictor_core_n_anova(sample_data):
+    """ Test one-way ANOVA for three groups. """
+    sample_data['Group'] = np.random.choice(['A', 'B', 'C'], 100)
+    result = hypothesis_predictor_core_n(sample_data, 'Value', 'Group', True, True)
+    assert 'f_oneway' in result
+    assert 'stat' in result['f_oneway']
+    assert 'p_val' in result['f_oneway']
+    assert result['f_oneway']['test_name'] == 'One-way ANOVA (with 3 groups)'
+
+
+def test_hypothesis_predictor_core_n_kruskal(sample_data):
+    """ Test Kruskal-Wallis H-test for three groups. """
+    sample_data['Group'] = np.random.choice(['A', 'B', 'C'], 100)
+    result = hypothesis_predictor_core_n(sample_data, 'Value', 'Group', False, False)
+    assert 'kruskal' in result
+    assert 'stat' in result['kruskal']
+    assert 'p_val' in result['kruskal']
+    assert result['kruskal']['test_name'] == 'Kruskal-Wallis H-test (with 3 groups)'
+
+
+def test_hypothesis_predictor_core_n_more_than_three_groups(sample_data):
+    """ Test ANOVA with more than three groups. """
+    sample_data['Group'] = np.random.choice(['A', 'B', 'C', 'D'], 100)
+    result = hypothesis_predictor_core_n(sample_data, 'Value', 'Group', True, True)
+    assert 'f_oneway' in result
+    assert 'stat' in result['f_oneway']
+    assert 'p_val' in result['f_oneway']
+    assert result['f_oneway']['test_name'] == 'One-way ANOVA (with 4 groups)'
