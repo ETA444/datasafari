@@ -67,4 +67,5 @@ setuptools~=61.2.0
 scipy~=1.7.3
 statsmodels~=0.13.2
 scikit-learn~=1.0.2
+scikit-optimize~=0.9
 Levenshtein==0.25.0

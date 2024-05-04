@@ -37,7 +37,7 @@ setup(
     name='datasafari',
     packages=find_packages(include=['datasafari', 'datasafari.*']),
     test_suite='tests',
-    tests_require=test_requirements,
+    tests_require=requirements,
     url='https://github.com/ETA444/datasafari',
     version='0.1.0',
     zip_safe=False,
