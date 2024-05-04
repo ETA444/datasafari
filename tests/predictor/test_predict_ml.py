@@ -232,3 +232,19 @@ def test_calculate_composite_score_zero_weights():
     with pytest.raises(ValueError):
         calculate_composite_score({'Accuracy': 0.95}, {'Accuracy': 0})
 
+
+# TESTING FUNCTIONALITY for calculate_composite_score() #
+
+def test_calculate_composite_score_basic(sample_data_ccs):
+    """ Test calculate_composite_score with basic valid input. """
+    scores, metric_weights = sample_data_ccs
+    result = calculate_composite_score(scores, metric_weights)
+    assert pytest.approx(result, 0.01) == 0.92
+
+
+def test_calculate_composite_score_zero_weights():
+    """ Test calculate_composite_score with some zero weights. """
+    scores = {'Accuracy': 0.95, 'Precision': 0.90, 'Recall': 0.85}
+    metric_weights = {'Accuracy': 5, 'Precision': 0, 'Recall': 2}
+    result = calculate_composite_score(scores, metric_weights)
+    assert pytest.approx(result, 0.01) == 0.92
