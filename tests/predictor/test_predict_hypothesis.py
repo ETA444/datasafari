@@ -22,6 +22,17 @@ def sample_contingency_table():
     )
 
 
+@pytest.fixture
+def sample_data_ph():
+    """ Provides sample data for predict_ml() tests. """
+    return pd.DataFrame({
+        'Group': np.random.choice(['Control', 'Treatment'], size=100),
+        'Score': np.random.normal(0, 1, 100),
+        'Category': np.random.choice(['Type1', 'Type2'], size=100),
+        'Feature2': np.random.exponential(1, 100)
+    })
+
+
 # TESTING ERROR-HANDLING for hypothesis_predictor_core_n() #
 
 def test_hypothesis_predictor_core_n_non_dataframe_input():
@@ -257,3 +268,83 @@ def test_hypothesis_predictor_core_c_all_tests(sample_contingency_table):
     """ Test running all tests. """
     result = hypothesis_predictor_core_c(sample_contingency_table, True, True, True, True, True)
     assert "chi2_contingency" in result or "barnard_exact" in result or "boschloo_exact" in result or "fisher_exact" in result
+
+
+# TESTING ERROR-HANDLING for predict_hypothesis() #
+
+def test_predict_hypothesis_non_dataframe_input():
+    """ Test that non-DataFrame input raises a TypeError. """
+    with pytest.raises(TypeError, match="The 'df' parameter must be a pandas DataFrame."):
+        predict_hypothesis("not a dataframe", 'var1', 'var2')
+
+
+def test_predict_hypothesis_non_string_var1(sample_data_ph):
+    """ Test that non-string var1 raises a TypeError. """
+    with pytest.raises(TypeError, match="The 'var1' and 'var2' parameters must be strings."):
+        predict_hypothesis(sample_data_ph, 123, 'var2')
+
+
+def test_predict_hypothesis_non_string_var2(sample_data_ph):
+    """ Test that non-string var2 raises a TypeError. """
+    with pytest.raises(TypeError, match="The 'var1' and 'var2' parameters must be strings."):
+        predict_hypothesis(sample_data_ph, 'var1', 456)
+
+
+def test_predict_hypothesis_non_string_normality_method(sample_data_ph):
+    """ Test that non-string normality_method raises a TypeError. """
+    with pytest.raises(TypeError, match="The 'normality_method' parameter must be a string."):
+        predict_hypothesis(sample_data_ph, 'Group', 'Score', normality_method=123)
+
+
+def test_predict_hypothesis_non_string_variance_method(sample_data_ph):
+    """ Test that non-string variance_method raises a TypeError. """
+    with pytest.raises(TypeError, match="The 'variance_method' parameter must be a string."):
+        predict_hypothesis(sample_data_ph, 'Group', 'Score', variance_method=456)
+
+
+def test_predict_hypothesis_non_string_exact_tests_alternative(sample_data_ph):
+    """ Test that non-string exact_tests_alternative raises a TypeError. """
+    with pytest.raises(TypeError, match="The 'exact_tests_alternative' parameter must be a string."):
+        predict_hypothesis(sample_data_ph, 'Group', 'Score', exact_tests_alternative=789)
+
+
+def test_predict_hypothesis_non_integer_yates_min_sample_size(sample_data_ph):
+    """ Test that non-integer yates_min_sample_size raises a TypeError. """
+    with pytest.raises(TypeError, match="The 'yates_min_sample_size' parameter must be an integer."):
+        predict_hypothesis(sample_data_ph, 'Group', 'Score', yates_min_sample_size="forty")
+
+
+def test_predict_hypothesis_empty_dataframe():
+    """ Test handling of empty DataFrame. """
+    with pytest.raises(ValueError, match="The input DataFrame is empty."):
+        predict_hypothesis(pd.DataFrame(), 'var1', 'var2')
+
+
+def test_predict_hypothesis_invalid_normality_method(sample_data_ph):
+    """ Test handling of invalid normality_method. """
+    with pytest.raises(ValueError, match="Invalid 'normality_method' value."):
+        predict_hypothesis(sample_data_ph, 'Group', 'Score', normality_method='invalid')
+
+
+def test_predict_hypothesis_invalid_variance_method(sample_data_ph):
+    """ Test handling of invalid variance_method. """
+    with pytest.raises(ValueError, match="Invalid 'variance_method' value."):
+        predict_hypothesis(sample_data_ph, 'Group', 'Score', variance_method='invalid')
+
+
+def test_predict_hypothesis_invalid_exact_tests_alternative(sample_data_ph):
+    """ Test handling of invalid exact_tests_alternative. """
+    with pytest.raises(ValueError, match="Invalid 'exact_tests_alternative' value."):
+        predict_hypothesis(sample_data_ph, 'Group', 'Score', exact_tests_alternative='invalid')
+
+
+def test_predict_hypothesis_invalid_yates_min_sample_size(sample_data_ph):
+    """ Test handling of yates_min_sample_size less than 1. """
+    with pytest.raises(ValueError, match="The 'yates_min_sample_size' must be at least 1."):
+        predict_hypothesis(sample_data_ph, 'Group', 'Score', yates_min_sample_size=0)
+
+
+def test_predict_hypothesis_both_variables_numerical(sample_data_ph):
+    """ Test handling of both variables being numerical. """
+    with pytest.raises(ValueError, match="Both of the provided variables are numerical."):
+        predict_hypothesis(sample_data_ph, 'Score', 'Feature2')
