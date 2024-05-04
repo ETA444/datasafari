@@ -346,7 +346,7 @@ def transform_cat(
         transformed_df = df.copy()
 
         # create an instance of one hot encoder
-        onehot_encoder = OneHotEncoder(sparse=False)
+        onehot_encoder = OneHotEncoder(sparse_output=False)
 
         # encode all variables at once for efficiency
         encoded_data = onehot_encoder.fit_transform(df[categorical_variables])
