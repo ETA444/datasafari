@@ -13,6 +13,15 @@ def sample_data():
     })
 
 
+@pytest.fixture
+def sample_contingency_table():
+    """ Provides a sample contingency table for tests. """
+    return pd.crosstab(
+        index=np.random.choice(['A', 'B'], 50),
+        columns=np.random.choice(['X', 'Y'], 50)
+    )
+
+
 # TESTING ERROR-HANDLING for hypothesis_predictor_core_n() #
 
 def test_hypothesis_predictor_core_n_non_dataframe_input():
@@ -128,3 +137,60 @@ def test_hypothesis_predictor_core_n_more_than_three_groups(sample_data):
     assert 'stat' in result['f_oneway']
     assert 'p_val' in result['f_oneway']
     assert result['f_oneway']['test_name'] == 'One-way ANOVA (with 4 groups)'
+
+
+# TESTING ERROR-HANDLING for hypothesis_predictor_core_c() #
+
+def test_hypothesis_predictor_core_c_invalid_df():
+    """ Test that non-DataFrame input raises a TypeError. """
+    with pytest.raises(TypeError):
+        hypothesis_predictor_core_c("not a dataframe", True, True, True, True, True)
+
+
+def test_hypothesis_predictor_core_c_invalid_chi2_viability(sample_contingency_table):
+    """ Test that non-boolean chi2_viability raises a TypeError. """
+    with pytest.raises(TypeError):
+        hypothesis_predictor_core_c(sample_contingency_table, "not boolean", True, True, True, True)
+
+
+def test_hypothesis_predictor_core_c_invalid_barnard_viability(sample_contingency_table):
+    """ Test that non-boolean barnard_viability raises a TypeError. """
+    with pytest.raises(TypeError):
+        hypothesis_predictor_core_c(sample_contingency_table, True, "not boolean", True, True, True)
+
+
+def test_hypothesis_predictor_core_c_invalid_boschloo_viability(sample_contingency_table):
+    """ Test that non-boolean boschloo_viability raises a TypeError. """
+    with pytest.raises(TypeError):
+        hypothesis_predictor_core_c(sample_contingency_table, True, True, "not boolean", True, True)
+
+
+def test_hypothesis_predictor_core_c_invalid_fisher_viability(sample_contingency_table):
+    """ Test that non-boolean fisher_viability raises a TypeError. """
+    with pytest.raises(TypeError):
+        hypothesis_predictor_core_c(sample_contingency_table, True, True, True, "not boolean", True)
+
+
+def test_hypothesis_predictor_core_c_invalid_yates_correction_viability(sample_contingency_table):
+    """ Test that non-boolean yates_correction_viability raises a TypeError. """
+    with pytest.raises(TypeError):
+        hypothesis_predictor_core_c(sample_contingency_table, True, True, True, True, "not boolean")
+
+
+def test_hypothesis_predictor_core_c_invalid_alternative_type(sample_contingency_table):
+    """ Test that non-string alternative raises a TypeError. """
+    with pytest.raises(TypeError):
+        hypothesis_predictor_core_c(sample_contingency_table, True, True, True, True, True, alternative=123)
+
+
+def test_hypothesis_predictor_core_c_invalid_alternative_value(sample_contingency_table):
+    """ Test that invalid string alternative raises a ValueError. """
+    with pytest.raises(ValueError):
+        hypothesis_predictor_core_c(sample_contingency_table, True, True, True, True, True, alternative="invalid")
+
+
+def test_hypothesis_predictor_core_c_empty_contingency_table():
+    """ Test handling of empty contingency table. """
+    empty_contingency_table = pd.DataFrame()
+    with pytest.raises(ValueError):
+        hypothesis_predictor_core_c(empty_contingency_table, True, True, True, True, True)
