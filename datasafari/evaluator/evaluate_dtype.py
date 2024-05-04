@@ -9,6 +9,7 @@ def evaluate_dtype(
         max_unique_values_ratio: float = 0.05,
         min_unique_values: int = 10,
         string_length_threshold: int = 50,
+        small_dataset_threshold: int = 20,
         output: str = 'dict'
 ) -> Union[dict, list]:
     """
@@ -28,6 +29,8 @@ def evaluate_dtype(
         The minimum number of unique values for a column to be considered continuous. Columns below this threshold are categorized. Default is 10.
     string_length_threshold : int, optional
         The average string length threshold above which a column is classified as text data. Default is 50.
+    small_dataset_threshold : int, optional
+        The threshold for small datasets, below which the column is likely categorical. Default is 20.
     output : str, optional
         Specifies the format of the output. Options are:
         - 'dict': Returns a dictionary mapping column names to their determined data types ('numerical', 'categorical', 'text', 'datetime').
@@ -49,7 +52,7 @@ def evaluate_dtype(
         - If `df` is not a pandas DataFrame.
         - If `col_names` is not a list or if elements of `col_names` are not all strings.
         - If `max_unique_values_ratio` is not a float or an integer.
-        - If `min_unique_values`, `string_length_threshold` are not integers.
+        - If `min_unique_values`, `string_length_threshold`, `small_dataset_threshold` are not integers.
         - If `output` is not a string or does not match one of the expected output format strings ('dict', 'list_n', 'list_c').
     ValueError
         - If the `df` is empty, indicating that there's no data to evaluate.
@@ -57,7 +60,7 @@ def evaluate_dtype(
         - If `min_unique_values` is less than 1, as at least one unique value is needed to categorize a column.
         - If `string_length_threshold` is less than or equal to 0, indicating an invalid threshold for text data classification.
         - If 'col_names' list is empty or any specified column names in `col_names` are not present in the DataFrame.
-        - If the `output` string does not correspond to one of the valid options ('dict', 'list_n', 'list_c').
+        - If the `output` string does not correspond to one of the valid options ('dict', 'list_n', 'list_c', 'list_d', 'list_t').
 
     Examples
     --------
@@ -72,7 +75,6 @@ def evaluate_dtype(
     >>> numerical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department'], output='list_n')
     >>> categorical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department'], output='list_c')
     """
-
     # Error-handling #
     # TypeErrors
     if not isinstance(df, pd.DataFrame):
@@ -92,6 +94,9 @@ def evaluate_dtype(
     if not isinstance(string_length_threshold, int):
         raise TypeError("evaluate_dtype(): The 'string_length_threshold' must be an integer.")
 
+    if not isinstance(small_dataset_threshold, int):
+        raise TypeError("evaluate_dtype(): The 'small_dataset_threshold' must be an integer.")
+
     if not isinstance(output, str):
         raise TypeError("evaluate_dtype(): The 'output' parameter must be a string. Possible values are: 'dict', 'list_n', 'list_c', 'list_d' and 'list_t'.")
 
@@ -108,7 +113,9 @@ def evaluate_dtype(
     if string_length_threshold <= 0:
         raise ValueError("evaluate_dtype(): The 'string_length_threshold' must be greater than 0.")
 
-    # Check if list has any members
+    if small_dataset_threshold <= 0:
+        raise ValueError("evaluate_dtype(): The 'small_dataset_threshold' must be greater than 0.")
+
     if len(col_names) == 0:
         raise ValueError("evaluate_dtype(): The 'col_names' list must contain at least one column name.")
 
@@ -120,7 +127,7 @@ def evaluate_dtype(
     if output not in valid_outputs:
         raise ValueError(f"evaluate_dtype(): Invalid output '{output}'. Valid options are: {', '.join(valid_outputs)}")
 
-    # Main Function
+    # Main Function #
     data_type_dictionary = {}
     for col in col_names:
         if is_numeric_dtype(df[col]):
@@ -132,7 +139,11 @@ def evaluate_dtype(
                 data_type_dictionary[col] = 'numerical'
         elif is_string_dtype(df[col]):
             avg_str_length = df[col].dropna().apply(len).mean()
-            if avg_str_length > string_length_threshold or df[col].nunique() / len(df[col]) > max_unique_values_ratio:
+            num_unique_values = df[col].nunique()
+            total_values = len(df[col])
+            if total_values <= small_dataset_threshold and num_unique_values < min_unique_values:
+                data_type_dictionary[col] = 'categorical'
+            elif avg_str_length > string_length_threshold or num_unique_values / total_values > max_unique_values_ratio:
                 data_type_dictionary[col] = 'text'
             else:
                 data_type_dictionary[col] = 'categorical'
