@@ -341,7 +341,7 @@ def data_preprocessing_core(
         - If 'x_cols' is not a list of strings.
         - If 'y_col' is not a string.
         - If 'data_state' is not a string.
-        - If 'test_size' is not a float between 0 and 1.
+        - If 'test_size' is not a float.
         - If 'random_state' is not an integer.
         - If 'verbose' is not an integer
         - If numeric_imputer, numeric_scaler, categorical_imputer, categorical_encoder, text_vectorizer, or datetime_transformer do not support the required interface.
@@ -350,6 +350,7 @@ def data_preprocessing_core(
         - If 'data_state' is not 'unprocessed' or 'preprocessed'.
         - If 'y_col' is not found in 'df'.
         - If specified 'x_cols' are not present in 'df'.
+        - If 'test_size' is not between 0 and 1.
         - If 'df' does not contain enough data to split according to 'test_size'.
 
 
@@ -389,8 +390,8 @@ def data_preprocessing_core(
     if not isinstance(data_state, str):
         raise TypeError("data_preprocessing_core(): The 'data_state' parameter must be a string and one of ['unprocessed', 'preprocessed'].")
 
-    if not isinstance(test_size, float) or not 0 < test_size < 1:
-        raise TypeError("data_preprocessing_core(): The 'test_size' parameter must be a float between 0 and 1.")
+    if not isinstance(test_size, float):
+        raise TypeError("data_preprocessing_core(): The 'test_size' parameter must be a float.")
 
     if not isinstance(random_state, int):
         raise TypeError("data_preprocessing_core(): The 'random_state' parameter must be an integer.")
@@ -420,6 +421,9 @@ def data_preprocessing_core(
     # ValueErrors
     if df.empty:
         raise ValueError("explore_num(): The input DataFrame is empty.")
+
+    if not 0 < test_size < 1:
+        raise ValueError("data_preprocessing_core(): The 'test_size' parameter must be a float between 0 and 1.")
 
     if data_state.lower() not in ['unprocessed', 'preprocessed'] or None:
         raise ValueError(f"data_preprocessing_core(): The data_state must be one of the following: \n- 'unprocessed': activates predict_ml() preprocessing capabilities.\n - 'preprocessed': user opts out of preprocessing (Warning: ensure your data is properly preprocessed for ML)")
