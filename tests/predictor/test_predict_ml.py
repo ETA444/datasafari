@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
 import pandas as pd
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import OneHotEncoder
 from datasafari.predictor.predict_ml import data_preprocessing_core
 
 
@@ -129,3 +131,65 @@ def test_test_size_too_large(sample_data_dpc):
     small_df = sample_data_dpc.head(3)
     with pytest.raises(ValueError):
         data_preprocessing_core(small_df, ["Age"], "Salary", "unprocessed", test_size=0.5)
+
+
+# TESTING FUNCTIONALITY of data_preprocessing_core() #
+
+def test_data_preprocessing_default(sample_data_dpc):
+    """ Test default functionality of data_preprocessing_core with mixed data types. """
+    x_train, x_test, y_train, y_test, task_type = data_preprocessing_core(sample_data_dpc, ["Age", "Salary", "Department", "Review", "Employment Date"], "Salary", "unprocessed")
+    assert x_train.shape[1] == x_test.shape[1], "Mismatch in number of columns between training and test sets"
+    assert len(x_train) == 80 and len(x_test) == 20, "Incorrect train-test split"
+    assert task_type == "regression", "Incorrect task type detected"
+
+
+def test_data_preprocessing_classification(sample_data_dpc):
+    """ Test functionality of data_preprocessing_core for classification task. """
+    x_train, x_test, y_train, y_test, task_type = data_preprocessing_core(sample_data_dpc, ["Age", "Salary", "Department", "Review", "Employment Date"], "Department", "unprocessed")
+    assert x_train.shape[1] == x_test.shape[1], "Mismatch in number of columns between training and test sets"
+    assert task_type == "classification", "Incorrect task type detected"
+
+
+def test_data_preprocessing_preprocessed(sample_data_dpc):
+    """ Test functionality of data_preprocessing_core with preprocessed data. """
+    x_train, x_test, y_train, y_test, task_type = data_preprocessing_core(sample_data_dpc, ["Age", "Salary", "Department", "Review", "Employment Date"], "Salary", "preprocessed")
+    assert x_train.shape[1] == x_test.shape[1], "Mismatch in number of columns between training and test sets"
+    assert len(x_train) == 80 and len(x_test) == 20, "Incorrect train-test split"
+    assert task_type == "regression", "Incorrect task type detected"
+
+
+def test_data_preprocessing_custom_numeric_imputer(sample_data_dpc):
+    """ Test functionality of data_preprocessing_core with custom numeric imputer. """
+    custom_imputer = SimpleImputer(strategy='mean')
+    x_train, x_test, y_train, y_test, task_type = data_preprocessing_core(
+        sample_data_dpc, ["Age", "Salary", "Department", "Review", "Employment Date"],
+        "Salary", "unprocessed", numeric_imputer=custom_imputer)
+    assert x_train.shape[1] == x_test.shape[1], "Mismatch in number of columns between training and test sets"
+    assert task_type == "regression", "Incorrect task type detected"
+
+
+def test_data_preprocessing_custom_categorical_encoder(sample_data_dpc):
+    """ Test functionality of data_preprocessing_core with custom categorical encoder. """
+    custom_encoder = OneHotEncoder(drop='first', handle_unknown='ignore')
+    x_train, x_test, y_train, y_test, task_type = data_preprocessing_core(
+        sample_data_dpc, ["Age", "Salary", "Department", "Review", "Employment Date"],
+        "Salary", "unprocessed", categorical_encoder=custom_encoder)
+    assert x_train.shape[1] == x_test.shape[1], "Mismatch in number of columns between training and test sets"
+    assert task_type == "regression", "Incorrect task type detected"
+
+
+def test_data_preprocessing_datetime_features(sample_data_dpc):
+    """ Test functionality of data_preprocessing_core with datetime features. """
+    x_train, x_test, y_train, y_test, task_type = data_preprocessing_core(
+        sample_data_dpc, ["Employment Date"], "Salary", "unprocessed")
+    assert x_train.shape[1] == x_test.shape[1], "Mismatch in number of columns between training and test sets"
+    assert x_train.shape[1] == 3, "Incorrect number of columns for datetime features"
+    assert task_type == "regression", "Incorrect task type detected"
+
+
+def test_data_preprocessing_text_features(sample_data_dpc):
+    """ Test functionality of data_preprocessing_core with text features. """
+    x_train, x_test, y_train, y_test, task_type = data_preprocessing_core(
+        sample_data_dpc, ["Review"], "Salary", "unprocessed")
+    assert x_train.shape[1] == x_test.shape[1], "Mismatch in number of columns between training and test sets"
+    assert task_type == "regression", "Incorrect task type detected"
