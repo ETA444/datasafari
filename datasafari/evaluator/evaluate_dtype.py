@@ -1,3 +1,4 @@
+import warnings
 from typing import Union
 import pandas as pd
 from pandas.api.types import is_numeric_dtype, is_string_dtype, is_datetime64_any_dtype
@@ -75,6 +76,7 @@ def evaluate_dtype(
     >>> numerical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department'], output='list_n')
     >>> categorical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department'], output='list_c')
     """
+
     # Error-handling #
     # TypeErrors
     if not isinstance(df, pd.DataFrame):
@@ -126,6 +128,14 @@ def evaluate_dtype(
     valid_outputs = ['dict', 'list_n', 'list_c', 'list_d', 'list_t']
     if output not in valid_outputs:
         raise ValueError(f"evaluate_dtype(): Invalid output '{output}'. Valid options are: {', '.join(valid_outputs)}")
+
+    # Warn about small dataset size #
+    if df.shape[0] < 60:
+        warnings.warn(
+            f"evaluate_dtype: Dataset size ({df.shape[0]}) is smaller than 60. "
+            f"Evaluation may be inaccurate.",
+            UserWarning
+        )
 
     # Main Function #
     data_type_dictionary = {}
