@@ -765,3 +765,5 @@ def transform_num(
         print(f"  ➡ Shape of original dataframe: {df.shape}")
         print(f"  ➡ Shape of transformed dataframe: {transformed_df.shape}\n")
         print("* Review the binned data to ensure it aligns with your analysis or modeling strategy.\n")
+
+        return transformed_df, binned_columns
