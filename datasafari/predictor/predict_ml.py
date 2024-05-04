@@ -689,27 +689,31 @@ def model_recommendation_core(
         raise TypeError("model_recommendation_core(): 'verbose' must be an integer value.")
 
     # ValueErrors
-    # validate if x_train and y_train have compatible shapes
-    if x_train.shape[0] != y_train.shape[0]:
-        raise ValueError("model_recommendation_core(): 'x_train' and 'y_train' must have the same number of rows.")
     # ensure 'x_train' and 'y_train' are not empty
     if x_train.size == 0:
         raise ValueError("model_recommendation_core(): 'x_train' cannot be empty.")
     if y_train.size == 0:
         raise ValueError("model_recommendation_core(): 'y_train' cannot be empty.")
 
+    # validate if x_train and y_train have compatible shapes
+    if x_train.shape[0] != y_train.shape[0]:
+        raise ValueError("model_recommendation_core(): 'x_train' and 'y_train' must have the same number of rows.")
+
     # ensure 'priority_metrics' does not contain duplicates
     if len(priority_metrics) != len(set(priority_metrics)):
         raise ValueError("model_recommendation_core(): 'priority_metrics' should not contain duplicate values.")
+
     # ensure 'priority_metrics' list items are strings
     if not all(isinstance(metric, str) for metric in priority_metrics):
         raise ValueError("model_recommendation_core(): All items in 'priority_metrics' must be strings representing metric names.")
+
     # check if provided metrics are valid and remind users of valid options
     valid_metrics = set(scoring_classification.values()) | set(scoring_regression.values())
     invalid_metrics = [metric for metric in priority_metrics if metric not in valid_metrics]
     if invalid_metrics:
         valid_metric_list = ", ".join(sorted(valid_metrics))
         raise ValueError(f"model_recommendation_core(): Invalid metric(s) in 'priority_metrics': {', '.join(invalid_metrics)}.\n\nValid metrics are: {valid_metric_list}.")
+
     # check for valid metrics in relation to task type
     c_valid_metrics = set(scoring_classification.values())
     r_valid_metrics = set(scoring_regression.values())
