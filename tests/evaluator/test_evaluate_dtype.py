@@ -11,7 +11,8 @@ def sample_dataframe():
         'Age': np.random.randint(18, 35, 100),
         'Income': np.random.normal(50000, 15000, 100),
         'Department': np.random.choice(['HR', 'Tech', 'Admin'], 100),
-        'EntryDate': pd.date_range(start='1/1/2020', periods=100, freq='M')
+        'EntryDate': pd.date_range(start='1/1/2020', periods=100, freq='M'),
+        'Sentence': np.random.choice(['Lorem ipsum dolor sit amet', 'Others are also mentioned but their origin is not clear', 'Many heroes wore capes but some of them did not so generalizing is not advisable'], 100)
     })
 
 
@@ -169,3 +170,43 @@ def test_evaluate_dtype_output_list_text(sample_dataframe):
     sample_dataframe['Comments'] = ['This is a very detailed comment about something'] * 100
     result = evaluate_dtype(sample_dataframe, ['Comments'], output='list_t', string_length_threshold=10)
     assert result == [True], "List for text data type should be identified correctly"
+
+
+def test_evaluate_dtype_small_categorical(sample_dataframe):
+    """Test handling of small dataset with categorical data."""
+    result = evaluate_dtype(sample_dataframe, ['Department'], output='dict')
+    assert result['Department'] == 'categorical', "Small categorical column should be identified as categorical"
+
+
+def test_evaluate_dtype_small_text(sample_dataframe):
+    """Test handling of small dataset with text data."""
+    small_df = sample_dataframe.sample(n=60)
+    small_df['ShortText'] = ['short'] * 60
+    result = evaluate_dtype(small_df, ['ShortText'], output='dict', string_length_threshold=4)
+    print(result)
+    assert result['ShortText'] == 'text', "Small text column should be identified as text"
+
+
+def test_evaluate_dtype_small_numerical(sample_dataframe):
+    """Test handling of small dataset with numerical data."""
+    small_df = sample_dataframe.sample(n=60)
+    result = evaluate_dtype(small_df, ['Income'], output='dict')
+    print(result)
+    assert result['Income'] == 'numerical', "Small numerical column should be identified as numerical"
+
+
+def test_evaluate_dtype_small_mixed_data(sample_dataframe):
+    """Test handling of small dataset with mixed data types."""
+    small_df = sample_dataframe.sample(n=60)
+    result = evaluate_dtype(small_df, ['Age', 'Income', 'Department', 'EntryDate', 'Sentence'], output='dict')
+    print(result)
+    expected = {
+        'Age': 'numerical',
+        'Income': 'numerical',
+        'Department': 'categorical',
+        'EntryDate': 'datetime',
+        'Sentence': 'text'
+    }
+    print(result)
+    assert result == expected, "Mixed columns in small dataset should be identified correctly"
+
