@@ -194,3 +194,66 @@ def test_hypothesis_predictor_core_c_empty_contingency_table():
     empty_contingency_table = pd.DataFrame()
     with pytest.raises(ValueError):
         hypothesis_predictor_core_c(empty_contingency_table, True, True, True, True, True)
+
+
+# TESTING FUNCTIONALITY for hypothesis_predictor_core_c() #
+
+def test_hypothesis_predictor_core_c_chi2_without_yates(sample_contingency_table):
+    """ Test Chi-square test without Yates' correction. """
+    result = hypothesis_predictor_core_c(sample_contingency_table, True, False, False, False, False)
+    assert "chi2_contingency" in result
+    assert "stat" in result["chi2_contingency"]
+    assert "p_val" in result["chi2_contingency"]
+    assert "conclusion" in result["chi2_contingency"]
+    assert "yates_correction" in result["chi2_contingency"]
+    assert result["chi2_contingency"]["yates_correction"] is False
+
+
+def test_hypothesis_predictor_core_c_chi2_with_yates(sample_contingency_table):
+    """ Test Chi-square test with Yates' correction. """
+    result = hypothesis_predictor_core_c(sample_contingency_table, True, False, False, False, True)
+    assert "chi2_contingency" in result
+    assert "stat" in result["chi2_contingency"]
+    assert "p_val" in result["chi2_contingency"]
+    assert "conclusion" in result["chi2_contingency"]
+    assert "yates_correction" in result["chi2_contingency"]
+    assert result["chi2_contingency"]["yates_correction"] is True
+
+
+def test_hypothesis_predictor_core_c_barnard(sample_contingency_table):
+    """ Test Barnard's exact test. """
+    result = hypothesis_predictor_core_c(sample_contingency_table, False, True, False, False, False)
+    assert "barnard_exact" in result
+    assert "stat" in result["barnard_exact"]
+    assert "p_val" in result["barnard_exact"]
+    assert "conclusion" in result["barnard_exact"]
+    assert "alternative" in result["barnard_exact"]
+    assert result["barnard_exact"]["alternative"] == "two-sided"
+
+
+def test_hypothesis_predictor_core_c_boschloo(sample_contingency_table):
+    """ Test Boschloo's exact test. """
+    result = hypothesis_predictor_core_c(sample_contingency_table, False, False, True, False, False)
+    assert "boschloo_exact" in result
+    assert "stat" in result["boschloo_exact"]
+    assert "p_val" in result["boschloo_exact"]
+    assert "conclusion" in result["boschloo_exact"]
+    assert "alternative" in result["boschloo_exact"]
+    assert result["boschloo_exact"]["alternative"] == "two-sided"
+
+
+def test_hypothesis_predictor_core_c_fisher(sample_contingency_table):
+    """ Test Fisher's exact test. """
+    result = hypothesis_predictor_core_c(sample_contingency_table, False, False, False, True, False)
+    assert "fisher_exact" in result
+    assert "stat" in result["fisher_exact"]
+    assert "p_val" in result["fisher_exact"]
+    assert "conclusion" in result["fisher_exact"]
+    assert "alternative" in result["fisher_exact"]
+    assert result["fisher_exact"]["alternative"] == "two-sided"
+
+
+def test_hypothesis_predictor_core_c_all_tests(sample_contingency_table):
+    """ Test running all tests. """
+    result = hypothesis_predictor_core_c(sample_contingency_table, True, True, True, True, True)
+    assert "chi2_contingency" in result or "barnard_exact" in result or "boschloo_exact" in result or "fisher_exact" in result
