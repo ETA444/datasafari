@@ -34,7 +34,7 @@ models_classification = {
     'DecisionTreeClassifier': DecisionTreeClassifier(),
     'RandomForestClassifier': RandomForestClassifier(),
     'GradientBoostingClassifier': GradientBoostingClassifier(),
-    'SVC': SVC(),
+    'SVC': SVC(probability=True),
     'KNeighborsClassifier': KNeighborsClassifier(),
 }
 
