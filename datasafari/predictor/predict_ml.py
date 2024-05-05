@@ -904,9 +904,6 @@ def model_tuning_core(
     if not isinstance(task_type, str):
         raise TypeError("model_tuning_core(): 'task_type' must be a string.")
 
-    if task_type not in ['classification', 'regression']:
-        raise ValueError("model_tuning_core(): 'task_type' must be either 'classification' or 'regression'.")
-
     if models is None or not isinstance(models, dict):
         raise TypeError("model_tuning_core(): 'models' must be a dictionary with model names as keys and model instances as values.")
 
@@ -922,8 +919,8 @@ def model_tuning_core(
     if not isinstance(n_jobs, int):
         raise TypeError("model_tuning_core(): 'n_jobs' must be an integer.")
 
-    if not isinstance(cv, int) or cv < 1:
-        raise ValueError("model_tuning_core(): 'cv' must be an integer greater than 0.")
+    if not isinstance(cv, int):
+        raise TypeError("model_tuning_core(): 'cv' must be an integer.")
 
     if n_iter_random is not None and (not isinstance(n_iter_random, int) or n_iter_random < 1):
         raise ValueError("model_tuning_core(): 'n_iter_random' must be a non-negative integer.")
@@ -938,6 +935,9 @@ def model_tuning_core(
         raise TypeError("model_tuning_core(): 'random_state' must be an integer.")
 
     # ValueErrors
+    if task_type not in ['classification', 'regression']:
+        raise ValueError("model_tuning_core(): 'task_type' must be either 'classification' or 'regression'.")
+
     if x_train.shape[0] != y_train.shape[0]:
         raise ValueError("model_tuning_core(): 'x_train' and 'y_train' must have the same number of rows.")
 
@@ -955,6 +955,9 @@ def model_tuning_core(
 
     if priority_metrics and len(priority_metrics) != len(set(priority_metrics)):
         raise ValueError("model_tuning_core(): 'priority_metrics' contains duplicate entries.")
+
+    if cv < 1:
+        raise ValueError("model_tuning_core(): 'cv' must be an integer greater than 0.")
 
     # Check valid metrics based on task_type
     valid_metrics = set(scoring_classification.values()) if task_type == 'classification' else set(scoring_regression.values())
