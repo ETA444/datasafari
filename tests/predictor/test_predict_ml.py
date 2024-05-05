@@ -3,8 +3,10 @@ import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.linear_model import LogisticRegression, LinearRegression
 from datasafari.predictor.predict_ml import (
-    data_preprocessing_core, calculate_composite_score, model_recommendation_core
+    data_preprocessing_core, calculate_composite_score, model_recommendation_core,
+    model_tuning_core
 )
 
 
@@ -28,17 +30,9 @@ def sample_data_ccs():
     return scores, metric_weights
 
 
-@pytest.fixture
-def sample_data_mrc():
-    """ Provides sample data for tests related to error-handling of model_recommendation_core(). """
-    x_train = np.random.rand(100, 5)
-    y_train = np.random.randint(0, 2, size=100)
-    return x_train, y_train
-
-
 @pytest.fixture()
-def sample_data_mrc2():
-    """ Provides sample data for tests related to functionality of model_recommendation_core(). """
+def sample_data_mrc_mtc():
+    """ Provides sample data for tests of model_recommendation_core() and model_tuning_core(). """
     x_train = np.random.rand(100, 5)
     y_train_classification = np.random.randint(0, 2, size=100)
     y_train_regression = np.random.rand(100)
@@ -269,133 +263,133 @@ def test_calculate_composite_score_zero_weights_extra():
 
 # TESTING ERROR-HANDLING for model_recommendation_core() #
 
-def test_model_recommendation_core_type_error_x_train(sample_data_mrc):
+def test_model_recommendation_core_type_error_x_train(sample_data_mrc_mtc):
     """ Test model_recommendation_core TypeError when x_train is not DataFrame or ndarray. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(TypeError, match="model_recommendation_core\\(\\): 'x_train' must be a pandas DataFrame or NumPy ndarray."):
         model_recommendation_core("invalid_input", y_train, task_type="classification")
 
 
-def test_model_recommendation_core_type_error_y_train(sample_data_mrc):
+def test_model_recommendation_core_type_error_y_train(sample_data_mrc_mtc):
     """ Test model_recommendation_core TypeError when y_train is not Series or ndarray. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(TypeError, match="model_recommendation_core\\(\\): 'y_train' must be a pandas Series or NumPy ndarray."):
         model_recommendation_core(x_train, "invalid_input", task_type="classification")
 
 
-def test_model_recommendation_core_type_error_task_type(sample_data_mrc):
+def test_model_recommendation_core_type_error_task_type(sample_data_mrc_mtc):
     """ Test model_recommendation_core ValueError when task_type is not 'classification' or 'regression'. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): 'task_type' must be either 'classification' or 'regression'."):
         model_recommendation_core(x_train, y_train, task_type="invalid")
 
 
-def test_model_recommendation_core_type_error_priority_metrics(sample_data_mrc):
+def test_model_recommendation_core_type_error_priority_metrics(sample_data_mrc_mtc):
     """ Test model_recommendation_core TypeError when priority_metrics is not a list. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(TypeError, match="model_recommendation_core\\(\\): 'priority_metrics' must be a list of scoring metric names."):
         model_recommendation_core(x_train, y_train, task_type="classification", priority_metrics="invalid")
 
 
-def test_model_recommendation_core_type_error_cv(sample_data_mrc):
+def test_model_recommendation_core_type_error_cv(sample_data_mrc_mtc):
     """ Test model_recommendation_core TypeError when cv is not an integer. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(TypeError, match="model_recommendation_core\\(\\): 'cv' must be an integer."):
         model_recommendation_core(x_train, y_train, task_type="classification", cv="invalid")
 
 
-def test_model_recommendation_core_type_error_n_top_models(sample_data_mrc):
+def test_model_recommendation_core_type_error_n_top_models(sample_data_mrc_mtc):
     """ Test model_recommendation_core ValueError when n_top_models is not an integer greater than 0. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): 'n_top_models' must be an integer greater than 0."):
         model_recommendation_core(x_train, y_train, task_type="classification", n_top_models=0)
 
 
-def test_model_recommendation_core_type_error_verbose(sample_data_mrc):
+def test_model_recommendation_core_type_error_verbose(sample_data_mrc_mtc):
     """ Test model_recommendation_core TypeError when verbose is not an integer. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(TypeError, match="model_recommendation_core\\(\\): 'verbose' must be an integer value."):
         model_recommendation_core(x_train, y_train, task_type="classification", verbose="invalid")
 
 
-def test_model_recommendation_core_value_error_shape(sample_data_mrc):
+def test_model_recommendation_core_value_error_shape(sample_data_mrc_mtc):
     """ Test model_recommendation_core ValueError when x_train and y_train have incompatible shapes. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     y_train = y_train[:-1]  # mismatched shapes
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): 'x_train' and 'y_train' must have the same number of rows."):
         model_recommendation_core(x_train, y_train, task_type="classification")
 
 
-def test_model_recommendation_core_value_error_empty_x_train(sample_data_mrc):
+def test_model_recommendation_core_value_error_empty_x_train(sample_data_mrc_mtc):
     """Test model_recommendation_core ValueError when x_train is empty."""
-    _, y_train = sample_data_mrc
+    _, _, y_train = sample_data_mrc_mtc
     x_train = np.empty((0, 5))  # Properly emptying x_train
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): 'x_train' cannot be empty."):
         model_recommendation_core(x_train, y_train, task_type="classification")
 
 
-def test_model_recommendation_core_value_error_empty_y_train(sample_data_mrc):
+def test_model_recommendation_core_value_error_empty_y_train(sample_data_mrc_mtc):
     """Test model_recommendation_core ValueError when y_train is empty."""
-    x_train, _ = sample_data_mrc
+    x_train, _, _ = sample_data_mrc_mtc
     y_train = np.empty((0,))  # Properly emptying y_train
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): 'y_train' cannot be empty."):
         model_recommendation_core(x_train, y_train, task_type="classification")
 
 
-def test_model_recommendation_core_value_error_priority_metrics_duplicates(sample_data_mrc):
+def test_model_recommendation_core_value_error_priority_metrics_duplicates(sample_data_mrc_mtc):
     """ Test model_recommendation_core ValueError when priority_metrics contains duplicate values. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): 'priority_metrics' should not contain duplicate values."):
         model_recommendation_core(x_train, y_train, task_type="classification", priority_metrics=["Accuracy", "Accuracy"])
 
 
-def test_model_recommendation_core_value_error_priority_metrics_not_strings(sample_data_mrc):
+def test_model_recommendation_core_value_error_priority_metrics_not_strings(sample_data_mrc_mtc):
     """ Test model_recommendation_core ValueError when priority_metrics contains non-string items. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): All items in 'priority_metrics' must be strings representing metric names."):
         model_recommendation_core(x_train, y_train, task_type="classification", priority_metrics=["Accuracy", 123])
 
 
-def test_model_recommendation_core_value_error_invalid_priority_metrics(sample_data_mrc):
+def test_model_recommendation_core_value_error_invalid_priority_metrics(sample_data_mrc_mtc):
     """ Test model_recommendation_core ValueError when priority_metrics contains invalid metric names. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): Invalid metric\\(s\\) in 'priority_metrics': .+"):
         model_recommendation_core(x_train, y_train, task_type="classification", priority_metrics=["InvalidMetric"])
 
 
-def test_model_recommendation_core_value_error_invalid_metrics_classification(sample_data_mrc):
+def test_model_recommendation_core_value_error_invalid_metrics_classification(sample_data_mrc_mtc):
     """ Test model_recommendation_core ValueError when priority_metrics contains invalid metrics for classification. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): The following priority metrics are not valid for classification: .+"):
         model_recommendation_core(x_train, y_train, task_type="classification", priority_metrics=["neg_mean_squared_error"])
 
 
-def test_model_recommendation_core_value_error_invalid_metrics_regression(sample_data_mrc):
+def test_model_recommendation_core_value_error_invalid_metrics_regression(sample_data_mrc_mtc):
     """ Test model_recommendation_core ValueError when priority_metrics contains invalid metrics for regression. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): The following priority metrics are not valid for regression:"):
         model_recommendation_core(x_train, y_train, task_type="regression", priority_metrics=["accuracy"])
 
 
-def test_model_recommendation_core_value_error_n_top_models_exceeds_classification(sample_data_mrc):
+def test_model_recommendation_core_value_error_n_top_models_exceeds_classification(sample_data_mrc_mtc):
     """ Test model_recommendation_core ValueError when n_top_models exceeds available models for classification. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): 'n_top_models' cannot exceed the number of available classification models .+"):
         model_recommendation_core(x_train, y_train, task_type="classification", n_top_models=10)
 
 
-def test_model_recommendation_core_value_error_n_top_models_exceeds_regression(sample_data_mrc):
+def test_model_recommendation_core_value_error_n_top_models_exceeds_regression(sample_data_mrc_mtc):
     """ Test model_recommendation_core ValueError when n_top_models exceeds available models for regression. """
-    x_train, y_train = sample_data_mrc
+    x_train, _, y_train = sample_data_mrc_mtc
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): 'n_top_models' cannot exceed the number of available regression models .+"):
         model_recommendation_core(x_train, y_train, task_type="regression", n_top_models=10)
 
 
 # TESTING FUNCTIONALITY of model_recommendation_core() #
 
-def test_model_recommendation_core_classification(sample_data_mrc2):
+def test_model_recommendation_core_classification(sample_data_mrc_mtc):
     """ Test model_recommendation_core functionality for classification task. """
-    x_train, y_train_classification, _ = sample_data_mrc2
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
     recommended_models = model_recommendation_core(x_train, y_train_classification, task_type="classification")
     assert isinstance(recommended_models, dict)
     assert len(recommended_models) <= 3
@@ -405,9 +399,9 @@ def test_model_recommendation_core_classification(sample_data_mrc2):
         assert hasattr(model_obj, "predict")
 
 
-def test_model_recommendation_core_regression(sample_data_mrc2):
+def test_model_recommendation_core_regression(sample_data_mrc_mtc):
     """ Test model_recommendation_core functionality for regression task. """
-    x_train, _, y_train_regression = sample_data_mrc2
+    x_train, _, y_train_regression = sample_data_mrc_mtc
     recommended_models = model_recommendation_core(x_train, y_train_regression, task_type="regression", priority_metrics=["neg_mean_squared_error"])
     assert isinstance(recommended_models, dict)
     assert len(recommended_models) <= 3
@@ -417,9 +411,9 @@ def test_model_recommendation_core_regression(sample_data_mrc2):
         assert hasattr(model_obj, "predict")
 
 
-def test_model_recommendation_core_classification_no_priority(sample_data_mrc2):
+def test_model_recommendation_core_classification_no_priority(sample_data_mrc_mtc):
     """ Test model_recommendation_core functionality for classification task without priority metrics. """
-    x_train, y_train_classification, _ = sample_data_mrc2
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
     recommended_models = model_recommendation_core(x_train, y_train_classification, task_type="classification")
     assert isinstance(recommended_models, dict)
     assert len(recommended_models) <= 3
@@ -429,9 +423,9 @@ def test_model_recommendation_core_classification_no_priority(sample_data_mrc2):
         assert hasattr(model_obj, "predict")
 
 
-def test_model_recommendation_core_regression_no_priority(sample_data_mrc2):
+def test_model_recommendation_core_regression_no_priority(sample_data_mrc_mtc):
     """ Test model_recommendation_core functionality for regression task without priority metrics. """
-    x_train, _, y_train_regression = sample_data_mrc2
+    x_train, _, y_train_regression = sample_data_mrc_mtc
     recommended_models = model_recommendation_core(x_train, y_train_regression, task_type="regression")
     assert isinstance(recommended_models, dict)
     assert len(recommended_models) <= 3
