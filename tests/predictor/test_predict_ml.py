@@ -435,17 +435,223 @@ def test_model_recommendation_core_regression_no_priority(sample_data_mrc_mtc):
         assert hasattr(model_obj, "predict")
 
 
-def test_model_recommendation_core_classification_verbose(sample_data_mrc2, capsys):
+def test_model_recommendation_core_classification_verbose(sample_data_mrc_mtc, capsys):
     """ Test model_recommendation_core functionality for classification task with verbose output. """
-    x_train, y_train_classification, _ = sample_data_mrc2
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
     model_recommendation_core(x_train, y_train_classification, task_type="classification", priority_metrics=["accuracy"], verbose=2)
     captured = capsys.readouterr()
     assert "< MODEL RECOMMENDATIONS >" in captured.out
 
 
-def test_model_recommendation_core_regression_verbose(sample_data_mrc2, capsys):
+def test_model_recommendation_core_regression_verbose(sample_data_mrc_mtc, capsys):
     """ Test model_recommendation_core functionality for regression task with verbose output. """
-    x_train, _, y_train_regression = sample_data_mrc2
+    x_train, _, y_train_regression = sample_data_mrc_mtc
     model_recommendation_core(x_train, y_train_regression, task_type="regression", priority_metrics=["neg_mean_squared_error"], verbose=2)
     captured = capsys.readouterr()
     assert "< MODEL RECOMMENDATIONS >" in captured.out
+
+
+# TESTING ERROR-HANDLING of model_tuning_core() #
+
+def test_model_tuning_core_invalid_x_train_type(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises TypeError when 'x_train' is not a DataFrame or ndarray.
+    """
+    _, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(TypeError):
+        model_tuning_core(x_train="invalid_type", y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()})
+
+
+def test_model_tuning_core_invalid_y_train_type(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises TypeError when 'y_train' is not a Series or ndarray.
+    """
+    x_train, _, _ = sample_data_mrc_mtc
+    with pytest.raises(TypeError):
+        model_tuning_core(x_train=x_train, y_train="invalid_type", task_type='classification', models={'model': LogisticRegression()})
+
+
+def test_model_tuning_core_invalid_task_type():
+    """
+    Tests if model_tuning_core raises TypeError when 'task_type' is not a string.
+    """
+    x_train = np.random.randn(100, 5)
+    y_train = np.random.randint(0, 2, 100)
+    with pytest.raises(TypeError):
+        model_tuning_core(x_train=x_train, y_train=y_train, task_type=123, models={'model': LogisticRegression()})
+
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train, task_type='invalid', models={'model': LogisticRegression()})
+
+
+def test_model_tuning_core_invalid_models_type(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises TypeError when 'models' is not a dictionary.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(TypeError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models="invalid_type")
+
+
+def test_model_tuning_core_invalid_priority_metrics_type(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises TypeError when 'priority_metrics' is not a list.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(TypeError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, priority_metrics="invalid_type")
+
+
+def test_model_tuning_core_invalid_priority_tuners_type(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises TypeError when 'priority_tuners' is not a list.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(TypeError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, priority_tuners="invalid_type")
+
+
+def test_model_tuning_core_invalid_custom_param_grids_type(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises TypeError when 'custom_param_grids' is not a dictionary.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(TypeError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, custom_param_grids="invalid_type")
+
+
+def test_model_tuning_core_invalid_n_jobs_type(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises TypeError when 'n_jobs' is not an integer.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(TypeError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, n_jobs="invalid_type")
+
+
+def test_model_tuning_core_invalid_cv_type(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises TypeError when 'cv' is not an integer.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(TypeError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, cv="invalid_type")
+
+
+def test_model_tuning_core_invalid_cv_value(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises ValueError when 'cv' is less than 1.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, cv=0)
+
+
+def test_model_tuning_core_invalid_n_iter_random_value(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises ValueError when 'n_iter_random' is less than 1.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, n_iter_random=-1)
+
+
+def test_model_tuning_core_invalid_n_iter_bayesian_value(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises ValueError when 'n_iter_bayesian' is less than 1.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, n_iter_bayesian=-1)
+
+
+def test_model_tuning_core_invalid_verbose_type(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises TypeError when 'verbose' is not an integer.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(TypeError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, verbose="invalid_type")
+
+
+def test_model_tuning_core_invalid_random_state_type(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises TypeError when 'random_state' is not an integer.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(TypeError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, random_state="invalid_type")
+
+
+def test_model_tuning_core_mismatched_x_y_shapes(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises ValueError when 'x_train' and 'y_train' have different number of rows.
+    """
+    x_train = np.random.randn(100, 5)
+    y_train = np.random.randint(0, 2, 99)
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train, task_type='classification', models={'model': LogisticRegression()})
+
+
+def test_model_tuning_core_empty_x_train(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises ValueError when 'x_train' is empty.
+    """
+    x_train = np.array([]).reshape(0, 5)
+    y_train = np.random.randint(0, 2, 100)
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train, task_type='classification', models={'model': LogisticRegression()})
+
+
+def test_model_tuning_core_empty_y_train(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises ValueError when 'y_train' is empty.
+    """
+    x_train = np.random.randn(100, 5)
+    y_train = np.array([])
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train, task_type='classification', models={'model': LogisticRegression()})
+
+
+def test_model_tuning_core_duplicate_priority_metrics(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises ValueError when 'priority_metrics' contains duplicate values.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, priority_metrics=["accuracy", "accuracy"])
+
+
+def test_model_tuning_core_invalid_priority_metrics_for_task_type(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises ValueError when 'priority_metrics' contains invalid metrics for the specified 'task_type'.
+    """
+    x_train, _, y_train_regression = sample_data_mrc_mtc
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train_regression, task_type='regression', models={'model': LinearRegression()}, priority_metrics=["accuracy"])
+
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, priority_metrics=["r2"])
+
+
+def test_model_tuning_core_invalid_priority_tuners(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises ValueError when 'priority_tuners' contains unrecognized tuner names.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, priority_tuners=["invalid"])
+
+
+def test_model_tuning_core_invalid_refit_metric(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core raises ValueError when 'refit_metric' is not applicable to the provided 'task_type'.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train_classification, task_type='classification', models={'model': LogisticRegression()}, refit_metric="r2")
+
+    _, y_train_regression, _ = sample_data_mrc_mtc
+    with pytest.raises(ValueError):
+        model_tuning_core(x_train=x_train, y_train=y_train_regression, task_type='regression', models={'model': LinearRegression()}, refit_metric="accuracy")
