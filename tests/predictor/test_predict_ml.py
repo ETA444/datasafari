@@ -30,10 +30,19 @@ def sample_data_ccs():
 
 @pytest.fixture
 def sample_data_mrc():
-    """ Provides sample data for tests related to model_recommendation_core(). """
+    """ Provides sample data for tests related to error-handling of model_recommendation_core(). """
     x_train = np.random.rand(100, 5)
     y_train = np.random.randint(0, 2, size=100)
     return x_train, y_train
+
+
+@pytest.fixture()
+def sample_data_mrc2():
+    """ Provides sample data for tests related to functionality of model_recommendation_core(). """
+    x_train = np.random.rand(100, 5)
+    y_train_classification = np.random.randint(0, 2, size=100)
+    y_train_regression = np.random.rand(100)
+    return x_train, y_train_classification, y_train_regression
 
 
 # TESTING ERROR-HANDLING of data_preprocessing_core() #
@@ -380,3 +389,69 @@ def test_model_recommendation_core_value_error_n_top_models_exceeds_regression(s
     x_train, y_train = sample_data_mrc
     with pytest.raises(ValueError, match="model_recommendation_core\\(\\): 'n_top_models' cannot exceed the number of available regression models .+"):
         model_recommendation_core(x_train, y_train, task_type="regression", n_top_models=10)
+
+
+# TESTING FUNCTIONALITY of model_recommendation_core() #
+
+def test_model_recommendation_core_classification(sample_data_mrc2):
+    """ Test model_recommendation_core functionality for classification task. """
+    x_train, y_train_classification, _ = sample_data_mrc2
+    recommended_models = model_recommendation_core(x_train, y_train_classification, task_type="classification")
+    assert isinstance(recommended_models, dict)
+    assert len(recommended_models) <= 3
+    for model_name, model_obj in recommended_models.items():
+        assert isinstance(model_name, str)
+        assert hasattr(model_obj, "fit")
+        assert hasattr(model_obj, "predict")
+
+
+def test_model_recommendation_core_regression(sample_data_mrc2):
+    """ Test model_recommendation_core functionality for regression task. """
+    x_train, _, y_train_regression = sample_data_mrc2
+    recommended_models = model_recommendation_core(x_train, y_train_regression, task_type="regression", priority_metrics=["neg_mean_squared_error"])
+    assert isinstance(recommended_models, dict)
+    assert len(recommended_models) <= 3
+    for model_name, model_obj in recommended_models.items():
+        assert isinstance(model_name, str)
+        assert hasattr(model_obj, "fit")
+        assert hasattr(model_obj, "predict")
+
+
+def test_model_recommendation_core_classification_no_priority(sample_data_mrc2):
+    """ Test model_recommendation_core functionality for classification task without priority metrics. """
+    x_train, y_train_classification, _ = sample_data_mrc2
+    recommended_models = model_recommendation_core(x_train, y_train_classification, task_type="classification")
+    assert isinstance(recommended_models, dict)
+    assert len(recommended_models) <= 3
+    for model_name, model_obj in recommended_models.items():
+        assert isinstance(model_name, str)
+        assert hasattr(model_obj, "fit")
+        assert hasattr(model_obj, "predict")
+
+
+def test_model_recommendation_core_regression_no_priority(sample_data_mrc2):
+    """ Test model_recommendation_core functionality for regression task without priority metrics. """
+    x_train, _, y_train_regression = sample_data_mrc2
+    recommended_models = model_recommendation_core(x_train, y_train_regression, task_type="regression")
+    assert isinstance(recommended_models, dict)
+    assert len(recommended_models) <= 3
+    for model_name, model_obj in recommended_models.items():
+        assert isinstance(model_name, str)
+        assert hasattr(model_obj, "fit")
+        assert hasattr(model_obj, "predict")
+
+
+def test_model_recommendation_core_classification_verbose(sample_data_mrc2, capsys):
+    """ Test model_recommendation_core functionality for classification task with verbose output. """
+    x_train, y_train_classification, _ = sample_data_mrc2
+    model_recommendation_core(x_train, y_train_classification, task_type="classification", priority_metrics=["accuracy"], verbose=2)
+    captured = capsys.readouterr()
+    assert "< MODEL RECOMMENDATIONS >" in captured.out
+
+
+def test_model_recommendation_core_regression_verbose(sample_data_mrc2, capsys):
+    """ Test model_recommendation_core functionality for regression task with verbose output. """
+    x_train, _, y_train_regression = sample_data_mrc2
+    model_recommendation_core(x_train, y_train_regression, task_type="regression", priority_metrics=["neg_mean_squared_error"], verbose=2)
+    captured = capsys.readouterr()
+    assert "< MODEL RECOMMENDATIONS >" in captured.out
