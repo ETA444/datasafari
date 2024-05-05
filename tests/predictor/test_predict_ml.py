@@ -7,13 +7,14 @@ from sklearn.linear_model import LogisticRegression, LinearRegression, Ridge
 from sklearn.svm import SVC, SVR
 from datasafari.predictor.predict_ml import (
     data_preprocessing_core, calculate_composite_score, model_recommendation_core,
-    model_tuning_core
+    model_tuning_core, model_recommendation_core_inference, predict_ml
 )
 
 
 @pytest.fixture
 def sample_data_dpc():
     """ Provides sample data for tests related to data_preprocessing_core(). """
+    np.random.seed(42)
     return pd.DataFrame({
         'Age': np.random.randint(18, 35, size=100),
         'Salary': np.random.normal(50000, 12000, size=100),
@@ -34,10 +35,23 @@ def sample_data_ccs():
 @pytest.fixture()
 def sample_data_mrc_mtc():
     """ Provides sample data for tests of model_recommendation_core() and model_tuning_core(). """
+    np.random.seed(42)
     x_train = np.random.rand(100, 5)
     y_train_classification = np.random.randint(0, 2, size=100)
     y_train_regression = np.random.rand(100)
     return x_train, y_train_classification, y_train_regression
+
+
+@pytest.fixture
+def sample_data_mrci():
+    """ Provides sample data for tests of model_recommendation_core_inference(). """
+    np.random.seed(42)
+    df = pd.DataFrame({
+        'Age': np.random.randint(20, 70, size=100),
+        'Experience': np.random.randint(1, 30, size=100),
+        'Salary': np.random.normal(50000, 15000, size=100)
+    })
+    return df
 
 
 # TESTING ERROR-HANDLING of data_preprocessing_core() #
@@ -758,3 +772,94 @@ def test_model_tuning_core_regression_with_custom_param_grids(sample_data_mrc_mt
     tuned_models = model_tuning_core(x_train, y_train_regression, 'regression', models, custom_param_grids=custom_param_grids)
     assert 'Ridge' in tuned_models
     assert isinstance(tuned_models['Ridge']['best_model'], Ridge)
+
+
+# TESTING ERROR-HANDLING of model_recommendation_core_inference() #
+
+def test_model_recommendation_core_inference_invalid_df_type():
+    """
+    Tests if model_recommendation_core_inference raises a TypeError for invalid df type.
+    """
+    with pytest.raises(TypeError, match=r"model_recommendation_core_inference\(\): 'df' must be a pandas DataFrame."):
+        model_recommendation_core_inference(df=[], formula='Salary ~ Age + Experience')
+
+
+def test_model_recommendation_core_inference_invalid_formula_type(sample_data_mrci):
+    """
+    Tests if model_recommendation_core_inference raises a TypeError for invalid formula type.
+    """
+    df = sample_data_mrci
+    with pytest.raises(TypeError, match=r"model_recommendation_core_inference\(\): 'formula' must be a string."):
+        model_recommendation_core_inference(df, formula=123)
+
+
+def test_model_recommendation_core_inference_invalid_priority_models_type(sample_data_mrci):
+    """
+    Tests if model_recommendation_core_inference raises a TypeError for invalid priority_models type.
+    """
+    df = sample_data_mrci
+    with pytest.raises(TypeError, match=r"model_recommendation_core_inference\(\): 'priority_models' must be a list of strings."):
+        model_recommendation_core_inference(df, 'Salary ~ Age + Experience', priority_models='Logit')
+
+
+def test_model_recommendation_core_inference_invalid_n_top_models_type(sample_data_mrci):
+    """
+    Tests if model_recommendation_core_inference raises a ValueError for invalid n_top_models type.
+    """
+    df = sample_data_mrci
+    with pytest.raises(ValueError, match=r"model_recommendation_core_inference\(\): 'n_top_models' must be an integer greater than 0."):
+        model_recommendation_core_inference(df, 'Salary ~ Age + Experience', n_top_models=-1)
+
+
+def test_model_recommendation_core_inference_invalid_model_kwargs_type(sample_data_mrci):
+    """
+    Tests if model_recommendation_core_inference raises a TypeError for invalid model_kwargs type.
+    """
+    df = sample_data_mrci
+    with pytest.raises(TypeError, match=r"model_recommendation_core_inference\(\): 'model_kwargs' must be a dictionary."):
+        model_recommendation_core_inference(df, 'Salary ~ Age + Experience', model_kwargs='kwargs')
+
+
+def test_model_recommendation_core_inference_invalid_verbose_type(sample_data_mrci):
+    """
+    Tests if model_recommendation_core_inference raises a TypeError for invalid verbose type.
+    """
+    df = sample_data_mrci
+    with pytest.raises(TypeError, match=r"model_recommendation_core_inference\(\): 'verbose' must be an integer."):
+        model_recommendation_core_inference(df, 'Salary ~ Age + Experience', verbose='loud')
+
+
+def test_model_recommendation_core_inference_empty_dataframe():
+    """
+    Tests if model_recommendation_core_inference raises a ValueError for empty dataframe.
+    """
+    df = pd.DataFrame()
+    with pytest.raises(ValueError, match=r"model_recommendation_core_inference\(\): The input DataFrame is empty."):
+        model_recommendation_core_inference(df, 'Salary ~ Age + Experience')
+
+
+def test_model_recommendation_core_inference_invalid_formula_format(sample_data_mrci):
+    """
+    Tests if model_recommendation_core_inference raises a ValueError for incorrect formula format.
+    """
+    df = sample_data_mrci
+    with pytest.raises(ValueError, match=r"model_recommendation_core_inference\(\): 'formula' must include exactly one '~' to separate dependent and independent variables."):
+        model_recommendation_core_inference(df, 'Salary ~ Age ~ Experience')
+
+
+def test_model_recommendation_core_inference_missing_target_variable(sample_data_mrci):
+    """
+    Tests if model_recommendation_core_inference raises a ValueError when the target variable is missing from the dataframe.
+    """
+    df = sample_data_mrci.drop(columns='Salary')
+    with pytest.raises(ValueError, match=r"model_recommendation_core_inference\(\): Specified target variable 'Salary' is not in DataFrame."):
+        model_recommendation_core_inference(df, 'Salary ~ Age + Experience')
+
+
+def test_model_recommendation_core_inference_missing_independent_variable(sample_data_mrci):
+    """
+    Tests if model_recommendation_core_inference raises a ValueError when an independent variable is missing from the dataframe.
+    """
+    df = sample_data_mrci.drop(columns='Age')
+    with pytest.raises(ValueError, match=r"model_recommendation_core_inference\(\): The following independent variables are not in DataFrame: Age."):
+        model_recommendation_core_inference(df, 'Salary ~ Age + Experience')
