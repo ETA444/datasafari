@@ -989,7 +989,11 @@ def model_tuning_core(
     priority_scoring = {metric_name: metric_func for metric_name, metric_func in scoring.items() if metric_func in priority_metrics} if priority_metrics else scoring
 
     if refit_metric is None:
-        refit_metric = priority_metrics[0] if priority_metrics else 'Accuracy' if task_type == 'classification' else 'MSE'
+        if priority_metrics:
+            first_priority_metric_name = [metric_name for metric_name, metric_func in scoring.items() if metric_func == priority_metrics[0]]
+            refit_metric = first_priority_metric_name[0]
+        else:
+            refit_metric = 'Accuracy' if task_type == 'classification' else 'MSE'
 
     final_param_grids = default_param_grids_classification if task_type == 'classification' else default_param_grids_regression
     if custom_param_grids:
