@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.linear_model import LogisticRegression, LinearRegression, Ridge
+from sklearn.svm import SVC, SVR
 from datasafari.predictor.predict_ml import (
     data_preprocessing_core, calculate_composite_score, model_recommendation_core,
     model_tuning_core
@@ -655,3 +656,105 @@ def test_model_tuning_core_invalid_refit_metric(sample_data_mrc_mtc):
     _, y_train_regression, _ = sample_data_mrc_mtc
     with pytest.raises(ValueError):
         model_tuning_core(x_train=x_train, y_train=y_train_regression, task_type='regression', models={'model': LinearRegression()}, refit_metric="accuracy")
+
+
+# TESTING FUNCTIONALITY of model_tuning_core() #
+
+def test_model_tuning_core_classification_with_logistic_regression(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core works for classification with Logistic Regression model.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    models = {'LogisticRegression': LogisticRegression()}
+    tuned_models = model_tuning_core(x_train, y_train_classification, 'classification', models)
+    assert 'LogisticRegression' in tuned_models
+    assert isinstance(tuned_models['LogisticRegression']['best_model'], LogisticRegression)
+
+
+def test_model_tuning_core_regression_with_ridge(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core works for regression with Linear Regression model.
+    """
+    x_train, _, y_train_regression = sample_data_mrc_mtc
+    models = {'Ridge': Ridge()}
+    tuned_models = model_tuning_core(x_train, y_train_regression, 'regression', models)
+    assert 'Ridge' in tuned_models
+    assert isinstance(tuned_models['Ridge']['best_model'], Ridge)
+
+
+def test_model_tuning_core_classification_with_svc(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core works for classification with SVC model.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    models = {'SVC': SVC(probability=True)}
+    tuned_models = model_tuning_core(x_train, y_train_classification, 'classification', models, priority_tuners=['grid'])
+    assert 'SVC' in tuned_models
+    assert isinstance(tuned_models['SVC']['best_model'], SVC)
+
+
+def test_model_tuning_core_regression_with_svr(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core works for regression with SVR model.
+    """
+    x_train, _, y_train_regression = sample_data_mrc_mtc
+    models = {'SVR': SVR()}
+    tuned_models = model_tuning_core(x_train, y_train_regression, 'regression', models, priority_tuners=['grid'])
+    assert 'SVR' in tuned_models
+    assert isinstance(tuned_models['SVR']['best_model'], SVR)
+
+
+def test_model_tuning_core_classification_with_priority_metrics(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core works for classification with priority metrics.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    models = {'LogisticRegression': LogisticRegression()}
+    tuned_models = model_tuning_core(x_train, y_train_classification, 'classification', models, priority_metrics=['accuracy', 'f1_micro'])
+    assert 'LogisticRegression' in tuned_models
+    assert isinstance(tuned_models['LogisticRegression']['best_model'], LogisticRegression)
+
+
+def test_model_tuning_core_regression_with_priority_metrics(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core works for regression with priority metrics.
+    """
+    x_train, _, y_train_regression = sample_data_mrc_mtc
+    models = {'Ridge': Ridge()}
+    tuned_models = model_tuning_core(x_train, y_train_regression, 'regression', models, priority_metrics=['r2', 'neg_mean_squared_error'])
+    assert 'Ridge' in tuned_models
+    assert isinstance(tuned_models['Ridge']['best_model'], Ridge)
+
+
+def test_model_tuning_core_classification_with_custom_param_grids(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core works for classification with custom parameter grids.
+    """
+    x_train, y_train_classification, _ = sample_data_mrc_mtc
+    models = {'LogisticRegression': LogisticRegression()}
+    custom_param_grids = {
+        'LogisticRegression': {
+            'C': [0.1, 1, 10],
+            'penalty': ['l2'],
+            'solver': ['lbfgs', 'sag']
+        }
+    }
+    tuned_models = model_tuning_core(x_train, y_train_classification, 'classification', models, custom_param_grids=custom_param_grids)
+    assert 'LogisticRegression' in tuned_models
+    assert isinstance(tuned_models['LogisticRegression']['best_model'], LogisticRegression)
+
+
+def test_model_tuning_core_regression_with_custom_param_grids(sample_data_mrc_mtc):
+    """
+    Tests if model_tuning_core works for regression with custom parameter grids.
+    """
+    x_train, _, y_train_regression = sample_data_mrc_mtc
+    models = {'Ridge': Ridge()}
+    custom_param_grids = {
+        'Ridge': {
+            'solver': ['svd', 'cholesky']
+        }
+    }
+    tuned_models = model_tuning_core(x_train, y_train_regression, 'regression', models, custom_param_grids=custom_param_grids)
+    assert 'Ridge' in tuned_models
+    assert isinstance(tuned_models['Ridge']['best_model'], Ridge)
