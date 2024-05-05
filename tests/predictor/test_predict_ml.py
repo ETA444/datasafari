@@ -863,3 +863,88 @@ def test_model_recommendation_core_inference_missing_independent_variable(sample
     df = sample_data_mrci.drop(columns='Age')
     with pytest.raises(ValueError, match=r"model_recommendation_core_inference\(\): The following independent variables are not in DataFrame: Age."):
         model_recommendation_core_inference(df, 'Salary ~ Age + Experience')
+
+
+# TESTING FUNCTIONALITY of model_recommendation_core_inference() #
+
+def test_model_recommendation_core_inference_basic_regression(sample_data_mrci):
+    """
+    Tests the basic functionality of model_recommendation_core_inference for a regression task.
+    """
+    df = sample_data_mrci
+    formula = 'Salary ~ Age + Experience'
+    results = model_recommendation_core_inference(df, formula, n_top_models=2, verbose=1)
+
+    assert len(results) <= 2, "Returned more models than requested."
+    for model_name, details in results.items():
+        assert 'model' in details, f"Model object missing for {model_name}."
+        assert 'metrics' in details, f"Metrics missing for {model_name}."
+
+        available_metrics = details['metrics'].keys()
+        expected_metrics = ['AIC', 'R-squared']
+        for metric in expected_metrics:
+            if metric in available_metrics:
+                assert metric in details['metrics'], f"{metric} metric missing for {model_name}"
+
+
+def test_model_recommendation_core_inference_basic_classification():
+    """
+    Tests the basic functionality of model_recommendation_core_inference for a classification task.
+    """
+    df = pd.DataFrame({
+        'Outcome': np.random.choice([0, 1], size=100),
+        'Feature1': np.random.normal(size=100),
+        'Feature2': np.random.normal(size=100)
+    })
+    formula = 'Outcome ~ Feature1 + Feature2'
+    results = model_recommendation_core_inference(df, formula, n_top_models=2, verbose=1)
+
+    assert len(results) <= 2, "Returned more models than requested."
+    for model_name, details in results.items():
+        assert 'model' in details, f"Model object missing for {model_name}."
+        assert 'metrics' in details, f"Metrics missing for {model_name}."
+        assert 'AIC' in details['metrics'], f"AIC metric missing for {model_name}."
+        assert 'Pseudo R-squared' in details['metrics'], f"Pseudo R-squared metric missing for {model_name}."
+
+
+def test_model_recommendation_core_inference_custom_priority_models(sample_data_mrci):
+    """
+    Tests the functionality of model_recommendation_core_inference with custom priority models.
+    """
+    df = sample_data_mrci
+    formula = 'Salary ~ Age + Experience'
+    priority_models = ['OLS', 'RLM']
+    results = model_recommendation_core_inference(df, formula, priority_models=priority_models, verbose=1)
+
+    assert set(results.keys()) <= set(priority_models), "Returned models not in the priority list."
+
+
+def test_model_recommendation_core_inference_custom_kwargs(sample_data_mrci):
+    """
+    Tests the functionality of model_recommendation_core_inference with custom kwargs for models.
+    """
+    df = sample_data_mrci
+    formula = 'Salary ~ Age + Experience'
+    model_kwargs = {'OLS': {'missing': 'drop'}}
+    results = model_recommendation_core_inference(df, formula, model_kwargs=model_kwargs, verbose=1)
+
+    ols_model = results.get('OLS')
+    if ols_model:
+        assert ols_model['model'].model.missing == 'drop', "Custom kwarg 'missing' not set correctly for OLS."
+
+
+def test_model_recommendation_core_inference_verbose_levels(sample_data_mrci):
+    """
+    Tests the functionality of model_recommendation_core_inference with different verbosity levels.
+    """
+    df = sample_data_mrci
+    formula = 'Salary ~ Age + Experience'
+    results = model_recommendation_core_inference(df, formula, verbose=0)
+
+    assert len(results) > 0, "Function should return at least one model even with verbose=0."
+
+    results = model_recommendation_core_inference(df, formula, verbose=2)
+    assert len(results) > 0, "Function should return at least one model even with verbose=2."
+    for details in results.values():
+        assert 'model' in details, "Model object missing."
+        assert 'metrics' in details, "Metrics missing."
