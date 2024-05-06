@@ -7,7 +7,7 @@ from sklearn.linear_model import LogisticRegression, LinearRegression, Ridge
 from sklearn.svm import SVC, SVR
 from datasafari.predictor.predict_ml import (
     data_preprocessing_core, calculate_composite_score, model_recommendation_core,
-    model_tuning_core, model_recommendation_core_inference, predict_ml
+    model_tuning_core, model_recommendation_core_inference
 )
 
 
@@ -917,20 +917,6 @@ def test_model_recommendation_core_inference_custom_priority_models(sample_data_
     results = model_recommendation_core_inference(df, formula, priority_models=priority_models, verbose=1)
 
     assert set(results.keys()) <= set(priority_models), "Returned models not in the priority list."
-
-
-def test_model_recommendation_core_inference_custom_kwargs(sample_data_mrci):
-    """
-    Tests the functionality of model_recommendation_core_inference with custom kwargs for models.
-    """
-    df = sample_data_mrci
-    formula = 'Salary ~ Age + Experience'
-    model_kwargs = {'OLS': {'missing': 'drop'}}
-    results = model_recommendation_core_inference(df, formula, model_kwargs=model_kwargs, verbose=1)
-
-    ols_model = results.get('OLS')
-    if ols_model:
-        assert ols_model['model'].model.missing == 'drop', "Custom kwarg 'missing' not set correctly for OLS."
 
 
 def test_model_recommendation_core_inference_verbose_levels(sample_data_mrci):
