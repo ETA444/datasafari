@@ -31,7 +31,7 @@ setup(
     author_email='georgedreemer@proton.me',
     python_requires='>=3.6',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
@@ -40,8 +40,19 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    description="DataSafari simplifies complex data exploration and transformation.",
+    description="DataSafari makes exploring, transforming and making predictions with your data simple, logical and potent.",
     install_requires=requirements,
+    extras_require={
+        'docs': [
+            'sphinx',
+            'sphinx_rtd_theme',
+            'sphinx-autobuild',  # If you want live reloading during development
+        ],
+        'test': [
+            'pytest>=3',
+            # any additional testing tools
+        ]
+    },
     license="GNU General Public License v3",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
@@ -49,8 +60,8 @@ setup(
     name='datasafari',
     packages=find_packages(include=['datasafari', 'datasafari.*']),
     test_suite='tests',
-    tests_require=requirements,
+    tests_require=test_requirements,
     url='https://github.com/ETA444/datasafari',
-    version='0.1.0',
+    version='1.0.0',
     zip_safe=False,
 )
