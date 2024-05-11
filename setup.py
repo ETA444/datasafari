@@ -4,13 +4,25 @@
 
 from setuptools import setup, find_packages
 
-with open('README.rst') as readme_file:
+with open('README.md') as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.rst') as history_file:
+with open('HISTORY.md') as history_file:
     history = history_file.read()
 
-requirements = [ ] # will be added later
+requirements = [
+    'numpy==1.26.2',
+    'pandas==2.1.4',
+    'scikit-learn==1.0.2',
+    'scikit-optimize==0.10.1',
+    'scipy==1.12.0',
+    'matplotlib==3.8.2',
+    'seaborn==0.13.0',
+    'statsmodels==0.13.2',
+    'category-encoders==2.6.3',
+    'Levenshtein==0.25.0'
+]
+
 
 test_requirements = ['pytest>=3', ]
 
