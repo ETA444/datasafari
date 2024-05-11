@@ -64,13 +64,15 @@ coverage: ## check code coverage quickly with the default Python
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
-docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/datasafari.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ datasafari
-	$(MAKE) -C docs clean
+docs: clean-docs ## generate Sphinx HTML documentation, including API docs
+	sphinx-apidoc -o docs/source/ datasafari
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
+
+clean-docs: ## remove previously built docs
+	rm -rf docs/_build/
+	rm -f docs/datasafari.rst
+	rm -f docs/modules.rst
 
 servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
