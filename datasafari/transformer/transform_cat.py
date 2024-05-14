@@ -75,22 +75,25 @@ def transform_cat(
 
     Examples
     --------
-    # Import necessary libraries
+    Import necessary libraries
+
     >>> import pandas as pd
 
-    # Generate a DataFrame for examples
+    **Generate a DataFrame for examples:**
+
     >>> df = pd.DataFrame({
     ...     'Category': ['Student', 'student', 'STUDENT', 'StUdEnT', 'high school', 'High School', 'high   school', 'hgh schl', 'A', 'B', 'A', 'C', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
     ...     'Target': [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
     ... })
 
-    # Apply 'uniform_simple' method
+    **Apply 'uniform_simple' method**
+
     >>> transform_cat(df, ['Category'], method='uniform_simple')
 
-    # Apply 'uniform_smart' method
+    **Apply 'uniform_smart' method**
     >>> transform_cat(df, ['Category'], method='uniform_smart')
 
-    # Apply 'uniform_mapping' method with a custom abbreviation map
+    Apply 'uniform_mapping' method with a custom abbreviation map
     >>> abbreviation_map = {'Category': {'hgh schl': 'high school'}}
     >>> transform_cat(df, ['Category'], method='uniform_mapping', abbreviation_map=abbreviation_map)
 
