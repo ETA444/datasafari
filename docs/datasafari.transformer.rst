@@ -7,23 +7,6 @@ Submodules
 datasafari.transformer.transform\_cat module
 --------------------------------------------
 
-.. automodule:: datasafari.transformer.transform_cat
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. currentmodule:: datasafari.explorer.explore_df
 
-datasafari.transformer.transform\_num module
---------------------------------------------
-
-.. automodule:: datasafari.transformer.transform_num
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: datasafari.transformer
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. autofunction:: explore_df

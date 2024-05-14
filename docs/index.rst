@@ -19,13 +19,7 @@ Modules
    :maxdepth: 2
    :caption: Modules:
 
-   datasafari.explorer.rst
-   datasafari.transformer.rst
-   datasafari.evaluator.rst
-   datasafari.predictor.rst
-   datasafari.utils.rst
-   datasafari.rst
-   modules.rst
+   explorer.explore_df.rst
 
 Contributing
 ------------
