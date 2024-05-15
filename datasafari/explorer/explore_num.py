@@ -32,86 +32,98 @@ def explore_num(
     ----------
     df : pd.DataFrame
         The DataFrame containing the numerical data to analyze.
+
     numerical_variables : list
         A list of strings representing the column names in `df` to be analyzed.
-    method : str, optional, default 'all'
-        Specifies the analysis method to apply. Options include:
-        - 'correlation_analysis' for analyzing the correlation between numerical variables.
-        - 'distribution_analysis' for distribution characteristics, including skewness and kurtosis, and normality tests (Shapiro-Wilk, Anderson-Darling).
-        - 'outliers_zscore' for outlier detection using the Z-score method.
-        - 'outliers_iqr' for outlier detection using the Interquartile Range method.
-        - 'outliers_mahalanobis' for outlier detection using the Mahalanobis distance.
-        - 'multicollinearity' for detecting multicollinearity among the numerical variables.
-        - 'all' to perform all available analyses. Default is 'all'.
+
+    method : str, optional
+        Specifies the analysis method to apply. Default is 'all'.
+
+        - ``'correlation_analysis'`` for analyzing the correlation between numerical variables.
+        - ``'distribution_analysis'`` for distribution characteristics, including skewness and kurtosis, and normality tests (Shapiro-Wilk, Anderson-Darling).
+        - ``'outliers_zscore'`` for outlier detection using the Z-score method.
+        - ``'outliers_iqr'`` for outlier detection using the Interquartile Range method.
+        - ``'outliers_mahalanobis'`` for outlier detection using the Mahalanobis distance.
+        - ``'multicollinearity'`` for detecting multicollinearity among the numerical variables.
+        - ``'all'`` to perform all available analyses.
+
     output : str, optional, default 'print'
-        Determines the output format. Options include:
+        Determines the output format. Default is 'print'.
+
         - 'print' to print the analysis results to the console.
-        - 'return' to return the analysis results as a DataFrame or dictionaries, depending on the analysis type. Default is 'print'.
+        - 'return' to return the analysis results as a DataFrame or dictionaries, depending on the analysis type.
+
     threshold_z : int, optional, default 3
         Used in method 'outliers_zscore', users can define their preferred z-score threshold, if the default value does not fit their needs.
 
     Returns
     -------
-    Depending on the method and output chosen:
-    - For 'correlation_analysis', returns a DataFrame showing the correlation coefficients between variables if output is 'return'.
-    - For 'distribution_analysis', returns a DataFrame with distribution statistics if output is 'return'.
-    - For outlier detection methods ('outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis'), returns a dictionary mapping variables to their outlier values and a DataFrame of rows considered outliers if output is 'return'.
-    - For 'multicollinearity', returns a DataFrame or a Series indicating the presence of multicollinearity, such as VIF scores, if output is 'return'.
-    - If 'output' is set to 'return' and 'method' is 'all', returns a comprehensive summary of all analyses as text or a combination of DataFrames and dictionaries.
+    Tuple[Dict, DataFrame] or None.
+
+        - For 'correlation_analysis', returns a DataFrame showing the correlation coefficients between variables if output is 'return'.
+        - For 'distribution_analysis', returns a DataFrame with distribution statistics if output is 'return'.
+        - For outlier detection methods ('outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis'), returns a dictionary mapping variables to their outlier values and a DataFrame of rows considered outliers if output is 'return'.
+        - For 'multicollinearity', returns a DataFrame or a Series indicating the presence of multicollinearity, such as VIF scores, if output is 'return'.
+        - If 'output' is set to 'return' and 'method' is 'all', returns a comprehensive summary of all analyses as text or a combination of DataFrames and dictionaries.
 
     Raises
     ------
     TypeError
-        - If `df` is not a pandas DataFrame.
-        - If `numerical_variables` is not a list of strings.
-        - If `method` is not a string.
-        - If `output` is not a string.
-        - If `threshold_z` is not a float or an int.
+        If `df` is not a pandas DataFrame.
+        If `numerical_variables` is not a list of strings.
+        If `method` is not a string.
+        If `output` is not a string.
+        If `threshold_z` is not a float or an int.
     ValueError
-        - If the `df` is empty, indicating that there's no data to evaluate.
-        - If `method` is not one of the specified valid methods ('correlation_analysis', 'distribution_analysis', 'outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis', 'multicollinearity', 'all').
-        - If `output` is not 'print' or 'return'.
-        - If 'numerical_variables' list is empty.
-        - If variables provided through 'numerical_variables' are not numerical variables.
-        - If any specified variables in `numerical_variables` are not found in the DataFrame's columns.
+        If the `df` is empty, indicating that there's no data to evaluate.
+        If `method` is not one of the specified valid methods ('correlation_analysis', 'distribution_analysis', 'outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis', 'multicollinearity', 'all').
+        If `output` is not 'print' or 'return'.
+        If 'numerical_variables' list is empty.
+        If variables provided through 'numerical_variables' are not numerical variables.
+        If any specified variables in `numerical_variables` are not found in the DataFrame's columns.
 
     Examples
     --------
-    # Generating a sample DataFrame for demonstration
-    >>> import numpy as np
-    >>> import pandas as pd
-    >>> np.random.seed(0) # For reproducible results
-    >>> data = {
-    ...     'Feature1': np.random.normal(loc=0, scale=1, size=100), # Normally distributed data
-    ...     'Feature2': np.random.exponential(scale=2, size=100),   # Exponentially distributed data
-    ...     'Feature3': np.random.randint(low=1, high=100, size=100) # Uniformly distributed integers
-    ... }
-    >>> df = pd.DataFrame(data)
+    Generating a sample DataFrame to demonstrate the functionality::
 
-    # Importing the explore_num function (assuming it is defined elsewhere in your module)
-    # from your_module import explore_num
+        >>> import datasafari
+        >>> import numpy as np
+        >>> import pandas as pd
+        >>> data = {
+            'Feature1': np.random.normal(loc=0, scale=1, size=100),
+            'Feature2': np.random.exponential(scale=2, size=100),
+            'Feature3': np.random.randint(low=1, high=100, size=100)
+        }
+        >>> df = pd.DataFrame(data)
 
-    # Performing correlation analysis and printing the results
-    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='correlation_analysis', output='print')
+    The full potential of ``explore_num()`` is unlocked by simply providing a dataframe and the numerical columns to explore::
 
-    # Conducting distribution analysis and capturing the returned DataFrame for further analysis
-    >>> distribution_results = explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='distribution_analysis', output='return')
-    >>> print(distribution_results)
+        >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'])
 
-    # Detecting outliers using the IQR method and printing the results
-    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_iqr', output='print')
+    Performing correlation analysis and printing the results::
 
-    # Detecting outliers using the Z-score method with a custom threshold and printing the results
-    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_zscore', output='print', threshold_z=2.5)
+        >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='correlation_analysis', output='print')
 
-    # Identifying outliers using the Mahalanobis distance method and printing the results
-    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_mahalanobis', output='print')
+    Conducting distribution analysis and returning the results::
 
-    # Examining multicollinearity among the numerical features and printing the VIF scores
-    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='multicollinearity', output='print')
+        >>> distribution_results = explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='distribution_analysis', output='return')
+        >>> print(distribution_results)
 
-    # Applying all available analyses and printing the comprehensive results
-    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='all', output='print')
+    Detecting outliers using the IQR method and printing the results::
+
+        >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_iqr', output='print')
+
+    Detecting outliers using the Z-score method with a custom threshold::
+
+        >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_zscore', threshold_z=2.5, output='print')
+
+    Identifying multicollinearity and printing VIF scores::
+
+        >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='multicollinearity', output='print')
+
+    Applying all analyses and printing comprehensive results::
+
+        >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='all', output='print')
 
     Notes
     -----
