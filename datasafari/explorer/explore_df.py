@@ -28,8 +28,8 @@ def explore_df(
     df : pandas.DataFrame
         DataFrame to be explored.
 
-    method : str, optional
-        Specifies the method to apply on the DataFrame. Default is 'all'.
+    method : str, optional, default: 'all'
+        Specifies the method to apply on the DataFrame.
 
         - ``'na'``: Displays counts of NAs per column and percentage of NAs.
         - ``'desc'``: Shows summary statistics using the `describe` method.
@@ -37,8 +37,8 @@ def explore_df(
         - ``'info'``: Provides concise information about the DataFrame using `info`.
         - ``'all'``: Executes all the above methods sequentially.
 
-    output : str, optional
-        Determines the output of the exploration results. Default is 'print'.
+    output : str, optional, default: 'print'
+        Determines the output of the exploration results.
 
         - ``'print'``: Prints the results to the console.
         - ``'return'``: Returns the results as a string.

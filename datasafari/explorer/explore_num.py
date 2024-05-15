@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple, Dict
 import numpy as np
 from numpy.linalg import inv
 import pandas as pd
@@ -24,7 +24,7 @@ def explore_num(
         method: str = 'all',
         output: str = 'print',
         threshold_z: int = 3
-) -> Optional[str]:
+) -> Optional[Tuple[Dict, pd.DataFrame]]:
     """
     Analyze numerical variables in a DataFrame for distribution characteristics, outlier detection using multiple methods (Z-score, IQR, Mahalanobis), normality tests, skewness, kurtosis, correlation analysis, and multicollinearity detection.
 
@@ -36,8 +36,8 @@ def explore_num(
     numerical_variables : list
         A list of strings representing the column names in `df` to be analyzed.
 
-    method : str, optional
-        Specifies the analysis method to apply. Default is 'all'.
+    method : str, optional, default: 'all'
+        Specifies the analysis method to apply.
 
         - ``'correlation_analysis'`` for analyzing the correlation between numerical variables.
         - ``'distribution_analysis'`` for distribution characteristics, including skewness and kurtosis, and normality tests (Shapiro-Wilk, Anderson-Darling).
@@ -47,18 +47,18 @@ def explore_num(
         - ``'multicollinearity'`` for detecting multicollinearity among the numerical variables.
         - ``'all'`` to perform all available analyses.
 
-    output : str, optional, default 'print'
-        Determines the output format. Default is 'print'.
+    output : str, optional, default: 'print'
+        Determines the output format.
 
         - 'print' to print the analysis results to the console.
         - 'return' to return the analysis results as a DataFrame or dictionaries, depending on the analysis type.
 
-    threshold_z : int, optional, default 3
+    threshold_z : int, optional, default; 3
         Used in method 'outliers_zscore', users can define their preferred z-score threshold, if the default value does not fit their needs.
 
     Returns
     -------
-    Tuple[Dict, DataFrame] or None.
+    Tuple[Dict, pd.DataFrame] or None.
 
         - For 'correlation_analysis', returns a DataFrame showing the correlation coefficients between variables if output is 'return'.
         - For 'distribution_analysis', returns a DataFrame with distribution statistics if output is 'return'.
