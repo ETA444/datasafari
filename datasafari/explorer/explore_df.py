@@ -20,13 +20,8 @@ def explore_df(
         **kwargs
 ) -> Optional[str]:
     """
-    Explores a DataFrame using specified methods, providing options for output control
-    and method-specific parameters. The function aims to offer a comprehensive overview of the data.
+    Gain a quick birds-eye view of a dataframe by checking summary statistics, NAs, data types and more. The function combines the most common data exploration functions in one convenient output in your console.
 
-    **Note:** For in-depth exploration of numerical and categorical data, consider using:
-
-    - :func:`explore_num`
-    - :func:`explore_cat`
 
     Parameters
     ----------
@@ -36,19 +31,17 @@ def explore_df(
     method : str, optional
         Specifies the method to apply on the DataFrame. Default is 'all'.
 
-            Options include:
-
-                - 'na': Displays counts of NAs per column and percentage of NAs.
-                - 'desc': Shows summary statistics using the `describe` method.
-                - 'head': Outputs the first few rows using `head`.
-                - 'info': Provides concise information about the DataFrame using `info`.
-                - 'all': Executes all the above methods sequentially.
+        - ``'na'``: Displays counts of NAs per column and percentage of NAs.
+        - ``'desc'``: Shows summary statistics using the `describe` method.
+        - ``'head'``: Outputs the first few rows using `head`.
+        - ``'info'``: Provides concise information about the DataFrame using `info`.
+        - ``'all'``: Executes all the above methods sequentially.
 
     output : str, optional
         Determines the output of the exploration results. Default is 'print'.
 
-        - 'print': Prints the results to the console.
-        - 'return': Returns the results as a string.
+        - ``'print'``: Prints the results to the console.
+        - ``'return'``: Returns the results as a string.
 
     **kwargs : dict
         Additional arguments for pandas methods (e.g., 'percentiles' for 'desc').
@@ -64,20 +57,21 @@ def explore_df(
     Raises
     ------
     TypeError
-        - If `df` is not a pandas DataFrame.
-        - If `method` is not a string.
-        - If `output` is not a string.
+        If `df` is not a pandas DataFrame.
+        If `method` is not a string.
+        If `output` is not a string.
 
     ValueError
-        - If `df` is empty, indicating no data to evaluate.
-        - If `method` is not one of the valid options: 'na', 'desc', 'head', 'info', or 'all'.
-        - If `oputput` is not 'print' or 'return'.
-        - If 'buf' parameter is used in the 'info' method.
+        If `df` is empty, indicating no data to evaluate.
+        If `method` is not one of the valid options: 'na', 'desc', 'head', 'info', or 'all'.
+        If `output` is not 'print' or 'return'.
+        If 'buf' parameter is used in the 'info' method.
 
     Examples
     --------
     Create a sample DataFrame to use in the examples::
 
+        >>> import datasafari
         >>> import numpy as np
         >>> import pandas as pd
         >>> data = {
@@ -88,9 +82,9 @@ def explore_df(
         }
         >>> df = pd.DataFrame(data)
 
-    Use the 'all' method for a comprehensive exploration::
+    The full potential of ``explore_df()`` is unlocked by simply providing a dataframe::
 
-        >>> explore_df(df, 'all')
+        >>> explore_df(df)
 
     Alternatively, save the output to a string::
 
