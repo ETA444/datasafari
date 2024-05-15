@@ -94,19 +94,7 @@ html_theme = 'furo'  # https://pypi.org/project/furo/
 # Theme options are theme-specific and customize the look and feel of a
 # theme further. For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {
-    'display_version': True,
-    'prev_next_buttons_location': 'bottom',
-    'style_external_links': True,
-    'vcs_pageview_mode': 'edit',
-    # 'style_nav_header_background': 'white',
-    # Toc options
-    'collapse_navigation': True,
-    'sticky_navigation': True,
-    'navigation_depth': 4,
-    'includehidden': True,
-    'titles_only': False
-}
+html_theme_options = {}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
