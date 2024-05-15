@@ -16,10 +16,12 @@ flake8==7.0.0
 tox==4.12.1
 twine==5.0.0
 cookiecutter==2.5.0
-sphinx==5.3.0
-sphinx-rtd-theme==2.0.0
-sphinx-rtd-light-dark==0.1.2
+sphinx==7.3.7
+sphinx-basic-ng==1.0.0b2
+furo==2024.5.6
+# sphinx-rtd-theme==2.0.0
+# sphinx-rtd-light-dark==0.1.2
 sphinx-favicon==1.0.1
-sphinxext-opengraph==0.9.1
+# sphinxext-opengraph==0.9.1
 sphinx-prompt==1.8.0
 sphinx-copybutton==0.5.2
