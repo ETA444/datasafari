@@ -87,8 +87,9 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages. See the documentation for
 # a list of builtin themes.
-# html_theme = 'sphinx_rtd_theme'
-html_theme = 'sphinx_rtd_light_dark'
+# html_theme = 'sphinx_rtd_theme'  # removed due to lack of support for sphinx > 7
+# html_theme = 'sphinx_rtd_light_dark'  # removed due to lack of support for sphinx > 7
+html_theme = 'furo'  # https://pypi.org/project/furo/
 
 # Theme options are theme-specific and customize the look and feel of a
 # theme further. For a list of options available for each theme, see the
@@ -121,15 +122,15 @@ html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
-html_sidebars = {
-    '**': [
-        'about.html',
-        'navigation.html',
-        'relations.html',  # needs 'show_related': True option to display
-        'searchbox.html',
-        'donate.html',
-    ]
-}
+# html_sidebars = { >>>incompatible with furo<<<
+#    '**': [
+#        'about.html',
+#        'navigation.html',
+#        'relations.html',  # needs 'show_related': True option to display
+#        'searchbox.html',
+#        'donate.html',
+#    ]
+#}
 
 # Optional logo. Uncomment the line below if you have a logo.
 html_logo = "_static/my_logo.png"
