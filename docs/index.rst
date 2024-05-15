@@ -13,13 +13,15 @@ Usage
 -----
 .. include:: usage.rst
 
-Modules
--------
+Explorers
+---------
 .. toctree::
-   :maxdepth: 2
-   :caption: Modules:
+   :maxdepth: 1
+   :caption: Explorers
 
-   explorer.explore_df.rst
+   datasafari.explorer.explore_df
+   datasafari.explorer.explore_num
+   datasafari.explorer.explore_cat
 
 Contributing
 ------------
