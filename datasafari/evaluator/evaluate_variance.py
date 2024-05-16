@@ -71,6 +71,7 @@ def evaluate_variance(
     Examples:
     ---------
     Create a DataFrame with mixed data types for the example::
+        >>> import datasafari
         >>> import pandas as pd
         >>> import numpy as np
         >>> df = pd.DataFrame({
@@ -80,7 +81,6 @@ def evaluate_variance(
 
     Example 1: Evaluate variance homogeneity using the consensus method::
         >>> variance_info = evaluate_variance(df, 'Data', 'Group')
-        >>> print(variance_info)
 
     Example 2: Using evaluate_variance in a comprehensive evaluation pipeline::
         >>> variance_homogeneity = evaluate_variance(df, 'Data', 'Group', pipeline=True)
@@ -100,9 +100,9 @@ def evaluate_variance(
 
         **The consensus method works as follows:**
             1. **Test Execution**: All applicable tests are performed on the dataset.
-            2. **Outcome Evaluation**: Each test provides a conclusion on variance homogeneity (either 'equal' or 'unequal').
+            2. **Outcome Evaluation**: Each test provides a conclusion on variance homogeneity.
             3. **Majority Rule**: The final conclusion is based on the majority of test outcomes. If more than half of the tests suggest equal variances, the consensus is 'equal variances'. If more than half suggest unequal variances, the consensus is 'unequal variances'.
-            4. **Tie-Breaker**: In the event of a tie (equal number of 'equal' and 'unequal' outcomes), the result of Levene's test is given precedence due to its robustness against non-normality.
+            4. **Tie-Breaker**: In the event of a tie (50/50), the result of Levene's test is given precedence due to its robustness against non-normality.
 
     This method ensures a more reliable conclusion by mitigating the limitations of individual tests, especially in cases where the data may not perfectly meet the assumptions of any single test.
     """
