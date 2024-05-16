@@ -71,23 +71,26 @@ def evaluate_variance(
     Examples:
     ---------
     Create a DataFrame with mixed data types for the example:
-        >>> import datasafari
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> df = pd.DataFrame({
-        ...     'Group': np.random.choice(['A', 'B', 'C'], 100),
-        ...     'Data': np.random.normal(0, 1, 100)
-        ... })
+
+    >>> import datasafari
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame({
+    ...     'Group': np.random.choice(['A', 'B', 'C'], 100),
+    ...     'Data': np.random.normal(0, 1, 100)
+    ... })
 
     Example 1: Evaluate variance homogeneity using the consensus method:
-        >>> variance_info = evaluate_variance(df, 'Data', 'Group')
+
+    >>> variance_info = evaluate_variance(df, 'Data', 'Group')
 
     Example 2: Using evaluate_variance in a comprehensive evaluation pipeline:
-        >>> variance_homogeneity = evaluate_variance(df, 'Data', 'Group', pipeline=True)
-        >>> if variance_homogeneity:
-        ...     # run tests assuming homogeneity pipeline
-        >>> else:
-        ...     # treat homogeneity pipeline
+
+    >>> variance_homogeneity = evaluate_variance(df, 'Data', 'Group', pipeline=True)
+    >>> if variance_homogeneity:
+    ...     # run tests assuming homogeneity pipeline
+    >>> else:
+    ...     # treat homogeneity pipeline
 
     Notes:
     ------

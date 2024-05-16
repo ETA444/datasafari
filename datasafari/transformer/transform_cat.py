@@ -86,41 +86,46 @@ def transform_cat(
     Examples:
     ---------
     Import necessary libraries and generate a DataFrame for examples:
-        >>> import datasafari
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> df = pd.DataFrame({
-            ...     'Category': ['Student', 'student', 'STUDENT', 'StUdEnT', 'high school', 'High School', 'high   school', 'hgh schl'],
-            ...     'Target': np.random.randint(0, 2, 8)
-            ... })
+
+    >>> import datasafari
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame({
+        ...     'Category': ['Student', 'student', 'STUDENT', 'StUdEnT', 'high school', 'High School', 'high   school', 'hgh schl'],
+        ...     'Target': np.random.randint(0, 2, 8)
+        ... })
 
     Apply ``'uniform_simple'`` method to clean up ```Category`` column:
-        >>> transformed_df, uniform_simple_cols = transform_cat(df, ['Category'], method='uniform_simple')
+
+    >>> transformed_df, uniform_simple_cols = transform_cat(df, ['Category'], method='uniform_simple')
 
     Apply ``'uniform_smart'`` method to clean up more complex issues in the column using ML techniques:
-        >>> transformed_df, uniform_smart_cols = transform_cat(transformed_df, ['Category'], method='uniform_smart')
-        >>> # Note: 'uniform_smart' already has 'uniform_simple' built-in, however to save resources you can run smart only if needed.
+
+    >>> transformed_df, uniform_smart_cols = transform_cat(transformed_df, ['Category'], method='uniform_smart')
+    >>> # Note: 'uniform_smart' already has 'uniform_simple' built-in, however to save resources you can run smart only if needed.
 
     Apply ``'uniform_mapping'`` method with a custom abbreviation map to clean up the more stubborn issues that ``uniform_smart`` did not catch:
-        >>> abbreviation_map = {'Category': {'hgh schl': 'high school'}}
-        >>> transformed_df, uniform_mapped_cols = transform_cat(transformed_df, ['Category'], method='uniform_mapping', abbreviation_map=abbreviation_map)
+
+    >>> abbreviation_map = {'Category': {'hgh schl': 'high school'}}
+    >>> transformed_df, uniform_mapped_cols = transform_cat(transformed_df, ['Category'], method='uniform_mapping', abbreviation_map=abbreviation_map)
 
     Using the various encoding methods now that the data is clean:
-        >>> # Apply 'encode_onehot' method:
-        >>> transformed_onehot_df, onehot_cols = transform_cat(transformed_df, ['Category'], method='encode_onehot')
-        ...
-        >>> # Apply 'encode_ordinal' method with a custom ordinal map:
-        >>> ordinal_map = {'Category': ['student', 'high school']}
-        >>> transformed_ordinal_df, ordinal_cols = transform_cat(transformed_df, ['Category'], method='encode_ordinal', ordinal_map=ordinal_map)
-        ...
-        >>> # Apply 'encode_freq' method:
-        >>> transformed_freq_df, freq_cols = transform_cat(transformed_df, ['Category'], method='encode_freq')
-        ...
-        >>> # Apply 'encode_target' method with a specified target variable:
-        >>> transformed_target_df, target_cols = transform_cat(transformed_df, ['Category'], method='encode_target', target_variable='Target')
-        ...
-        >>> # Apply 'encode_binary' method:
-        >>> transformed_binary_df, binary_cols = transform_cat(transformed_df, ['Category'], method='encode_binary')
+
+    >>> # Apply 'encode_onehot' method:
+    >>> transformed_onehot_df, onehot_cols = transform_cat(transformed_df, ['Category'], method='encode_onehot')
+    ...
+    >>> # Apply 'encode_ordinal' method with a custom ordinal map:
+    >>> ordinal_map = {'Category': ['student', 'high school']}
+    >>> transformed_ordinal_df, ordinal_cols = transform_cat(transformed_df, ['Category'], method='encode_ordinal', ordinal_map=ordinal_map)
+    ...
+    >>> # Apply 'encode_freq' method:
+    >>> transformed_freq_df, freq_cols = transform_cat(transformed_df, ['Category'], method='encode_freq')
+    ...
+    >>> # Apply 'encode_target' method with a specified target variable:
+    >>> transformed_target_df, target_cols = transform_cat(transformed_df, ['Category'], method='encode_target', target_variable='Target')
+    ...
+    >>> # Apply 'encode_binary' method:
+    >>> transformed_binary_df, binary_cols = transform_cat(transformed_df, ['Category'], method='encode_binary')
 
     Notes:
     ------

@@ -52,35 +52,39 @@ def evaluate_contingency_table(
         - If `min_sample_size_yates` is not a positive integer.
 
     Examples:
-    --------
+    ---------
     Creating a contingency table from a small dataset and evaluating it:
-        >>> import pandas as pd
-        >>> data = {
-        ...     'Gender': ['Male', 'Female', 'Male', 'Female', 'Male'],
-        ...     'Preference': ['Tea', 'Coffee', 'Coffee', 'Tea', 'Tea']
-        ... }
-        >>> df_small = pd.DataFrame(data)
-        >>> contingency_small = pd.crosstab(df_small['Gender'], df_small['Preference'])
-        >>> viability_dict_small = evaluate_contingency_table(contingency_small)
+
+    >>> import datasafari
+    >>> import pandas as pd
+    >>> data = {
+    ...     'Gender': ['Male', 'Female', 'Male', 'Female', 'Male'],
+    ...     'Preference': ['Tea', 'Coffee', 'Coffee', 'Tea', 'Tea']
+    ... }
+    >>> df_small = pd.DataFrame(data)
+    >>> contingency_small = pd.crosstab(df_small['Gender'], df_small['Preference'])
+    >>> viability_dict_small = evaluate_contingency_table(contingency_small)
 
     Using a larger dataset to demonstrate the effect of sample size on test viability:
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> data_large = {
-        ...     'Gender': np.random.choice(['Male', 'Female'], 200),
-        ...     'Preference': np.random.choice(['Tea', 'Coffee'], 200)
-        ... }
-        >>> df_large = pd.DataFrame(data_large)
-        >>> contingency_large = pd.crosstab(df_large['Gender'], df_large['Preference'])
-        >>> viability_dict_large = evaluate_contingency_table(contingency_large)
-        ...
-        >>> # Applying the function in a pipeline to make further decisions:
-        >>> contingency_pipeline = pd.crosstab(df_large['Gender'], df_large['Preference'])
-        >>> chi2, yates, barnard, boschloo, fisher = evaluate_contingency_table(contingency_pipeline, pipeline=True)
-        >>> if chi2:
-        >>>     print("Chi-square test is viable for this dataset.")
-        >>> else:
-        >>>     print("Consider alternative tests such as Fisher's exact test.")
+
+    >>> import datasafari
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> data_large = {
+    ...     'Gender': np.random.choice(['Male', 'Female'], 200),
+    ...     'Preference': np.random.choice(['Tea', 'Coffee'], 200)
+    ... }
+    >>> df_large = pd.DataFrame(data_large)
+    >>> contingency_large = pd.crosstab(df_large['Gender'], df_large['Preference'])
+    >>> viability_dict_large = evaluate_contingency_table(contingency_large)
+    ...
+    >>> # Applying the function in a pipeline to make further decisions:
+    >>> contingency_pipeline = pd.crosstab(df_large['Gender'], df_large['Preference'])
+    >>> chi2, yates, barnard, boschloo, fisher = evaluate_contingency_table(contingency_pipeline, pipeline=True)
+    >>> if chi2:
+    >>>     print("Chi-square test is viable for this dataset.")
+    >>> else:
+    >>>     print("Consider alternative tests such as Fisher's exact test.")
     """
 
     # Error Handling

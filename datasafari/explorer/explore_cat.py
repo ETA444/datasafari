@@ -57,35 +57,42 @@ def explore_cat(
     Examples:
     ---------
     Create a sample DataFrame to use in the examples:
-        >>> import datasafari
-        >>> import numpy as np
-        >>> import pandas as pd
-        >>> data = {
-        ...     'Category1': np.random.choice(['Apple', 'Banana', 'Cherry'], size=100),
-        ...     'Category2': np.random.choice(['Yes', 'No'], size=100),
-        ...     'Category3': np.random.choice(['Low', 'Medium', 'High'], size=100)
-        ... }
-        >>> df = pd.DataFrame(data)
+
+    >>> import datasafari
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> data = {
+    ...     'Category1': np.random.choice(['Apple', 'Banana', 'Cherry'], size=100),
+    ...     'Category2': np.random.choice(['Yes', 'No'], size=100),
+    ...     'Category3': np.random.choice(['Low', 'Medium', 'High'], size=100)
+    ... }
+    >>> df = pd.DataFrame(data)
 
     The full potential of ``explore_cat()`` is unlocked by simply providing a dataframe and the categorical columns to explore:
-        >>> explore_cat(df, ['Category1', 'Category2', 'Category3'])
+
+    >>> explore_cat(df, ['Category1', 'Category2', 'Category3'])
 
     Display unique values for 'Category1' and 'Category2':
-        >>> explore_cat(df, ['Category1', 'Category2'], method='unique_values', output='print')
+
+    >>> explore_cat(df, ['Category1', 'Category2'], method='unique_values', output='print')
 
     Explore counts and percentages for 'Category1' and 'Category2', then print the results:
-        >>> explore_cat(df, ['Category1', 'Category2'], method='counts_percentage', output='print')
+
+    >>> explore_cat(df, ['Category1', 'Category2'], method='counts_percentage', output='print')
 
     Calculate and return the entropy of 'Category1', 'Category2', and 'Category3':
-        >>> result = explore_cat(df, ['Category1', 'Category2', 'Category3'], method='entropy', output='return')
-        >>> print(result)
+
+    >>> result = explore_cat(df, ['Category1', 'Category2', 'Category3'], method='entropy', output='return')
+    >>> print(result)
 
     Comprehensive exploration of all specified methods for 'Category1', 'Category2', and 'Category3', displaying to console:
-        >>> explore_cat(df, ['Category1', 'Category2', 'Category3'], method='all', output='print')
+
+    >>> explore_cat(df, ['Category1', 'Category2', 'Category3'], method='all', output='print')
 
     Using 'all' method to explore 'Category1' and 'Category2', returning the results as a string:
-        >>> result_str = explore_cat(df, ['Category1', 'Category2'], method='all', output='return')
-        >>> print(result_str)
+
+    >>> result_str = explore_cat(df, ['Category1', 'Category2'], method='all', output='return')
+    >>> print(result_str)
 
     Notes:
     -----

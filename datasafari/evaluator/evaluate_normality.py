@@ -63,21 +63,23 @@ def evaluate_normality(
     Examples:
     ---------
     Example 1: Using the consensus method to evaluate normality in a DataFrame:
-        >>> import datasafari
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> df = pd.DataFrame({
-        ...     'Group': np.random.choice(['A', 'B', 'C'], size=100),
-        ...     'Data': np.random.normal(0, 1, size=100)
-        ... })
-        >>> normality_result = evaluate_normality(df, 'Data', 'Group')
+
+    >>> import datasafari
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> df = pd.DataFrame({
+    ...     'Group': np.random.choice(['A', 'B', 'C'], size=100),
+    ...     'Data': np.random.normal(0, 1, size=100)
+    ... })
+    >>> normality_result = evaluate_normality(df, 'Data', 'Group')
 
     Example 2: Using the function in a comprehensive evaluation pipeline:
-        >>> pipeline_result = evaluate_normality(df, 'Data', 'Group', pipeline=True)
-        >>> if pipeline_result:
-        ...     # your pipeline in the case normality is validated
-        ... else:
-        ...     # your pipeline in the case normality is not validated
+
+    >>> pipeline_result = evaluate_normality(df, 'Data', 'Group', pipeline=True)
+    >>> if pipeline_result:
+    ...     # your pipeline in the case normality is validated
+    ... else:
+    ...     # your pipeline in the case normality is not validated
 
     Notes:
     ------

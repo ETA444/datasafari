@@ -73,32 +73,37 @@ def evaluate_dtype(
     Examples:
     --------
     Create an example DataFrame with mixed data types:
-        >>> import datasafari
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> data = {
-        ...    'Age': np.random.randint(18, 35, 100),
-        ...    'Income': np.random.normal(50000, 15000, 100),
-        ...    'Department': np.random.choice(['HR', 'Tech', 'Admin'], 100),
-        ...    'Entry Date': pd.date_range(start='2021-01-01', periods=100, freq='M')
-        ... }
-        >>> df = pd.DataFrame(data)
+
+    >>> import datasafari
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> data = {
+    ...    'Age': np.random.randint(18, 35, 100),
+    ...    'Income': np.random.normal(50000, 15000, 100),
+    ...    'Department': np.random.choice(['HR', 'Tech', 'Admin'], 100),
+    ...    'Entry Date': pd.date_range(start='2021-01-01', periods=100, freq='M')
+    ... }
+    >>> df = pd.DataFrame(data)
 
     Evaluating data types with a dictionary output format:
-        >>> data_type_dict = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='dict')
-        >>> print(data_type_dict)
+
+    >>> data_type_dict = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='dict')
+    >>> print(data_type_dict)
 
     Evaluating data types with a list output format indicating numerical data:
-        >>> numerical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='list_n')
-        >>> print(numerical_bool_list)
+
+    >>> numerical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='list_n')
+    >>> print(numerical_bool_list)
 
     Evaluating data types with a list output format indicating categorical data:
-        >>> categorical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='list_c')
-        >>> print(categorical_bool_list)
+
+    >>> categorical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='list_c')
+    >>> print(categorical_bool_list)
 
     Evaluating data types with a list output format indicating datetime data:
-        >>> datetime_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='list_d')
-        >>> print(datetime_bool_list)
+
+    >>> datetime_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='list_d')
+    >>> print(datetime_bool_list)
     """
 
     # Error-handling #
