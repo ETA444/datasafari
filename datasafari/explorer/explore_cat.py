@@ -11,7 +11,7 @@ def explore_cat(
         output: str = 'print'
 ) -> Optional[str]:
     """
-    Explore categorical variables within a DataFrame, get quick in-depth insights on unique values, counts and percentages, and the entropy of variables to quantify data diversity.
+    Explore categorical variables within a DataFrame. Get quick in-depth insights on unique values, counts and percentages, and the entropy of variables to quantify data diversity.
 
     Parameters:
     -----------
