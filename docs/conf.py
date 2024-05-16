@@ -38,6 +38,9 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.napoleon'
               'sphinx_copybutton'  # Adds copy button to code blocks: https://pypi.org/project/sphinx-copybutton/
               ]
 
+# Make function signature parameters parse one a new line
+python_maximum_signature_line_length = 1
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
