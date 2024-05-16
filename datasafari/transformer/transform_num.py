@@ -28,7 +28,7 @@ def transform_num(
         bin_map: Optional[Dict[str, List[float]]] = None
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Applies various numerical data transformations to improve machine learning model performance or data analysis.
+    **Applies various numerical data transformations to improve machine learning model performance or data analysis.**
 
     Parameters:
     -----------

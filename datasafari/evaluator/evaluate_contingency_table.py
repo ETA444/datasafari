@@ -11,7 +11,7 @@ def evaluate_contingency_table(
         quiet: bool = False
 ) -> Union[dict, tuple]:
     """
-    Evaluates a contingency table to determine the viability of various statistical tests based on the table's characteristics.
+    **Evaluates a contingency table to determine the viability of various statistical tests based on the table's characteristics.**
 
     This function assesses the contingency table's suitability for chi-square tests, exact tests (Barnard's, Boschloo's, and Fisher's), and the application of Yates' correction within the chi-square test. It examines expected and observed frequencies, sample size, and table shape to guide the choice of appropriate statistical tests for hypothesis testing.
 

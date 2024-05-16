@@ -13,7 +13,7 @@ def evaluate_normality(
         pipeline: bool = False
 ) -> Union[dict, bool]:
     """
-    Evaluates the normality of a numeric variable within groups defined by a grouping variable using multiple statistical tests and a consensus approach.
+    **Evaluates the normality of a numeric variable within groups defined by a grouping variable using multiple statistical tests and a consensus approach.**
 
     This function offers a comprehensive examination of the distribution's normality by utilizing tests like Shapiro-Wilk, Anderson-Darling, D'Agostino and Pearson's test, and Lilliefors. Each test provides insights into different aspects of normality, and the consensus method integrates these perspectives to make a more informed decision.
 

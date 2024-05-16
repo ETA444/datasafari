@@ -20,7 +20,7 @@ def hypothesis_predictor_core_n(
         equal_variances_bool: bool
 ) -> dict:
     """
-    Conducts hypothesis testing on numerical data, choosing appropriate tests based on data characteristics.
+    **Conducts hypothesis testing on numerical data, choosing appropriate tests based on data characteristics.**
 
     This function performs hypothesis testing between groups defined by a categorical variable for a numerical
     target variable. It selects the appropriate statistical test based on the normality of the data and the homogeneity
@@ -140,7 +140,7 @@ def hypothesis_predictor_core_c(
         alternative: str = 'two-sided'
 ) -> dict:
     """
-    Conducts categorical hypothesis testing using contingency tables and appropriate statistical tests.
+    **Conducts categorical hypothesis testing using contingency tables and appropriate statistical tests.**
 
     This function assesses the association between two categorical variables by applying a series of statistical
     tests. It evaluates the data's suitability for different tests based on the shape of the contingency table,

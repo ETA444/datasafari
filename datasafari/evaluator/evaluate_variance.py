@@ -13,7 +13,7 @@ def evaluate_variance(
         pipeline: bool = False
 ) -> Union[dict, bool]:
     """
-    Evaluates the homogeneity of variances in the numerical target variable across groups defined by a grouping/categorical variable in a dataset.
+    **Evaluates the homogeneity of variances in the numerical target variable across groups defined by a grouping/categorical variable in a dataset.**
 
     This function is versatile, allowing for the evaluation of variance homogeneity through several statistical tests, including Levene's, Bartlett's, and Fligner-Killeen's tests.
 

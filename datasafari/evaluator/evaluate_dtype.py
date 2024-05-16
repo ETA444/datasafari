@@ -14,7 +14,7 @@ def evaluate_dtype(
         output: str = 'dict'
 ) -> Union[dict, list]:
     """
-    Evaluates and categorizes data types of specified columns in a DataFrame, with enhanced handling for numerical data that may functionally serve as categorical data.
+    **Evaluates and categorizes data types of specified columns in a DataFrame, with enhanced handling for numerical data that may functionally serve as categorical data.**
 
     This function examines columns within a DataFrame to determine if they are numerical or categorical. It goes beyond simple data type checks by considering the distribution of unique values within numerical data. This allows for more nuanced categorization, where numerical columns with a limited range of unique values can be treated as categorical, based on specified thresholds.
 
