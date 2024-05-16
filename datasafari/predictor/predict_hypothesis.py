@@ -26,7 +26,7 @@ def hypothesis_predictor_core_n(
     target variable. It selects the appropriate statistical test based on the normality of the data and the homogeneity
     of variances across groups, utilizing t-tests, Mann-Whitney U tests, ANOVA, or Kruskal-Wallis tests as appropriate.
 
-    Parameters
+    Parameters:
     ----------
     df : pd.DataFrame
         The DataFrame containing the data to be analyzed.
@@ -39,20 +39,20 @@ def hypothesis_predictor_core_n(
     equal_variances_bool : bool
         A boolean indicating if the groups have equal variances.
 
-    Returns
+    Returns:
     -------
-    output_info : dict
+    dict
         A dictionary containing the results of the hypothesis test, including test statistics, p-values,
         conclusions regarding the differences between groups, the name of the test used, and the assumptions
         tested (normality and equal variances).
 
-    Raises
+    Raises:
     ------
-    TypeError
+    TypeErrors:
         - If `df` is not a pandas DataFrame.
         - If `target_variable` or `grouping_variable` is not a string.
         - If `normality_bool` or `equal_variances_bool` is not a boolean.
-    ValueError
+    ValueErrors:
         - If the `df` is empty, indicating that there's no data to evaluate.
         - If `target_variable` or `grouping_variable` is not found in the DataFrame's columns.
         - If `target_variable` is not numerical.
@@ -147,35 +147,38 @@ def hypothesis_predictor_core_c(
     the minimum expected and observed frequencies, and specific methodological preferences, including Yates' correction
     for chi-square tests and alternatives for exact tests.
 
-    Parameters
+    Parameters:
     ----------
     contingency_table : pd.DataFrame
         A contingency table of the two categorical variables.
     chi2_viability : bool
         Indicates whether chi-square tests should be considered based on the data's suitability.
-    barnard_viability, boschloo_viability, fisher_viability : bool
-        Indicators for the applicability of Barnard's, Boschloo's, and Fisher's exact tests, respectively.
+    barnard_viability : bool
+        Indicators for the applicability of Barnard's exact test.
+    boschloo_viability : bool
+        Indicators for the applicability of Boschloo's exact test.
+    fisher_viability : bool
+        Indicators for the applicability of Fisher's exact test.
     yates_correction_viability : bool
         Determines whether Yates' correction is applicable based on the contingency table's shape and sample size.
-    alternative : str, optional
+    alternative : str, optional, default: 'two-sided'
         Specifies the alternative hypothesis for exact tests. Options include 'two-sided', 'less', or 'greater'.
-        Defaults to 'two-sided'.
 
-    Returns
+    Returns:
     -------
-    output_info : dict
+    dict
         A comprehensive dictionary detailing the outcomes of the statistical tests performed, including test names,
         statistics, p-values, and conclusions about the association between the categorical variables. The dictionary
         also contains specific details about the application of Yates' correction and the chosen alternative hypothesis
         for exact tests.
 
-    Raises
+    Raises:
     ------
-    TypeError
+    TypeErrors:
         - If `contingency_table` is not a pandas DataFrame.
         - If `chi2_viability`, `barnard_viability`, `boschloo_viability`, `fisher_viability`, or `yates_correction_viability` is not a boolean.
         - If `alternative` is not a string indicating the alternative hypothesis ('two-sided', 'less', 'greater').
-    ValueError
+    ValueErrors:
         - If the `contingency_table` is empty, indicating that there's no data to evaluate.
         - If the `alternative` specified does not match one of the expected values: 'two-sided', 'less', or 'greater'.
     """
@@ -310,151 +313,175 @@ def predict_hypothesis(
         yates_min_sample_size: int = 40
 ) -> dict:
     """
-    Automatically selects and performs the appropriate hypothesis test based on input variables from a DataFrame.
-    This function simplifies hypothesis testing to requiring only two variables and a DataFrame, intelligently
-    determining the test type, assessing necessary assumptions, and providing detailed test outcomes and conclusions.
+    **Automatically selects and performs the appropriate hypothesis test based on input variables from a DataFrame.**
 
-    Parameters
+    This function simplifies hypothesis testing to requiring only two variables and a DataFrame, intelligently determining the test type, assessing necessary assumptions, and providing detailed test outcomes and conclusions.
+
+        The combination of `var1` and `var2` data types determines the type of hypothesis test to perform:
+            - A pairing with two categorical variables triggers categorical testing (e.g., Chi-square, Fisher's exact test, etc.).
+            - A numerical and categorical variable pairing, interpreted as target and grouping variables respectively, leads to numerical testing (e.g., t-tests, ANOVA, etc.).
+            - Numerical and numerical variable pairings are not supported.
+
+
+    Parameters:
     ----------
     df : pd.DataFrame
-        The DataFrame containing the data for hypothesis testing. This function analyzes the data to
-        determine the type of hypothesis testing required based on the data types and relationships of `var1` and `var2`.
+        The DataFrame containing the data for hypothesis testing.
+
     var1 : str
-        The name of the first variable for hypothesis testing. The combination of `var1` and `var2` data types
-        determines the type of hypothesis test to perform. A pairing with two categorical variables
-        triggers categorical testing (e.g., Chi-square, Fisher's exact test, etc.), while a numerical and
-        categorical variable pairing, interpreted as target and grouping variables respectively, leads to numerical testing
-        (e.g., t-tests, ANOVA, etc.). Numerical and numerical variable pairings are not supported.
+        The name of the first variable for hypothesis testing.
+
     var2 : str
-        The name of the second variable for hypothesis testing. Similar to `var1`, its combination with `var1`
-        guides the selection of hypothesis testing procedures.
-    normality_method : str, optional
-        Specifies the method to evaluate normality within numerical hypothesis testing. Understanding the
-        distribution is crucial to selecting parametric or non-parametric tests. Available methods include:
-            - 'shapiro': Shapiro-Wilk test.
-            - 'anderson': Anderson-Darling test.
-            - 'normaltest': D’Agostino and Pearson’s test.
-            - 'lilliefors': Lilliefors test for normality.
-            - 'consensus': Utilizes a combination of the above tests to reach a consensus on normality.
-        Defaults to 'consensus'. For detailed explanation, refer to `evaluate_normality`'s docstring.
-    variance_method : str, optional
+        The name of the second variable for hypothesis testing.
+
+    normality_method : str, optional, default: 'consensus'
+        Specifies the method to evaluate normality within numerical hypothesis testing.
+            - ``'shapiro'`` Shapiro-Wilk test.
+            - ``'anderson'`` Anderson-Darling test.
+            - ``'normaltest'`` D’Agostino and Pearson’s test.
+            - ``'lilliefors'`` Lilliefors test for normality.
+            - ``'consensus'`` Utilizes a combination of the above tests to reach a consensus on normality.
+
+        *For more details, refer to:* :doc:`evaluate_normality() documentation <datasafari.evaluator.evaluate_normality>`
+
+    variance_method : str, optional, default: 'consensus'
         Determines the method to evaluate variance homogeneity (equal variances) across groups in numerical hypothesis testing.
-        The choice of test affects the selection between parametric and non-parametric tests for numerical data. Available methods include:
-            - 'levene': Levene's test, robust to non-normal distributions.
-            - 'bartlett': Bartlett’s test, sensitive to non-normal distributions.
-            - 'fligner': Fligner-Killeen test, a non-parametric alternative.
-            - 'consensus': A combination approach to determine equal variances across methods.
-        Defaults to 'consensus'. For more information, see `evaluate_variance`'s docstring.
-    exact_tests_alternative : str, optional
-        For categorical hypothesis testing, this parameter specifies the alternative hypothesis direction for exact tests:
-            - 'two-sided': Tests for any difference between the two variables without directionality.
-            - 'less': Tests if the first variable is less than the second variable.
-            - 'greater': Tests if the first variable is greater than the second variable.
-        This parameter influences tests like Fisher's exact test or Barnard's exact test. Defaults to 'two-sided'.
-    yates_min_sample_size : int, optional
-        Specifies the minimum sample size threshold for applying Yates' correction in chi-square testing to adjust
-        for continuity. The correction is applied to 2x2 contingency tables with small sample sizes to prevent
-        overestimation of the significance level. Defaults to 40.
+            - ``'levene'`` Levene's test, robust to non-normal distributions.
+            - ``'bartlett'`` Bartlett’s test, sensitive to non-normal distributions.
+            - ``'fligner'`` Fligner-Killeen test, a non-parametric alternative.
+            - ``'consensus'`` A combination approach to determine equal variances across methods.
 
-    Returns
+        *For more details, refer to:* :doc:`evaluate_variance() documentation <datasafari.evaluator.evaluate_variance>`
+
+    exact_tests_alternative : str, optional, default: 'two-sided'
+        For categorical hypothesis testing, this parameter specifies the alternative hypothesis direction for exact tests.
+            - ``'two-sided'`` Tests for any difference between the two variables without directionality.
+            - ``'less'`` Tests if the first variable is less than the second variable.
+            - ``'greater'`` Tests if the first variable is greater than the second variable.
+
+    yates_min_sample_size : int, optional, default: 40
+        Specifies the minimum sample size threshold for applying Yates' correction in chi-square testing to adjust for continuity. The correction is applied to 2x2 contingency tables with small sample sizes to prevent overestimation of the significance level.
+
+    Returns:
+    --------
+    dict
+        A dictionary with *key* the short test name (e.g. ``'f_oneway'``) and *value* another dictionary which contains all results from that test, namely:
+            - ``'stat'`` The test statistic value, quantifying the degree to which the observed data conform to the null hypothesis.
+            - ``'p_val'`` The p-value, indicating the probability of observing the test results under the null hypothesis.
+            - ``'conclusion'`` A textual interpretation of the test outcome, stating whether the evidence was sufficient to reject the null hypothesis.
+            - ``'test_name'`` The full name of the statistical test performed (e.g., 'Independent Samples T-Test', 'Chi-square test').
+
+                *Additional values in certain scenarios may be:*
+                    - ``'alternative'`` Specifies the alternative hypothesis direction used in exact tests ('two-sided', 'less', 'greater').
+                    - ``'yates_correction'`` A boolean that indicates whether a Yate's correction was applied used in Chi-square test.
+                    - ``'normality'`` A boolean that indicates whether the data were found to meet the normality assumption.
+                    - ``'equal_variance'`` A boolean that indicates whether the data were found to have equal variances across groups.
+                    - ``'tip'`` Helpful insights or considerations regarding the test's application or interpretation.
+
+    Raises:
     -------
-    output_info : dict
-        A dictionary with key the short test name (e.g. f_oneway) and value another dictionary which contains all results from that test, namely:
-            - 'stat': The test statistic value, quantifying the degree to which the observed data conform to the null hypothesis.
-            - 'p_val': The p-value, indicating the probability of observing the test results under the null hypothesis.
-            - 'conclusion': A textual interpretation of the test outcome, stating whether the evidence was sufficient to reject the null hypothesis.
-            - 'test_name': The full name of the statistical test performed (e.g., 'Independent Samples T-Test', 'Chi-square test').
-        Additional keys in certain scenarios may be:
-            - 'alternative': Specifies the alternative hypothesis direction used in exact tests ('two-sided', 'less', 'greater').
-            - 'yates_correction': A boolean that indicates whether a Yate's correction was applied used in Chi-square test.
-            - 'normality': A boolean that indicates whether the data were found to meet the normality assumption.
-            - 'equal_variance': A boolean that indicates whether the data were found to have equal variances across groups.
-            - 'tip': Helpful insights or considerations regarding the test's application or interpretation.
-
-    Raises
-    ------
-    TypeError
+    TypeErrors:
         - If `df` is not a pandas DataFrame.
         - If `var1` or `var2` is not a string.
         - If `normality_method`, `variance_method`, or `exact_tests_alternative` is not a string.
         - If `yates_min_sample_size` is not an integer.
-    ValueError
-        - If the `df` is empty, indicating that there's no data to evaluate.
-        - If `normality_method` is not one of the valid options: 'shapiro', 'anderson', 'normaltest', 'lilliefors', 'consensus'.
-        - If `variance_method` is not one of the valid options: 'levene', 'bartlett', 'fligner', 'consensus'.
-        - If `exact_tests_alternative` is not one of the valid options: 'two-sided', 'less', 'greater'.
+    ValueErrors:
+        - If the `df` is empty.
+        - If `normality_method` is not one of the valid options.
+        - If `variance_method` is not one of the valid options.
+        - If `exact_tests_alternative` is not one of the valid options.
         - If `yates_min_sample_size` is less than 1.
 
-    Notes
-    -----
-    `predict_hypothesis` is engineered to facilitate an intuitive yet powerful entry into hypothesis testing. Here’s a deeper look into its operational logic:
 
-    1. **Type Determination and Variable Interpretation**:
-        - **Numerical Testing**: Activated when one variable is numerical and the other categorical. The numerical variable is considered the 'target variable', subject to hypothesis testing across groups defined by the categorical 'grouping variable'.
-        - **Categorical Testing**: Engaged when both variables are categorical, examining the association between them through appropriate exact tests.
-    2. **Assumption Evaluation and Preparatory Checks**:
-        - For **numerical data**, it evaluates:
-            - **Normality**: Using methods such as Shapiro-Wilk, Anderson-Darling, D'Agostino's K-squared test, and Lilliefors test to assess the distribution of data.
-            - **Homogeneity of Variances**: With Levene, Bartlett, or Fligner-Killeen tests to ensure variance uniformity across groups, guiding the choice between parametric and non-parametric tests.
-        - For **categorical data**, it checks:
-            - **Adequacy of Frequencies**: Ensuring observed and expected frequencies support the validity of Chi-square and other exact tests.
-            - **Table Shape**: Determining the applicability of tests like Fisher’s exact test or Barnard’s test, based on the contingency table's dimensions.
-    3. **Test Selection and Execution**:
-        - **Numerical Hypothesis Tests** may include:
-            - T-tests (independent samples, paired samples) for normally distributed data with equal variances.
-            - ANOVA or Welch's ANOVA for comparing more than two groups, under respective assumptions.
-            - Mann-Whitney U, Wilcoxon signed-rank, Kruskal-Wallis H, or Friedman tests as non-parametric alternatives.
-        - **Categorical Hypothesis Tests** encompass:
-            - Chi-square test of independence, with or without Yates’ correction, for general association between two categorical variables.
-            - Fisher’s exact test for small sample sizes or when Chi-square assumptions are not met.
-            - Barnard’s exact test, offering more power in some scenarios compared to Fisher’s test.
-            - Boschloo’s exact test, aiming to increase the power further by combining strengths of Fisher’s and Barnard’s tests.
-    4. **Conclusive Results and Interpretation**: Outputs include test statistics, p-values, and clear conclusions.
-        The function demystifies statistical analysis, making it approachable for users across various disciplines, enabling informed decisions based on robust statistical evidence.
+    Examples:
+    ---------
+    First, we'll create a DataFrame with categorical and numerical variables to use in our examples:
 
-    This function stands out by automating complex decision trees involved in statistical testing, offering a
-    simplified yet comprehensive approach to hypothesis testing. It exemplifies how advanced statistical analysis
-    can be made accessible and actionable, fostering data-driven decision-making.
-
-    Examples
-    --------
-    # First, we'll create a DataFrame with categorical and numerical variables to use in our examples:
+    >>> import datasafari
     >>> import pandas as pd
     >>> import numpy as np
     >>> df = pd.DataFrame({
-            'Group': np.random.choice(['Control', 'Treatment'], size=100),
-            'Score': np.random.normal(0, 1, 100),
-            'Category': np.random.choice(['Type1', 'Type2'], size=100),
-            'Feature2': np.random.exponential(1, 100)
-        })
+    ...     'Group': np.random.choice(['Control', 'Treatment'], size=100),
+    ...     'Score': np.random.normal(0, 1, 100),
+    ...     'Category': np.random.choice(['Type1', 'Type2'], size=100),
+    ...     'Feature2': np.random.exponential(1, 100)
+    ... })
 
-    # Scenario 1: Basic numerical hypothesis testing (T-test or ANOVA based on groups)
+    Scenario 1: Basic numerical hypothesis testing (T-test or ANOVA based on groups)
+
     >>> output_num_basic = predict_hypothesis(df, 'Group', 'Score')
 
-    # Scenario 2: Numerical hypothesis testing specifying method to evaluate normality
+    Scenario 2: Numerical hypothesis testing specifying method to evaluate normality
+
     >>> output_num_normality = predict_hypothesis(df, 'Group', 'Score', normality_method='shapiro')
 
-    # Scenario 3: Numerical hypothesis testing with a specified method to evaluate variance
+    Scenario 3: Numerical hypothesis testing with a specified method to evaluate variance
+
     >>> output_num_variance = predict_hypothesis(df, 'Group', 'Score', variance_method='levene')
 
-    # Scenario 4: Categorical hypothesis testing (Chi-square or Fisher's exact test)
+    Scenario 4: Categorical hypothesis testing (Chi-square or Fisher's exact test)
+
     >>> output_cat_basic = predict_hypothesis(df, 'Group', 'Category')
 
-    # Scenario 5: Categorical hypothesis testing with alternative hypothesis specified
+    Scenario 5: Categorical hypothesis testing with alternative hypothesis specified
+
     >>> output_cat_alternative = predict_hypothesis(df, 'Category', 'Group', exact_tests_alternative='less')
 
-    # Scenario 6: Applying Yates' correction in a Chi-square test for small samples
+    Scenario 6: Applying Yates' correction in a Chi-square test for small samples
+
     >>> output_yates_correction = predict_hypothesis(df, 'Group', 'Category', yates_min_sample_size=30)
 
-    # Scenario 7: Comprehensive numerical hypothesis testing using consensus for normality and variance evaluation
+    Scenario 7: Comprehensive numerical hypothesis testing using consensus for normality and variance evaluation
+
     >>> output_num_comprehensive = predict_hypothesis(df, 'Group', 'Score', normality_method='consensus', variance_method='consensus')
 
-    # Scenario 8: Testing with a numerical variable against a different grouping variable
+    Scenario 8: Testing with a numerical variable against a different grouping variable
+
     >>> output_different_group = predict_hypothesis(df, 'Feature2', 'Group')
 
-    # Scenario 9: Exploring exact tests in categorical hypothesis testing for a 2x2 table
+    Scenario 9: Exploring exact tests in categorical hypothesis testing for a 2x2 table
+
     >>> df_small = df.sample(20) # Smaller sample for demonstration
     >>> output_exact_tests = predict_hypothesis(df_small, 'Category', 'Group', exact_tests_alternative='two-sided')
+
+    Notes:
+    ------
+    ``predict_hypothesis()`` is engineered to facilitate an intuitive yet powerful entry into hypothesis testing.
+
+    Here is a deeper look into its operational logic:
+        1. **Type Determination and Variable Interpretation**:
+
+            - **Numerical Testing**: Activated when one variable is numerical and the other categorical. The numerical variable is considered the 'target variable', subject to hypothesis testing across groups defined by the categorical 'grouping variable'.
+            - **Categorical Testing**: Engaged when both variables are categorical, examining the association between them through appropriate exact tests.
+
+        2. **Assumption Evaluation and Preparatory Checks**:
+
+            - For **numerical data**, it evaluates:
+                - **Normality**: Using methods such as Shapiro-Wilk, Anderson-Darling, D'Agostino's K-squared test, and Lilliefors test to assess the distribution of data.
+                - **Homogeneity of Variances**: With Levene, Bartlett, or Fligner-Killeen tests to ensure variance uniformity across groups, guiding the choice between parametric and non-parametric tests.
+
+            - For **categorical data**, it checks:
+                - **Adequacy of Frequencies**: Ensuring observed and expected frequencies support the validity of Chi-square and other exact tests.
+                - **Table Shape**: Determining the applicability of tests like Fisher’s exact test or Barnard’s test, based on the contingency table's dimensions.
+
+        3. **Test Selection and Execution**:
+
+            - **Numerical Hypothesis Tests** may include:
+                - T-tests (independent samples, paired samples) for normally distributed data with equal variances.
+                - ANOVA or Welch's ANOVA for comparing more than two groups, under respective assumptions.
+                - Mann-Whitney U, Wilcoxon signed-rank, Kruskal-Wallis H, or Friedman tests as non-parametric alternatives.
+
+            - **Categorical Hypothesis Tests** encompass:
+                - Chi-square test of independence, with or without Yates’ correction, for general association between two categorical variables.
+                - Fisher’s exact test for small sample sizes or when Chi-square assumptions are not met.
+                - Barnard’s exact test, offering more power in some scenarios compared to Fisher’s test.
+                - Boschloo’s exact test, aiming to increase the power further by combining strengths of Fisher’s and Barnard’s tests.
+
+        4. **Conclusive Results and Interpretation**: Outputs include test statistics, p-values, and clear conclusions.
+
+            - The function demystifies statistical analysis, making it approachable for users across various disciplines, enabling informed decisions based on robust statistical evidence.
+
+    This function stands out by automating complex decision trees involved in statistical testing, offering a simplified yet comprehensive approach to hypothesis testing. It exemplifies how advanced statistical analysis can be made accessible and actionable, fostering data-driven decision-making.
     """
     # Error Handling
     # TypeErrors
