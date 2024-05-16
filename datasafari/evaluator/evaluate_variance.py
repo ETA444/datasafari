@@ -70,7 +70,7 @@ def evaluate_variance(
 
     Examples:
     ---------
-    Create a DataFrame with mixed data types for the example::
+    Create a DataFrame with mixed data types for the example:
         >>> import datasafari
         >>> import pandas as pd
         >>> import numpy as np
@@ -79,10 +79,10 @@ def evaluate_variance(
         ...     'Data': np.random.normal(0, 1, 100)
         ... })
 
-    Example 1: Evaluate variance homogeneity using the consensus method::
+    Example 1: Evaluate variance homogeneity using the consensus method:
         >>> variance_info = evaluate_variance(df, 'Data', 'Group')
 
-    Example 2: Using evaluate_variance in a comprehensive evaluation pipeline::
+    Example 2: Using evaluate_variance in a comprehensive evaluation pipeline:
         >>> variance_homogeneity = evaluate_variance(df, 'Data', 'Group', pipeline=True)
         >>> if variance_homogeneity:
         ...     # run tests assuming homogeneity pipeline

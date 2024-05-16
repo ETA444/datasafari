@@ -72,7 +72,7 @@ def evaluate_dtype(
 
     Examples:
     --------
-    Create an example DataFrame with mixed data types::
+    Create an example DataFrame with mixed data types:
         >>> import datasafari
         >>> import pandas as pd
         >>> import numpy as np
@@ -84,19 +84,19 @@ def evaluate_dtype(
         ... }
         >>> df = pd.DataFrame(data)
 
-    Evaluating data types with a dictionary output format::
+    Evaluating data types with a dictionary output format:
         >>> data_type_dict = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='dict')
         >>> print(data_type_dict)
 
-    Evaluating data types with a list output format indicating numerical data::
+    Evaluating data types with a list output format indicating numerical data:
         >>> numerical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='list_n')
         >>> print(numerical_bool_list)
 
-    Evaluating data types with a list output format indicating categorical data::
+    Evaluating data types with a list output format indicating categorical data:
         >>> categorical_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='list_c')
         >>> print(categorical_bool_list)
 
-    Evaluating data types with a list output format indicating datetime data::
+    Evaluating data types with a list output format indicating datetime data:
         >>> datetime_bool_list = evaluate_dtype(df, ['Age', 'Income', 'Department', 'Entry Date'], output='list_d')
         >>> print(datetime_bool_list)
     """

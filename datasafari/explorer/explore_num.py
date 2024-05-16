@@ -83,7 +83,7 @@ def explore_num(
 
     Examples:
     ---------
-    Generating a sample DataFrame to demonstrate the functionality::
+    Generating a sample DataFrame to demonstrate the functionality:
         >>> import datasafari
         >>> import numpy as np
         >>> import pandas as pd
@@ -94,26 +94,26 @@ def explore_num(
         ... }
         >>> df = pd.DataFrame(data)
 
-    The full potential of ``explore_num()`` is unlocked by simply providing a dataframe and the numerical columns to explore::
+    The full potential of ``explore_num()`` is unlocked by simply providing a dataframe and the numerical columns to explore:
         >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'])
 
-    Performing correlation analysis and printing the results::
+    Performing correlation analysis and printing the results:
         >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='correlation_analysis', output='print')
 
-    Conducting distribution analysis and returning the results::
+    Conducting distribution analysis and returning the results:
         >>> distribution_results = explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='distribution_analysis', output='return')
         >>> print(distribution_results)
 
-    Detecting outliers using the IQR method and printing the results::
+    Detecting outliers using the IQR method and printing the results:
         >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_iqr', output='print')
 
-    Detecting outliers using the Z-score method with a custom threshold::
-        >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_zscore', threshold_z=2.5, output='print')
+    Detecting outliers using the Z-score method with a custom threshold:
+        >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_zscore', threshold_z=2, output='print')
 
-    Identifying multicollinearity and printing VIF scores::
+    Identifying multicollinearity and printing VIF scores:
         >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='multicollinearity', output='print')
 
-    Applying all analyses and printing comprehensive results::
+    Applying all analyses and printing comprehensive results:
         >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='all', output='print')
 
     Notes

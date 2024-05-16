@@ -65,7 +65,7 @@ def explore_df(
 
     Examples:
     ---------
-    Create a sample DataFrame to use in the examples::
+    Create a sample DataFrame to use in the examples:
         >>> import datasafari
         >>> import numpy as np
         >>> import pandas as pd
@@ -77,32 +77,32 @@ def explore_df(
         ... }
         >>> df = pd.DataFrame(data)
 
-    The full potential of ``explore_df()`` is unlocked by simply providing a dataframe::
+    The full potential of ``explore_df()`` is unlocked by simply providing a dataframe:
         >>> explore_df(df)
 
-    Alternatively, save the output to a string::
+    Alternatively, save the output to a string:
         >>> summary = explore_df(df, 'all', output='return')
 
-    Display summary statistics with custom percentiles::
+    Display summary statistics with custom percentiles:
         >>> explore_df(df, 'desc', percentiles=[0.05, 0.95], output='print')
 
-    Show the first 3 rows of the DataFrame::
+    Show the first 3 rows of the DataFrame:
         >>> explore_df(df, 'head', n=3, output='print')
 
-    Provide detailed DataFrame information::
+    Provide detailed DataFrame information:
         >>> explore_df(df, 'info', verbose=True, output='print')
 
-    Calculate and display the count and percentage of missing values::
+    Calculate and display the count and percentage of missing values:
         >>> explore_df(df, 'na', output='print')
 
-    Execute a comprehensive exploration with custom settings::
+    Execute a comprehensive exploration with custom settings:
         >>> explore_df(df, 'all', n=3, percentiles=[0.25, 0.75], output='print')
 
-    Return comprehensive exploration results as a string::
+    Return comprehensive exploration results as a string:
         >>> result_str = explore_df(df, 'all', n=5, output='return')
         >>> print(result_str)
 
-    Use 'all' with kwargs applicable to specific methods, print the results::
+    Use 'all' with kwargs applicable to specific methods, print the results:
         >>> explore_df(df, 'all', n=5, percentiles=[0.1, 0.9], verbose=False, output='print')
     """
 

@@ -62,7 +62,7 @@ def evaluate_normality(
 
     Examples:
     ---------
-    Example 1: Using the consensus method to evaluate normality in a DataFrame::
+    Example 1: Using the consensus method to evaluate normality in a DataFrame:
         >>> import datasafari
         >>> import pandas as pd
         >>> import numpy as np
@@ -72,7 +72,7 @@ def evaluate_normality(
         ... })
         >>> normality_result = evaluate_normality(df, 'Data', 'Group')
 
-    Example 2: Using the function in a comprehensive evaluation pipeline::
+    Example 2: Using the function in a comprehensive evaluation pipeline:
         >>> pipeline_result = evaluate_normality(df, 'Data', 'Group', pipeline=True)
         >>> if pipeline_result:
         ...     # your pipeline in the case normality is validated

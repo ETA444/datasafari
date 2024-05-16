@@ -63,7 +63,7 @@ def evaluate_contingency_table(
         >>> contingency_small = pd.crosstab(df_small['Gender'], df_small['Preference'])
         >>> viability_dict_small = evaluate_contingency_table(contingency_small)
 
-    Using a larger dataset to demonstrate the effect of sample size on test viability::
+    Using a larger dataset to demonstrate the effect of sample size on test viability:
         >>> import pandas as pd
         >>> import numpy as np
         >>> data_large = {
