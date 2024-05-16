@@ -13,64 +13,98 @@ def evaluate_variance(
         pipeline: bool = False
 ) -> Union[dict, bool]:
     """
-    Evaluates the homogeneity of variances in the numerical/target variable across groups defined by a grouping/categorical variable in a dataset.
+    Evaluates the homogeneity of variances in the numerical target variable across groups defined by a grouping/categorical variable in a dataset.
 
-    This function is versatile, allowing for the evaluation of variance homogeneity through several statistical tests, including Levene's, Bartlett's, and Fligner-Killeen's tests. It provides an option to use a consensus method for a more robust determination of homogeneity. It's suitable for preliminary data analysis before conducting hypothesis tests that assume equal variances and can be used in a pipeline for automated data analysis processes.
+    This function is versatile, allowing for the evaluation of variance homogeneity through several statistical tests, including Levene's, Bartlett's, and Fligner-Killeen's tests.
 
-    Parameters
-    ----------
+    The power of ``evaluate_variance()`` lies in ``method='consensus'``, which offers a robust determination of homogeneity, by combining the results of multiple tests to provide a more reliable conclusion on variance homogeneity. For a detailed explanation of the consensus method, refer to the Notes section.
+
+
+    Parameters:
+    -----------
     df : pd.DataFrame
         The DataFrame containing the dataset for analysis.
+
     target_variable : str
         The name of the numerical variable for which the variance homogeneity is to be evaluated.
+
     grouping_variable : str
         The name of the categorical variable used to divide the dataset into groups.
-    normality_info : bool, optional
+
+    normality_info : bool, optional, default: None
         A boolean indicating the normality of the dataset, which affects the choice of tests.
-            - If True, normality is assumed, which is relevant for the Bartlett's test. Default is None.
-    method : str, optional
-        Specifies the method to evaluate variance homogeneity. Options include:
-            - 'levene': Uses Levene's test, suitable for non-normal distributions.
-            - 'bartlett': Uses Bartlett's test, requires normality assumption.
-            - 'fligner': Uses Fligner-Killeen's test, a non-parametric alternative.
-            - 'consensus': Combines results from the available tests to reach a consensus.
-        Default is 'consensus'.
-    pipeline : bool, optional
-        If True, simplifies the output to a boolean indicating the consensus on equal variances. Useful for integration into automated analysis pipelines. Default is False.
+            - ``True`` Normality is assumed, which allows for Bartlett's test to be performed.
+            - ``False`` Normality is not assumed, which means Bartlett's test will not be available.
 
-    Returns
+    method : str, optional, default: 'consensus'
+        Specifies the method to evaluate variance homogeneity.
+            - ``'levene'`` Uses Levene's test, suitable for non-normal distributions.
+            - ``'bartlett'`` Uses Bartlett's test, requires normality assumption.
+            - ``'fligner'`` Uses Fligner-Killeen's test, a non-parametric alternative.
+            - ``'consensus'`` Combines results from the available tests to reach a consensus.
+
+    pipeline : bool, optional, default: False
+        - ``True`` Simplifies the output to a boolean indicating the consensus on equal variances. Useful for integration into automated analysis pipelines.
+        - ``False`` The output is a dictionary containing results of the respective test(s).
+
+    Returns:
+    --------
+    dict or bool
+        - ``dict`` If pipeline=False, returns a dictionary containing the results of the variance tests, including statistics, p-values, and a conclusion on variance homogeneity.
+        - ``bool`` If pipeline=True, returns a boolean indicating whether a consensus was reached on variance homogeneity.
+
+    Raises:
     -------
-    output_info : dict or bool
-        - If `pipeline` is False, returns a dictionary containing the results of the variance tests, including statistics, p-values, and a conclusion on variance homogeneity.
-        - If `pipeline` is True, returns a boolean indicating whether a consensus was reached on variance homogeneity.
-
-    Raises
-    ------
-    TypeError
+    TypeErrors:
         - If `df` is not a pandas DataFrame.
         - If `target_variable` or `grouping_variable` is not a string.
         - If `normality_info` is provided but is not a boolean.
         - If `method` is not a string.
         - If `pipeline` is not a boolean.
-    ValueError
-        - If the `df` is empty, indicating that there's no data to evaluate.
+    
+    ValueErrors:
+        - If the `df` is empty.
         - If the `target_variable` or `grouping_variable` does not exist in the DataFrame.
-        - If the `method` specified is not supported. Allowed methods are: 'levene', 'bartlett', 'fligner', 'consensus'.
-        - If the `target_variable` is not numerical, or if the `grouping_variable` is not categorical, as determined by evaluating their data types with `evaluate_dtype()`.
+        - If the `method` specified is not supported.
+        - If the `target_variable` is not numerical, or if the `grouping_variable` is not categorical, as determined by evaluating their data types with :doc:`evaluate_dtype() <datasafari.evaluator.evaluate_dtype>`.
 
-    Examples
-    --------
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> df = pd.DataFrame({'Group': np.random.choice(['A', 'B', 'C'], 100), 'Data': np.random.normal(0, 1, 100)})
-    # Evaluate variance homogeneity using the consensus method
-    >>> variance_info = evaluate_variance(df, 'Data', 'Group')
-    # Evaluate variance with explicit assumption of normality (for Bartlett's test)
-    >>> variance_info_bartlett = evaluate_variance(df, 'Data', 'Group', normality_info=True, method='bartlett')
-    # Use the function in a pipeline with simplified boolean output
-    >>> variance_homogeneity = evaluate_variance(df, 'Data', 'Group', pipeline=True)
-    >>> if variance_homogeneity:
-    >>>     # ...
+    Examples:
+    ---------
+    Create a DataFrame with mixed data types for the example::
+        >>> import pandas as pd
+        >>> import numpy as np
+        >>> df = pd.DataFrame({
+        ...     'Group': np.random.choice(['A', 'B', 'C'], 100),
+        ...     'Data': np.random.normal(0, 1, 100)
+        ... })
+
+    Example 1: Evaluate variance homogeneity using the consensus method::
+        >>> variance_info = evaluate_variance(df, 'Data', 'Group')
+        >>> print(variance_info)
+
+    Example 2: Using evaluate_variance in a comprehensive evaluation pipeline::
+        >>> variance_homogeneity = evaluate_variance(df, 'Data', 'Group', pipeline=True)
+        >>> if variance_homogeneity:
+        ...     # run tests assuming homogeneity pipeline
+        >>> else:
+        ...     # treat homogeneity pipeline
+
+    Notes:
+    ------
+    **Consensus Method:**
+    The consensus method in ``evaluate_variance()`` combines the results of multiple statistical tests to determine the homogeneity of variances more robustly. The tests included in the consensus method are:
+
+    - **Levene's Test**: Suitable for data that may not adhere to normality. It tests the null hypothesis that all input samples are from populations with equal variances.
+    - **Fligner-Killeen Test**: A non-parametric test that is less sensitive to departures from normality. It is useful when dealing with data that might not be normally distributed.
+    - **Bartlett's Test**: Assumes normality and is sensitive to departures from it. It tests the null hypothesis that all input samples are from populations with equal variances but requires that the data are normally distributed.
+
+        **The consensus method works as follows:**
+            1. **Test Execution**: All applicable tests are performed on the dataset.
+            2. **Outcome Evaluation**: Each test provides a conclusion on variance homogeneity (either 'equal' or 'unequal').
+            3. **Majority Rule**: The final conclusion is based on the majority of test outcomes. If more than half of the tests suggest equal variances, the consensus is 'equal variances'. If more than half suggest unequal variances, the consensus is 'unequal variances'.
+            4. **Tie-Breaker**: In the event of a tie (equal number of 'equal' and 'unequal' outcomes), the result of Levene's test is given precedence due to its robustness against non-normality.
+
+    This method ensures a more reliable conclusion by mitigating the limitations of individual tests, especially in cases where the data may not perfectly meet the assumptions of any single test.
     """
 
     # Error Handling
