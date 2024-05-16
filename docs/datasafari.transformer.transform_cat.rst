@@ -1,6 +1,6 @@
-====================================
-datasafari.transformer.transform_cat
-====================================
+===============
+transform_cat()
+===============
 
 .. currentmodule:: datasafari.transformer
 

@@ -1,6 +1,6 @@
-====================================
-datasafari.transformer.transform_num
-====================================
+===============
+transform_num()
+===============
 
 .. currentmodule:: datasafari.transformer
 

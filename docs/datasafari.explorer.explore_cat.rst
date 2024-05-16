@@ -1,6 +1,6 @@
-==============================
-datasafari.explorer.explore_cat
-==============================
+=============
+explore_cat()
+=============
 
 .. currentmodule:: datasafari.explorer
 

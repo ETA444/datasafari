@@ -1,6 +1,6 @@
-===============================================
-datasafari.evaluator.evaluate_contingency_table
-===============================================
+============================
+evaluate_contingency_table()
+============================
 
 .. currentmodule:: datasafari.evaluator
 

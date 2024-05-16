@@ -1,6 +1,6 @@
-===================================
-datasafari.evaluator.evaluate_dtype
-===================================
+================
+evaluate_dtype()
+================
 
 .. currentmodule:: datasafari.evaluator
 

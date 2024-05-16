@@ -1,6 +1,6 @@
-==============================
-datasafari.explorer.explore_df
-==============================
+============
+explore_df()
+============
 
 .. currentmodule:: datasafari.explorer
 

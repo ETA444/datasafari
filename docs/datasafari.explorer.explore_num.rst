@@ -1,6 +1,6 @@
-==============================
-datasafari.explorer.explore_num
-==============================
+=============
+explore_num()
+=============
 
 .. currentmodule:: datasafari.explorer
 

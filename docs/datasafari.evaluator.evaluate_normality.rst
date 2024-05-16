@@ -1,6 +1,6 @@
-======================================
-datasafari.evaluator.evaluate_normality
-======================================
+====================
+evaluate_normality()
+====================
 
 .. currentmodule:: datasafari.evaluator
 

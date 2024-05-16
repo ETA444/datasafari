@@ -1,6 +1,6 @@
-=======================================
-datasafari.predictor.predict_hypothesis
-=======================================
+====================
+predict_hypothesis()
+====================
 
 .. currentmodule:: datasafari.predictor
 

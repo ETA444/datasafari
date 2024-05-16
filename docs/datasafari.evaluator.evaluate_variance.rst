@@ -1,6 +1,6 @@
-======================================
-datasafari.evaluator.evaluate_variance
-======================================
+===================
+evaluate_variance()
+===================
 
 .. currentmodule:: datasafari.evaluator
 
