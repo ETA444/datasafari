@@ -15,49 +15,74 @@ def evaluate_contingency_table(
 
     This function assesses the contingency table's suitability for chi-square tests, exact tests (Barnard's, Boschloo's, and Fisher's), and the application of Yates' correction within the chi-square test. It examines expected and observed frequencies, sample size, and table shape to guide the choice of appropriate statistical tests for hypothesis testing.
 
-    Parameters
+    Parameters:
     ----------
     contingency_table : pd.DataFrame
         A contingency table generated from two categorical variables.
-    min_sample_size_yates : int, optional
-        The minimum sample size below which Yates' correction should be considered. Default is 40.
-    pipeline : bool, optional
-        Determines the format of the output. If True, outputs a tuple of boolean values representing the viability of each test. If False, outputs a dictionary with the test names as keys and their viabilities as boolean values. Default is False.
-    quiet : bool, optional
 
-    Returns
+    min_sample_size_yates : int, optional, default: 40
+        The minimum sample size below which Yates' correction should be considered.
+
+    pipeline : bool, optional, default: False
+        Determines the format of the output.
+            - ``True`` Outputs a tuple of boolean values representing the viability of each test.
+            - ``False`` Outputs a dictionary with the test names as keys and their viabilities as boolean values.
+
+    quiet : bool, optional, default: False
+        Determines if output is printed to the console.
+            - ``True`` Output is printed.
+            - ``False`` Output is not printed.
+
+    Returns:
     -------
-    test_viability : dict or tuple
+    dict or tuple
         Depending on the 'pipeline' parameter:
-            - If `pipeline` is False, returns a dictionary with keys as test names ('chi2_contingency', 'yates_correction', 'barnard_exact', 'boschloo_exact', 'fisher_exact') and values as boolean indicators of their viability.
-            - If `pipeline` is True, returns a tuple of boolean values in the order: (chi2_viability, yates_correction_viability, barnard_viability, boschloo_viability, fisher_viability).
+            - ``dict`` If pipeline=False, returns a dictionary with keys as test names ('chi2_contingency', 'yates_correction', 'barnard_exact', 'boschloo_exact', 'fisher_exact') and values as boolean indicators of their viability.
+            - ``tuple`` If pipeline=True, returns a tuple of boolean values in the order: (chi2_viability, yates_correction_viability, barnard_viability, boschloo_viability, fisher_viability).
 
-    Raises
+    Raises:
     ------
-    TypeError
-        - If `contingency_table` is not a pandas DataFrame, indicating the wrong data type has been passed.
-        - If `min_sample_size_yates` is not an integer, indicating the parameter is of the wrong type.
-        - If `pipeline` or `quiet` is not a boolean, indicating incorrect data types for these parameters.
-    ValueError
-        - If the `contingency_table` is empty, indicating that there's no data to evaluate.
-        - If `min_sample_size_yates` is not a positive integer, indicating an invalid parameter value.
+    TypeErrors:
+        - If `contingency_table` is not a pandas DataFrame.
+        - If `min_sample_size_yates` is not an integer.
+        - If `pipeline` or `quiet` is not a boolean.
 
-    Examples
+    ValueErrors:
+        - If the `contingency_table` is empty.
+        - If `min_sample_size_yates` is not a positive integer.
+
+    Examples:
     --------
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> data = {
-    ...     'Gender': np.random.choice(['Male', 'Female'], 100),
-    ...     'Preference': np.random.choice(['Option A', 'Option B'], 100)
-    ... }
-    >>> df_example = pd.DataFrame(data)
-    >>> contingency_table = pd.crosstab(df_example['Gender'], df_example['Preference'])
-    >>> test_viability = evaluate_contingency_table(contingency_table)
-    >>> print(test_viability)
-    >>> chi2, yates, barnard, boschloo, fisher = evaluate_contingency_table(contingency_table, pipeline=True, quiet=True)
-    >>> if chi2:
-    >>>     # ...
+    Creating a contingency table from a small dataset and evaluating it:
+        >>> import pandas as pd
+        >>> data = {
+        ...     'Gender': ['Male', 'Female', 'Male', 'Female', 'Male'],
+        ...     'Preference': ['Tea', 'Coffee', 'Coffee', 'Tea', 'Tea']
+        ... }
+        >>> df_small = pd.DataFrame(data)
+        >>> contingency_small = pd.crosstab(df_small['Gender'], df_small['Preference'])
+        >>> viability_dict_small = evaluate_contingency_table(contingency_small)
+
+    Using a larger dataset to demonstrate the effect of sample size on test viability::
+        >>> import pandas as pd
+        >>> import numpy as np
+        >>> data_large = {
+        ...     'Gender': np.random.choice(['Male', 'Female'], 200),
+        ...     'Preference': np.random.choice(['Tea', 'Coffee'], 200)
+        ... }
+        >>> df_large = pd.DataFrame(data_large)
+        >>> contingency_large = pd.crosstab(df_large['Gender'], df_large['Preference'])
+        >>> viability_dict_large = evaluate_contingency_table(contingency_large)
+        ...
+        >>> # Applying the function in a pipeline to make further decisions:
+        >>> contingency_pipeline = pd.crosstab(df_large['Gender'], df_large['Preference'])
+        >>> chi2, yates, barnard, boschloo, fisher = evaluate_contingency_table(contingency_pipeline, pipeline=True)
+        >>> if chi2:
+        >>>     print("Chi-square test is viable for this dataset.")
+        >>> else:
+        >>>     print("Consider alternative tests such as Fisher's exact test.")
     """
+
     # Error Handling
     # TypeErrors
     if not isinstance(contingency_table, pd.DataFrame):
