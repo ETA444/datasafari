@@ -1,4 +1,4 @@
-"""Top-level package for Data Safari."""
+"""Front-end functions of Data Safari."""
 
 __author__ = """George Dreemer"""
 __email__ = 'georgedreemer@proton.me'
@@ -16,12 +16,12 @@ from .transformer import (
     transform_num, transform_cat
 )
 
-# predictor
+# predictors
 from .predictor import (
-    predict_hypothesis,  # predict_ml
+    predict_hypothesis,  predict_ml
 )
 
-# evaluator
+# evaluators
 from .evaluator import (
     evaluate_dtype, evaluate_normality, evaluate_variance, evaluate_contingency_table
 )
