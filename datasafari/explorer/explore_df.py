@@ -23,100 +23,86 @@ def explore_df(
     Gain a quick birds-eye view of a dataframe by checking summary statistics, NAs, data types and more. The function combines the most common data exploration functions in one convenient output in your console.
 
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     df : pandas.DataFrame
         DataFrame to be explored.
 
     method : str, optional, default: 'all'
         Specifies the method to apply on the DataFrame.
-
-        - ``'na'``: Displays counts of NAs per column and percentage of NAs.
-        - ``'desc'``: Shows summary statistics using the `describe` method.
-        - ``'head'``: Outputs the first few rows using `head`.
-        - ``'info'``: Provides concise information about the DataFrame using `info`.
-        - ``'all'``: Executes all the above methods sequentially.
+            - ``'na'`` Displays counts of NAs per column and percentage of NAs.
+            - ``'desc'`` Shows summary statistics using the `describe` method.
+            - ``'head'`` Outputs the first few rows using `head`.
+            - ``'info'`` Provides concise information about the DataFrame using `info`.
+            - ``'all'`` Executes all the above methods sequentially.
 
     output : str, optional, default: 'print'
         Determines the output of the exploration results.
-
-        - ``'print'``: Prints the results to the console.
-        - ``'return'``: Returns the results as a string.
+            - ``'print'`` Prints the results to the console.
+            - ``'return'`` Returns the results as a string.
 
     **kwargs : dict
-        Additional arguments for pandas methods (e.g., 'percentiles' for 'desc').
-        You can specify arguments applicable when 'method' is set to 'all', which will be
-        appropriately directed to each pandas method used. Note that the 'buf' parameter
-        in the 'info' method is disabled and cannot be used.
+        Additional arguments for pandas methods (e.g., ``'percentiles'`` for ``'desc'``). You can specify arguments applicable when 'method' is set to ``'all'``, which will be appropriately directed to each pandas method used. Note that the ``'buf'`` parameter in the ``'info'`` method is disabled and cannot be used.
 
-    Returns
+    Return:
     -------
     str or None
-        Returns a string if `output` is 'return'. Otherwise, prints to the console and returns None.
+        - ``str`` If output='return', a string containing the formatted exploration results is returned as a uniform string.
+        - ``None`` If output='print', results are printed to the console, and the function returns None.
 
-    Raises
-    ------
-    TypeError
-        If `df` is not a pandas DataFrame.
-        If `method` is not a string.
-        If `output` is not a string.
+    Raises:
+    -------
+    TypeErrors:
+        - If `df` is not a pandas DataFrame.
+        - If `method` is not a string.
+        - If `output` is not a string.
 
-    ValueError
-        If `df` is empty, indicating no data to evaluate.
-        If `method` is not one of the valid options: 'na', 'desc', 'head', 'info', or 'all'.
-        If `output` is not 'print' or 'return'.
-        If 'buf' parameter is used in the 'info' method.
+    ValueErrors:
+        - If `df` is empty.
+        - If `method` is not one of the valid options:.
+        - If `output` is not 'print' or 'return'.
+        - If 'buf' parameter is used in the 'info' method.
 
-    Examples
-    --------
+    Examples:
+    ---------
     Create a sample DataFrame to use in the examples::
-
         >>> import datasafari
         >>> import numpy as np
         >>> import pandas as pd
         >>> data = {
-            'A': np.random.randn(100),
-            'B': np.random.rand(100) * 100,
-            'C': np.random.randint(1, 100, size=100),
-            'D': np.random.choice(['X', 'Y', 'Z'], size=100)
-        }
+        ...    'A': np.random.randn(100),
+        ...    'B': np.random.rand(100) * 100,
+        ...    'C': np.random.randint(1, 100, size=100),
+        ...    'D': np.random.choice(['X', 'Y', 'Z'], size=100)
+        ... }
         >>> df = pd.DataFrame(data)
 
     The full potential of ``explore_df()`` is unlocked by simply providing a dataframe::
-
         >>> explore_df(df)
 
     Alternatively, save the output to a string::
-
         >>> summary = explore_df(df, 'all', output='return')
 
     Display summary statistics with custom percentiles::
-
         >>> explore_df(df, 'desc', percentiles=[0.05, 0.95], output='print')
 
     Show the first 3 rows of the DataFrame::
-
         >>> explore_df(df, 'head', n=3, output='print')
 
     Provide detailed DataFrame information::
-
         >>> explore_df(df, 'info', verbose=True, output='print')
 
     Calculate and display the count and percentage of missing values::
-
         >>> explore_df(df, 'na', output='print')
 
     Execute a comprehensive exploration with custom settings::
-
         >>> explore_df(df, 'all', n=3, percentiles=[0.25, 0.75], output='print')
 
     Return comprehensive exploration results as a string::
-
         >>> result_str = explore_df(df, 'all', n=5, output='return')
         >>> print(result_str)
 
     Use 'all' with kwargs applicable to specific methods, print the results::
-
         >>> explore_df(df, 'all', n=5, percentiles=[0.1, 0.9], verbose=False, output='print')
     """
 
