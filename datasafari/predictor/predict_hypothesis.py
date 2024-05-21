@@ -22,9 +22,7 @@ def hypothesis_predictor_core_n(
     """
     **Conducts hypothesis testing on numerical data, choosing appropriate tests based on data characteristics.**
 
-    This function performs hypothesis testing between groups defined by a categorical variable for a numerical
-    target variable. It selects the appropriate statistical test based on the normality of the data and the homogeneity
-    of variances across groups, utilizing t-tests, Mann-Whitney U tests, ANOVA, or Kruskal-Wallis tests as appropriate.
+    This function performs hypothesis testing between groups defined by a categorical variable for a numerical target variable. It selects the appropriate statistical test based on the normality of the data and the homogeneity of variances across groups, utilizing t-tests, Mann-Whitney U tests, ANOVA, or Kruskal-Wallis tests as appropriate.
 
     Parameters:
     ----------
@@ -42,9 +40,7 @@ def hypothesis_predictor_core_n(
     Returns:
     -------
     dict
-        A dictionary containing the results of the hypothesis test, including test statistics, p-values,
-        conclusions regarding the differences between groups, the name of the test used, and the assumptions
-        tested (normality and equal variances).
+        A dictionary containing the results of the hypothesis test, including test statistics, p-values, conclusions regarding the differences between groups, the name of the test used, and the assumptions tested (normality and equal variances).
 
     Raises:
     ------
@@ -142,10 +138,7 @@ def hypothesis_predictor_core_c(
     """
     **Conducts categorical hypothesis testing using contingency tables and appropriate statistical tests.**
 
-    This function assesses the association between two categorical variables by applying a series of statistical
-    tests. It evaluates the data's suitability for different tests based on the shape of the contingency table,
-    the minimum expected and observed frequencies, and specific methodological preferences, including Yates' correction
-    for chi-square tests and alternatives for exact tests.
+    This function assesses the association between two categorical variables by applying a series of statistical tests. It evaluates the data's suitability for different tests based on the shape of the contingency table, the minimum expected and observed frequencies, and specific methodological preferences, including Yates' correction for chi-square tests and alternatives for exact tests.
 
     Parameters:
     ----------
@@ -162,15 +155,12 @@ def hypothesis_predictor_core_c(
     yates_correction_viability : bool
         Determines whether Yates' correction is applicable based on the contingency table's shape and sample size.
     alternative : str, optional, default: 'two-sided'
-        Specifies the alternative hypothesis for exact tests. Options include 'two-sided', 'less', or 'greater'.
+        Specifies the alternative hypothesis for exact tests. Options include ``'two-sided'``, ``'less'``, or ``'greater'``.
 
     Returns:
     -------
     dict
-        A comprehensive dictionary detailing the outcomes of the statistical tests performed, including test names,
-        statistics, p-values, and conclusions about the association between the categorical variables. The dictionary
-        also contains specific details about the application of Yates' correction and the chosen alternative hypothesis
-        for exact tests.
+        A comprehensive dictionary detailing the outcomes of the statistical tests performed, including test names, statistics, p-values, and conclusions about the association between the categorical variables. The dictionary also contains specific details about the application of Yates' correction and the chosen alternative hypothesis for exact tests.
 
     Raises:
     ------
@@ -179,8 +169,8 @@ def hypothesis_predictor_core_c(
         - If `chi2_viability`, `barnard_viability`, `boschloo_viability`, `fisher_viability`, or `yates_correction_viability` is not a boolean.
         - If `alternative` is not a string indicating the alternative hypothesis ('two-sided', 'less', 'greater').
     ValueErrors:
-        - If the `contingency_table` is empty, indicating that there's no data to evaluate.
-        - If the `alternative` specified does not match one of the expected values: 'two-sided', 'less', or 'greater'.
+        - If the `contingency_table` is empty.
+        - If the `alternative` specified does not match one of the expected values.
     """
 
     # Error Handling
