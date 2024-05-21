@@ -11,7 +11,7 @@ Getting started with Data Safari is as easy as installing the package and runnin
 
     pip install datasafari
 
-Here’s a quick example of using Data Safari to perform hypothesis testing on your data:
+**Hypothesis Testing Example:**
 
 .. code-block:: python
 
@@ -25,9 +25,30 @@ Here’s a quick example of using Data Safari to perform hypothesis testing on y
         'Score': np.random.normal(0, 1, 100)
     })
 
-    # Perform a simple T-test
+    # Perform hypothesis testing
     results = predictor.predict_hypothesis(df, 'Group', 'Score')
     print(results)
+
+- This function intelligently determines the best statistical test based on the data types and distribution:
+  - Automatically identifies whether to perform a T-test, ANOVA, or other relevant tests.
+  - Evaluates assumptions such as normality and homogeneity of variances if needed.
+
+**Machine Learning Model Selection Example:**
+
+.. code-block:: python
+
+    # Assuming 'df' is a DataFrame loaded with relevant features and a target variable
+    x_cols = df.columns[:-1]  # Feature columns
+    y_col = df.columns[-1]    # Target column
+
+    # Run the machine learning pipeline to recommend the best model
+    ml_results = predictor.predict_ml(df, x_cols=x_cols, y_col=y_col)
+    print(ml_results)
+
+- The ML pipeline automates the entire process of model selection:
+  - Preprocesses data based on the types of variables.
+  - Evaluates several models and tunes them to find the best performer.
+  - Utilizes a composite score to assess and rank models, ensuring optimal selection.
 
 Explore the Documentation
 -------------------------
@@ -57,7 +78,7 @@ Data Safari is organized into several subpackages, each tailored to specific dat
 
 Explorers
 ---------
-Discover patterns and insights in your data effortlessly.
+Discover patterns and insights in your data effortlessly. For instance, use `explore_df` to get a comprehensive overview of any DataFrame, helping to quickly identify missing values, outliers, and distribution patterns.
 
 .. autosummary::
    :toctree: explorers
@@ -68,7 +89,7 @@ Discover patterns and insights in your data effortlessly.
 
 Transformers
 ------------
-Transform your data to better fit your analysis or machine learning models.
+Transform your data to better fit your analysis or machine learning models. For example, `transform_cat` can be used to encode categorical variables effectively, preparing them for machine learning algorithms.
 
 .. autosummary::
    :toctree: transformers
@@ -78,7 +99,7 @@ Transform your data to better fit your analysis or machine learning models.
 
 Evaluators
 ----------
-Evaluate assumptions, validate models, and ensure the quality of your data.
+Evaluate assumptions, validate models, and ensure the quality of your data. Use `evaluate_normality` to check if your data conforms to a normal distribution, which is crucial for many statistical tests and models.
 
 .. autosummary::
    :toctree: evaluators
@@ -89,7 +110,7 @@ Evaluate assumptions, validate models, and ensure the quality of your data.
 
 Predictors
 ----------
-Build predictive models and conduct hypothesis testing with ease.
+Build predictive models and conduct hypothesis testing with ease. For example, `predict_hypothesis` can dynamically choose the best hypothesis test for your data, whether it's for simple comparisons or complex experimental designs.
 
 .. autosummary::
    :toctree: predictors
