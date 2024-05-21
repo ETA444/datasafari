@@ -786,7 +786,7 @@ def model_tuning_core(
         task_type: str,
         models: dict,
         priority_metrics: List[str] = None,
-        refit_metric: Optional[Union[str, Callable]] = None,
+        refit_metric: str = None,
         priority_tuners: List[str] = None,
         custom_param_grids: dict = None,
         n_jobs: int = -1,
@@ -797,55 +797,62 @@ def model_tuning_core(
         random_state: int = 42
 ) -> Dict[str, Any]:
     """
-    Conducts hyperparameter tuning on a set of models using specified tuning methods and parameter grids,
-    and returns the best tuned models along with their scores.
+    **Conducts hyperparameter tuning on a set of models using specified tuning methods and parameter grids, and returns the best tuned models along with their scores.**
 
-    This function systematically applies grid search, random search, or Bayesian optimization to explore the
-    hyperparameter space of given models. It supports customization of the tuning process through various parameters
-    and outputs the best found configurations.
+    This function systematically applies grid search, random search, or Bayesian optimization to explore the hyperparameter space of given models. It supports customization of the tuning process through various parameters and outputs the best found configurations.
 
-    Parameters
+    Parameters:
     ----------
     x_train : Union[pd.DataFrame, np.ndarray]
         Training feature dataset.
+
     y_train : Union[pd.Series, np.ndarray]
         Training target variable.
+
     task_type : str
-        Specifies the type of machine learning task: 'classification' or 'regression'.
+        Specifies the type of machine learning task: ``'classification'`` or ``'regression'``.
+
     models : dict
         Dictionary with model names as keys and model instances as values.
-    priority_metrics : List[str], optional
-        List of metric names given priority in model scoring. Default is None, which uses default metrics.
-    refit_metric : Optional[Union[str, Callable]], optional
-        Metric to use for refitting the models. A string (name of the metric) or a scorer callable object/function
-        with signature scorer(estimator, X, y). If None, the first metric listed in priority_metrics is used.
-    priority_tuners : List[str], optional
-        List of tuner names to use for hyperparameter tuning. Valid tuners are 'grid', 'random', 'bayesian'.
-    custom_param_grids : dict, optional
-        Custom parameter grids to use, overriding the default grids if provided. Each entry should be a model name
-        mapped to its corresponding parameter grid.
-    n_jobs : int, optional
-        Number of jobs to run in parallel. -1 means using all processors. Default is -1.
-    cv : int, optional
-        Number of cross-validation folds. Default is 5.
-    n_iter_random : int, optional
-        Number of iterations for random search. If None, default is set to 10.
-    n_iter_bayesian : int, optional
-        Number of iterations for Bayesian optimization. If None, default is set to 50.
-    verbose : int, optional
-        Level of verbosity. The higher the number, the more detailed the logging. Default is 1.
-    random_state : int, optional
-        Seed used by the random number generator. Default is 42.
 
-    Returns
+    priority_metrics : List[str], optional, default: None
+        List of metric names given priority in model scoring.
+
+    refit_metric : str, optional, default: None
+        Metric to use for refitting the models in the machine learning pipeline. If ``None``, the function will use the first member of ``priority_matrics``. If no ``priority_metrics`` are provided, the function defaults to ``'Accuracy'`` for classification models and ``'MSE'`` for regression models.
+
+    priority_tuners : List[str], optional, default: None
+        List of tuner names to use for hyperparameter tuning. Valid tuners are ``'grid'``, ``'random'``, ``'bayesian'``.
+
+    custom_param_grids : dict, optional, default: None
+        Custom parameter grids to use, overriding the default grids if provided. Each entry should be a model name mapped to its corresponding parameter grid.
+
+    n_jobs : int, optional, default: -1
+        Number of jobs to run in parallel. -1 means using all processors/parallel processing.
+
+    cv : int, optional, default: 5
+        Number of cross-validation folds.
+
+    n_iter_random : int, optional, default: 10
+        Number of iterations for random search.
+
+    n_iter_bayesian : int, optional, default: 50
+        Number of iterations for Bayesian optimization.
+
+    verbose : int, optional, default: 1
+        Level of verbosity. The higher the number, the more detailed the console output.
+
+    random_state : int, optional, default: 42
+        Seed used by the random number generator.
+
+    Returns:
     -------
     Dict[str, Any]
-        A dictionary containing the best models under each provided model name as keys. Values are dictionaries
-        with keys: 'best_model' storing the model object of the best estimator and 'best_score' storing the corresponding score.
+        A dictionary containing the best models under each provided model name as keys. Values are dictionaries with keys: 'best_model' storing the model object of the best estimator and 'best_score' storing the corresponding score.
 
-    Raises
+    Raises:
     ------
-    TypeError
+    TypeErrors:
         - If 'x_train' is not a pandas DataFrame or NumPy ndarray.
         - If 'y_train' is not a pandas Series or NumPy ndarray.
         - If 'task_type' is not a string.
@@ -857,8 +864,7 @@ def model_tuning_core(
         - If 'cv' is less than 1.
         - If 'n_iter_random' or 'n_iter_bayesian' is less than 1 when not None.
         - If 'refit_metric' is provided as a string but is not a callable or recognized metric name.
-
-    ValueError
+    ValueErrors:
         - If 'task_type' is not 'classification' or 'regression'.
         - If 'x_train' and 'y_train' do not have the same number of rows.
         - If 'x_train' or 'y_train' is empty (has zero elements).
@@ -869,17 +875,7 @@ def model_tuning_core(
         - If 'n_iter_random_adjusted' or 'n_iter_bayesian_adjusted' becomes zero due to all combinations being previously tested, implying there are no new combinations to explore.
         - If 'n_iter_random' or 'n_iter_bayesian' is set to zero or a negative number.
 
-
-    Examples
-    --------
-    >>> from sklearn.datasets import load_iris
-    >>> from sklearn.model_selection import train_test_split
-    >>> X, y = load_iris(return_X_y=True)
-    >>> x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    >>> models = {'logistic_regression': LogisticRegression(), 'random_forest': RandomForestClassifier()}
-    >>> tuned_models = model_tuning_core(x_train, y_train, 'classification', models, priority_metrics=['accuracy', 'f1'], priority_tuners=['bayesian'], n_iter_random=20, verbose=2)
-
-    Notes
+    Notes:
     -----
         - **Integration with Tuning Methods**: This function utilizes scikit-learn's `GridSearchCV` and `RandomizedSearchCV`, along with scikit-optimize's `BayesSearchCV` for hyperparameter tuning. The choice of tuning method (`grid`, `random`, or `bayesian`) depends on the entries provided in the `priority_tuners` list.
 
