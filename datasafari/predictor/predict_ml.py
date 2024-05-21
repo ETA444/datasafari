@@ -276,7 +276,7 @@ def data_preprocessing_core(
         df: pd.DataFrame,
         x_cols: List[str],
         y_col: str,
-        data_state: str,
+        data_state: str = 'unprocessed',
         test_size: float = 0.2,
         random_state: int = 42,
         numeric_imputer: TransformerMixin = SimpleImputer(strategy='median'),
@@ -288,55 +288,75 @@ def data_preprocessing_core(
         verbose: int = 1
 ) -> Tuple[np.ndarray, np.ndarray, pd.Series, pd.Series, str]:
     """
-    Performs comprehensive preprocessing on a dataset containing mixed data types.
+    **Performs comprehensive preprocessing on a dataset containing mixed data types.**
 
     This function prepares a dataset for machine learning by handling numerical, categorical, text, and datetime data. It supports flexible imputation, scaling, encoding, and vectorization methods to cater to a wide range of preprocessing needs. The function automatically splits the data into training and test sets and applies the preprocessing steps defined by the user. It accommodates custom preprocessing steps for various data types, enhancing flexibility and control over the preprocessing pipeline.
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     df : pd.DataFrame
         The DataFrame to preprocess.
+
     x_cols : list of str
         List of feature column names in `df` to include in the preprocessing.
+
     y_col : str
         The name of the target variable column in `df`.
-    data_state : str
-        Specifies the initial state of the data ('unprocessed' or 'preprocessed'). Default is 'unprocessed'.
-    test_size : float, optional
-        Proportion of the dataset to include in the test split. Default is 0.2.
-    random_state : int, optional
-        Controls the shuffling applied to the data before applying the split. Default is 42.
-    numeric_imputer : sklearn imputer object, optional
-        The imputation transformer for handling missing values in numerical data. Default is SimpleImputer(strategy='median').
-    numeric_scaler : sklearn scaler object, optional
-        The scaling transformer for numerical data. Default is StandardScaler().
-    categorical_imputer : sklearn imputer object, optional
-        The imputation transformer for handling missing values in categorical data. Default is SimpleImputer(strategy='constant', fill_value='missing').
-    categorical_encoder : sklearn encoder object, optional
-        The encoding transformer for categorical data. Default is OneHotEncoder(handle_unknown='ignore').
-    text_vectorizer : sklearn vectorizer object, optional
-        The vectorization transformer for text data. Default is CountVectorizer().
-    datetime_transformer : callable, optional
-        The transformation operation for datetime data. Default extracts year, month, and day as separate features.
-    verbose : int, optional
-        The higher value the more output and information the user receives. Default is 1.
 
-    Returns
-    -------
+    data_state : str, optional, default: 'unprocessed'
+        Specifies the initial state of the data ('unprocessed' or 'preprocessed').
+
+    test_size : float, optional, default: 0.2
+        Proportion of the dataset to include in the test split.
+
+    random_state : int, optional, default: 42
+        Controls the shuffling applied to the data before applying the split.
+
+    numeric_imputer : sklearn imputer object, optional, default: SimpleImputer(strategy='median')
+        The imputation transformer for handling missing values in numerical data.
+
+    numeric_scaler : sklearn scaler object, optional, default: StandardScaler()
+        The scaling transformer for numerical data.
+
+    categorical_imputer : sklearn imputer object, optional, default: SimpleImputer(strategy='constant', fill_value='missing')
+        The imputation transformer for handling missing values in categorical data.
+
+    categorical_encoder : sklearn encoder object, optional, default: OneHotEncoder(handle_unknown='ignore')
+        The encoding transformer for categorical data.
+
+    text_vectorizer : sklearn vectorizer object, optional, default: CountVectorizer()
+        The vectorization transformer for text data.
+
+    datetime_transformer : callable, optional, default: None
+        Transformer for datetime data.
+
+            *Note: This parameter defaults to a custom datetime transformer, which extracts year, month, and day as separate features.*
+
+    verbose : int, optional, default: 1
+        The higher value the more output and information the user receives.
+
+
+    Returns:
+    --------
     x_train_processed : ndarray
-        The preprocessed training feature set.
+        The preprocessed training feature set. *Note: The x_train will be untouched if ``data_state='preprocessed'``*
+
     x_test_processed : ndarray
-        The preprocessed test feature set.
+        The preprocessed test feature set. *Note: The x_train will be untouched if ``data_state='preprocessed'``*
+
     y_train : Series
         The training target variable.
+
     y_test : Series
         The test target variable.
+
     task_type : str
         The type of machine learning task inferred from the target variable ('regression' or 'classification').
 
-    Raises
-    ------
-    TypeError
+
+    Raises:
+    -------
+    TypeErrors:
         - If 'df' is not a pandas DataFrame.
         - If 'x_cols' is not a list of strings.
         - If 'y_col' is not a string.
@@ -345,8 +365,8 @@ def data_preprocessing_core(
         - If 'random_state' is not an integer.
         - If 'verbose' is not an integer
         - If numeric_imputer, numeric_scaler, categorical_imputer, categorical_encoder, text_vectorizer, or datetime_transformer do not support the required interface.
-    ValueError
-        - If the `df` is empty, indicating that there's no data to evaluate.
+    ValueErrors:
+        - If the `df` is empty.
         - If 'data_state' is not 'unprocessed' or 'preprocessed'.
         - If 'y_col' is not found in 'df'.
         - If specified 'x_cols' are not present in 'df'.
@@ -354,27 +374,16 @@ def data_preprocessing_core(
         - If 'df' does not contain enough data to split according to 'test_size'.
 
 
-    Examples
-    --------
-    >>> df = pd.DataFrame({
-    ...     'Age': np.random.randint(18, 35, size=100),
-    ...     'Salary': np.random.normal(50000, 12000, size=100),
-    ...     'Department': np.random.choice(['HR', 'Tech', 'Marketing'], size=100),
-    ...     'Review': ['Good review']*50 + ['Bad review']*50,
-    ...     'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
-    ... })
-    >>> x_cols = ['Age', 'Salary', 'Department', 'Review', 'Employment Date']
-    >>> y_col = 'Salary'
-    >>> processed_data = data_preprocessing_core(df, x_cols, y_col, test_size=0.25, random_state=123)
-
-    Notes
-    -----
-    The `data_preprocessing_core` function is an integral part of the `predict_ml()` pipeline, designed to automate the preprocessing steps for machine learning tasks. It handles various data types, including numerical, categorical, text, and datetime, providing a streamlined process for preparing data for model training. This function uses Scikit-learn's transformers and custom functions to perform imputation, scaling, encoding, and vectorization, allowing users to customize these steps according to their needs.
+    Notes:
+    ------
+    The ``data_preprocessing_core()`` function is an integral part of the ``predict_ml()`` pipeline, designed to automate the preprocessing steps for machine learning tasks. It handles various data types, including numerical, categorical, text, and datetime, providing a streamlined process for preparing data for model training. This function uses Scikit-learn's transformers and custom functions to perform imputation, scaling, encoding, and vectorization, allowing users to customize these steps according to their needs.
 
     This function supports flexible preprocessing, accommodating custom transformations through its parameters. By specifying transformers for different data types, users can adapt the preprocessing to fit their dataset's specific characteristics. The function also splits the data into training and test sets, facilitating model evaluation and selection later in the pipeline.
 
-    Designed with usability in mind, `data_preprocessing_core` includes console output options controlled by 'verbose' parameter. This feature provides users with insights into the preprocessing steps taken (verbose > 0), including information on processed features and tips for further customization (verbose > 1).
+    Designed with usability in mind, ``data_preprocessing_core()`` includes console output options controlled by 'verbose' parameter. This feature provides users with insights into the preprocessing steps taken (verbose > 0), including information on processed features and tips for further customization (verbose > 1).
     """
+    if datetime_transformer is None:
+        datetime_transformer = FunctionTransformer(datetime_feature_extractor, validate=False)
 
     # Error Handling
     # TypeErrors
