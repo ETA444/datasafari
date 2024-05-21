@@ -522,51 +522,53 @@ def data_preprocessing_core(
 
 def calculate_composite_score(scores: dict, metric_weights: dict) -> float:
     """
-    Calculates a composite score based on individual metric scores and their respective weights.
+    **Calculates a composite score based on individual metric scores and their respective weights.**
 
     This function aggregates multiple evaluation metrics into a single composite score by weighting each metric according to its importance, as defined in 'metric_weights'. A higher weight signifies greater importance of the metric towards the composite score. This approach allows for a balanced evaluation of model performance across various aspects.
 
-    Parameters
+    Parameters:
     ----------
     scores : dict
         A dictionary where keys are metric names (str) and values are their corresponding scores (float).
-        Example: {'Accuracy': 0.95, 'Precision': 0.90}
+            - Example: ``{'Accuracy': 0.95, 'Precision': 0.90}``
+
     metric_weights : dict
         A dictionary where keys are metric names (str) and values are the weights (int or float) assigned to each metric.
-        Example: {'Accuracy': 5, 'Precision': 1}
+            - Example: ``{'Accuracy': 5, 'Precision': 1}``
 
-    Returns
+    Returns:
     -------
     float
         The composite score calculated as the weighted average of the provided metric scores.
 
-    Raises
+    Raises:
     ------
-    TypeError
-        If 'scores' or 'metric_weights' is not a dictionary.
-    ValueError
-        If 'scores' or 'metric_weights' is empty.
-        If there are missing metric weights for any of the metrics provided in 'scores'.
+    TypeError:
+        - If 'scores' or 'metric_weights' is not a dictionary.
+    ValueErrors:
+        - If 'scores' or 'metric_weights' is empty.
+        - If there are missing metric weights for any of the metrics provided in 'scores'.
 
-    Examples
+    Examples:
     --------
     >>> scores = {'Accuracy': 0.95, 'Precision': 0.90}
     >>> metric_weights = {'Accuracy': 5, 'Precision': 1}
     >>> composite_score = calculate_composite_score(scores, metric_weights)
     >>> print(f"Composite Score: {composite_score:.2f}")
 
-    Notes
-    -----
+    Notes:
+    ------
     - This function is utilized within the `model_recommendation_core()` of the `predict_ml()` pipeline, aimed at recommending the top `n` models based on a synthesized performance evaluation.
     - The composite score is derived by assigning weights to various scoring metrics, thereby enabling a prioritized and balanced assessment of model performance across multiple criteria.
     - Metrics for which lower values are traditionally better (e.g., RMSE) are transformed (either inverted or negated) prior to weight application, aligning all metrics to the "higher is better" principle for composite score calculation.
     - The calculation involves weighting each metric's score, summing these weighted scores, and normalizing the sum by the total weight, as detailed in the following formula:
 
-    $$
-    C = \frac{\sum_{m \in M} (w_m \cdot \text{adj}(s_m))}{\sum_{m \in M} w_m}
-    $$
+        $$
+        C = \frac{\sum_{m \in M} (w_m \cdot \text{adj}(s_m))}{\sum_{m \in M} w_m}
+        $$
 
-    where $\text{adj}(s_m)$ is the score adjustment function, ensuring a consistent interpretation across metrics, $w_m$ represents the weight of metric $m$, and $M$ is the set of all metrics.
+        where $\text{adj}(s_m)$ is the score adjustment function, ensuring a consistent interpretation across metrics, $w_m$ represents the weight of metric $m$, and $M$ is the set of all metrics.
+
     - The inversion or negation of scores for metrics where lower values are preferable ensures the composite score accurately reflects a model's overall efficacy, facilitating straightforward comparisons across diverse model configurations.
     - Review of metrics' adherence to the 'higher is better' framework indicates the systematic alignment of evaluation metrics, reinforcing the utility and interpretability of the composite scoring approach in model selection processes.
     """
