@@ -326,28 +326,31 @@ def predict_hypothesis(
 
     normality_method : str, optional, default: 'consensus'
         Specifies the method to evaluate normality within numerical hypothesis testing.
-            - ``'shapiro'`` Shapiro-Wilk test.
-            - ``'anderson'`` Anderson-Darling test.
-            - ``'normaltest'`` D’Agostino and Pearson’s test.
-            - ``'lilliefors'`` Lilliefors test for normality.
-            - ``'consensus'`` Utilizes a combination of the above tests to reach a consensus on normality.
 
-        *For more details, refer to:* :doc:`evaluate_normality() documentation <datasafari.evaluator.evaluate_normality>`
+        - ``'shapiro'`` Shapiro-Wilk test.
+        - ``'anderson'`` Anderson-Darling test.
+        - ``'normaltest'`` D’Agostino and Pearson’s test.
+        - ``'lilliefors'`` Lilliefors test for normality.
+        - ``'consensus'`` Utilizes a combination of the above tests to reach a consensus on normality.
+
+            *Note: For more details, refer to:* :doc:`evaluate_normality() documentation <datasafari.evaluator.evaluate_normality>`
 
     variance_method : str, optional, default: 'consensus'
         Determines the method to evaluate variance homogeneity (equal variances) across groups in numerical hypothesis testing.
-            - ``'levene'`` Levene's test, robust to non-normal distributions.
-            - ``'bartlett'`` Bartlett’s test, sensitive to non-normal distributions.
-            - ``'fligner'`` Fligner-Killeen test, a non-parametric alternative.
-            - ``'consensus'`` A combination approach to determine equal variances across methods.
 
-        *For more details, refer to:* :doc:`evaluate_variance() documentation <datasafari.evaluator.evaluate_variance>`
+        - ``'levene'`` Levene's test, robust to non-normal distributions.
+        - ``'bartlett'`` Bartlett’s test, sensitive to non-normal distributions.
+        - ``'fligner'`` Fligner-Killeen test, a non-parametric alternative.
+        - ``'consensus'`` A combination approach to determine equal variances across methods.
+
+            *Note: For more details, refer to:* :doc:`evaluate_variance() documentation <datasafari.evaluator.evaluate_variance>`
 
     exact_tests_alternative : str, optional, default: 'two-sided'
         For categorical hypothesis testing, this parameter specifies the alternative hypothesis direction for exact tests.
-            - ``'two-sided'`` Tests for any difference between the two variables without directionality.
-            - ``'less'`` Tests if the first variable is less than the second variable.
-            - ``'greater'`` Tests if the first variable is greater than the second variable.
+
+        - ``'two-sided'`` Tests for any difference between the two variables without directionality.
+        - ``'less'`` Tests if the first variable is less than the second variable.
+        - ``'greater'`` Tests if the first variable is greater than the second variable.
 
     yates_min_sample_size : int, optional, default: 40
         Specifies the minimum sample size threshold for applying Yates' correction in chi-square testing to adjust for continuity. The correction is applied to 2x2 contingency tables with small sample sizes to prevent overestimation of the significance level.
@@ -385,7 +388,7 @@ def predict_hypothesis(
 
     Examples:
     ---------
-    First, we'll create a DataFrame with categorical and numerical variables to use in our examples:
+    First, we create a DataFrame with categorical and numerical variables to use in our examples:
 
     >>> import datasafari
     >>> import pandas as pd
