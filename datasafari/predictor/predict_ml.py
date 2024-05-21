@@ -1109,50 +1109,57 @@ def model_recommendation_core_inference(
         verbose: int = 1
 ) -> Dict[str, Any]:
     """
-    Recommends top statistical models for inference based on user-specified preferences and formula.
-    This function evaluates various statistical models from statsmodels, each suitable for either
-    regression or classification tasks determined dynamically by the nature of the target variable.
+    **Recommends top statistical models for inference based on user-specified preferences and formula.**
 
-    Parameters
+    This function evaluates various statistical models from statsmodels, each suitable for either regression or classification tasks determined dynamically by the nature of the target variable.
+
+
+    Parameters:
     ----------
     df : pd.DataFrame
         DataFrame containing the data to fit the models.
+
     formula : str
-        A patsy formula specifying the model. The target variable is on the left of '~'.
-    priority_models : List[str], optional
+        A patsy formula specifying the model. The independent variable is on the left of '~', while the dependent variables are on the right.
+
+    priority_models : List[str], optional, default: None
         A list of model names to restrict the evaluation to specific models, otherwise all applicable models are evaluated.
-    n_top_models : int, optional
-        Number of top-performing models to return based on sorted metrics. Defaults to 3.
-    model_kwargs : dict, optional
-        Dictionary mapping model names to dictionaries of additional keyword arguments to pass to the model constructors.
-        This can be used to pass additional parameters required by specific models.
-    verbose : int, optional
+
+    n_top_models : int, optional, default: 3
+        Number of top-performing models to return based on sorted metrics.
+
+    model_kwargs : dict, optional, default: None
+        Dictionary mapping model names to dictionaries of additional keyword arguments to pass to the model constructors. This can be used to pass additional parameters required by specific models.
+
+    verbose : int, optional, default: 1
         The verbosity level: 0 means silent, 1 outputs summary results, 2 includes detailed model summaries.
 
-    Raises
+
+    Returns:
+    -------
+    Dict[str, Any]
+        A dictionary with model names as keys and dictionaries as values. Each dictionary contains the 'model' object, 'metrics' dictionary with performance metrics, and potentially 'summary' if verbose > 1.
+
+
+    Raises:
     ------
-    TypeError
+    TypeErrors:
         - If 'df' is not a pandas DataFrame, ensuring that the input data structure is correct for model fitting.
         - If 'formula' is not a string, verifying that the model formula is correctly specified as a string.
         - If 'priority_models' is provided and is not a list of strings, ensuring the user specifies a proper list of model names.
         - If 'model_kwargs' is provided and is not a dictionary, ensuring the correct format for passing additional keyword arguments to model constructors.
         - If 'verbose' is not an integer, verifying that the verbosity level is specified as an integer.
-
-    ValueError
-        - If the input DataFrame is empty, ensuring that there is data available for model fitting.
+    ValueErrors:
+        - If the input DataFrame is empty.
         - If 'formula' does not contain exactly one '~', which is necessary to separate the dependent and independent variables in the model specification.
         - If the specified target variable from 'formula' is not found in the DataFrame, ensuring the formula correctly references a column in the DataFrame.
         - If any variables specified in the 'formula' for independent variables are not found in the DataFrame, checking for the presence of all required variables in the DataFrame.
         - If 'n_top_models' is not a positive integer, ensuring that the number of models to return is specified correctly.
 
-    Returns
-    -------
-    Dict[str, Any]
-        A dictionary with model names as keys and dictionaries as values. Each dictionary contains the 'model' object,
-        'metrics' dictionary with performance metrics, and potentially 'summary' if verbose > 1.
 
-    Examples
+    Examples:
     --------
+    >>> import datasafari
     >>> import numpy as np
     >>> import pandas as pd
     >>> df = pd.DataFrame({
@@ -1175,23 +1182,17 @@ def model_recommendation_core_inference(
     >>> best_model_aic = best_inference_models[best_model_name]['metrics']['AIC']
     >>> print(f"The best model according to AIC is {best_model_name} with an AIC of {best_model_aic:.2f}")
 
-    Notes
+    Notes:
     -----
-    - **Dynamic Model Evaluation**: Depending on the datatype of the target variable specified in the formula,
-      the function dynamically decides whether to treat the problem as a regression or classification task,
-      using appropriate metrics and models for each.
+    - **Dynamic Model Evaluation**: Depending on the datatype of the target variable specified in the formula, the function dynamically decides whether to treat the problem as a regression or classification task, using appropriate metrics and models for each.
 
-    - **Handling Model Specific Requirements**: This function allows passing custom arguments to model constructors
-      to handle models that require specific parameters via `model_kwargs`.
+    - **Handling Model Specific Requirements**: This function allows passing custom arguments to model constructors to handle models that require specific parameters via `model_kwargs`.
 
-    - **Metric Adjustments**: For metrics where a lower value is better (e.g., AIC, BIC), these are adjusted
-      to be compared directly alongside higher-is-better metrics like R-squared, by negating their values during sorting.
+    - **Metric Adjustments**: For metrics where a lower value is better (e.g., AIC, BIC), these are adjusted to be compared directly alongside higher-is-better metrics like R-squared, by negating their values during sorting.
 
-    - **Verbose Output**: The function provides different levels of output detail which can help in diagnosing model fit
-      or understanding model performance.
+    - **Verbose Output**: The function provides different levels of output detail which can help in diagnosing model fit or understanding model performance.
 
-    - **Error Handling**: The function will report and skip models that encounter errors during fitting, allowing for
-      robust execution even if some models are not applicable to the provided data or formula.
+    - **Error Handling**: The function will report and skip models that encounter errors during fitting, allowing for robust execution even if some models are not applicable to the provided data or formula.
     """
 
     # Error handling #
