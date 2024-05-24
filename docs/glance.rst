@@ -4,41 +4,6 @@ DataSafari is organized into several subpackages, each tailored to specific data
 
     *The logic behind the naming of each subpackage is inspired by the typical data workflow: exploring and understanding your data, transforming and cleaning it, evaluating assumptions and finally making predictions.* - George
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Explorers
-   :hidden:
-
-   datasafari.explorer.explore_df
-   datasafari.explorer.explore_num
-   datasafari.explorer.explore_cat
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Transformers
-   :hidden:
-
-   datasafari.transformer.transform_num
-   datasafari.transformer.transform_cat
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Evaluators
-   :hidden:
-
-   datasafari.evaluator.evaluate_normality
-   datasafari.evaluator.evaluate_variance
-   datasafari.evaluator.evaluate_dtype
-   datasafari.evaluator.evaluate_contingency_table
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Predictors
-   :hidden:
-
-   datasafari.predictor.predict_hypothesis
-   datasafari.predictor.predict_ml
-
 |
 
 Explorers
