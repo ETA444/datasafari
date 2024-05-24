@@ -5,12 +5,6 @@ DataSafari is organized into several subpackages, each tailored to specific data
     *The logic behind the naming of each subpackage is inspired by the typical data workflow: exploring and understanding your data, transforming and cleaning it, evaluating assumptions and finally making predictions.* - George
 
 .. toctree::
-   :maxdepth: 3
-   :hidden:
-
-   self
-
-.. toctree::
    :maxdepth: 1
    :caption: Explorers
    :hidden:
