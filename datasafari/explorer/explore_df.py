@@ -4,7 +4,6 @@ import io
 from datasafari.utils.filters import filter_kwargs
 
 
-# dictionary for filter_kwargs: define which kwargs are valid for which method
 valid_kwargs = {
     'head': ['n'],
     'describe': ['percentiles', 'include', 'exclude'],
@@ -12,7 +11,6 @@ valid_kwargs = {
 }
 
 
-# main function: explore_df
 def explore_df(
         df: pd.DataFrame,
         method: str = 'all',
@@ -117,9 +115,6 @@ def explore_df(
 
     >>> explore_df(df, 'all', n=5, percentiles=[0.1, 0.9], verbose=False, output='print')
     """
-
-
-
     # Error Handling #
     # TypeErrors for each parameter
     if not isinstance(df, pd.DataFrame):

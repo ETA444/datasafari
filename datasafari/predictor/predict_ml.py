@@ -527,7 +527,7 @@ def calculate_composite_score(scores: dict, metric_weights: dict) -> float:
     This function aggregates multiple evaluation metrics into a single composite score by weighting each metric according to its importance, as defined in 'metric_weights'. A higher weight signifies greater importance of the metric towards the composite score. This approach allows for a balanced evaluation of model performance across various aspects.
 
     Parameters:
-    ----------
+    -----------
     scores : dict
         A dictionary where keys are metric names (str) and values are their corresponding scores (float).
             - Example: ``{'Accuracy': 0.95, 'Precision': 0.90}``
@@ -537,12 +537,12 @@ def calculate_composite_score(scores: dict, metric_weights: dict) -> float:
             - Example: ``{'Accuracy': 5, 'Precision': 1}``
 
     Returns:
-    -------
+    --------
     float
         The composite score calculated as the weighted average of the provided metric scores.
 
     Raises:
-    ------
+    -------
     TypeError:
         - If 'scores' or 'metric_weights' is not a dictionary.
     ValueErrors:
@@ -550,7 +550,7 @@ def calculate_composite_score(scores: dict, metric_weights: dict) -> float:
         - If there are missing metric weights for any of the metrics provided in 'scores'.
 
     Examples:
-    --------
+    ---------
     >>> scores = {'Accuracy': 0.95, 'Precision': 0.90}
     >>> metric_weights = {'Accuracy': 5, 'Precision': 1}
     >>> composite_score = calculate_composite_score(scores, metric_weights)
@@ -633,12 +633,12 @@ def model_recommendation_core(
         The higher value the more output and information the user receives.
 
     Returns:
-    -------
+    --------
     Dict[str, Any]
         Dictionary of top N recommended models, keyed by model name with model object as value.
 
     Raises:
-    ------
+    -------
     TypeErrors:
         - If 'x_train' is not a pandas DataFrame or NumPy ndarray.
         - If 'y_train' is not a pandas Series or NumPy ndarray.
@@ -656,7 +656,7 @@ def model_recommendation_core(
 
 
     Notes:
-    -----
+    ------
     The core leverages a composite score for model evaluation, which synthesizes scores across multiple metrics, weighted by the specified priorities. This method enables a holistic and nuanced model comparison, taking into account the multidimensional aspects of model performance.
 
         - **Priority Metrics:** Assigning weights (default: 5 for prioritized metrics, 1 for others) allows users to emphasize metrics they find most relevant, affecting the composite score calculation.
@@ -802,7 +802,7 @@ def model_tuning_core(
     This function systematically applies grid search, random search, or Bayesian optimization to explore the hyperparameter space of given models. It supports customization of the tuning process through various parameters and outputs the best found configurations.
 
     Parameters:
-    ----------
+    -----------
     x_train : Union[pd.DataFrame, np.ndarray]
         Training feature dataset.
 
@@ -846,12 +846,12 @@ def model_tuning_core(
         Seed used by the random number generator.
 
     Returns:
-    -------
+    --------
     Dict[str, Any]
         A dictionary containing the best models under each provided model name as keys. Values are dictionaries with keys: 'best_model' storing the model object of the best estimator and 'best_score' storing the corresponding score.
 
     Raises:
-    ------
+    -------
     TypeErrors:
         - If 'x_train' is not a pandas DataFrame or NumPy ndarray.
         - If 'y_train' is not a pandas Series or NumPy ndarray.
@@ -876,7 +876,7 @@ def model_tuning_core(
         - If 'n_iter_random' or 'n_iter_bayesian' is set to zero or a negative number.
 
     Notes:
-    -----
+    ------
         - **Integration with Tuning Methods**: This function utilizes scikit-learn's `GridSearchCV` and `RandomizedSearchCV`, along with scikit-optimize's `BayesSearchCV` for hyperparameter tuning. The choice of tuning method (`grid`, `random`, or `bayesian`) depends on the entries provided in the `priority_tuners` list.
 
         - **Skipping Repeated Combinations**: For Bayesian optimization (`BayesSearchCV`), the function is designed to skip evaluations of previously tested parameter combinations. This approach aims to enhance the efficiency and performance of the tuning process by reducing redundant computations.
@@ -1115,7 +1115,7 @@ def model_recommendation_core_inference(
 
 
     Parameters:
-    ----------
+    -----------
     df : pd.DataFrame
         DataFrame containing the data to fit the models.
 
@@ -1136,13 +1136,13 @@ def model_recommendation_core_inference(
 
 
     Returns:
-    -------
+    --------
     Dict[str, Any]
         A dictionary with model names as keys and dictionaries as values. Each dictionary contains the 'model' object, 'metrics' dictionary with performance metrics, and potentially 'summary' if verbose > 1.
 
 
     Raises:
-    ------
+    -------
     TypeErrors:
         - If 'df' is not a pandas DataFrame, ensuring that the input data structure is correct for model fitting.
         - If 'formula' is not a string, verifying that the model formula is correctly specified as a string.
@@ -1158,7 +1158,7 @@ def model_recommendation_core_inference(
 
 
     Examples:
-    --------
+    ---------
     >>> import datasafari
     >>> import numpy as np
     >>> import pandas as pd
@@ -1322,7 +1322,6 @@ def predict_ml(
         datetime_transformer: Callable[[pd.DataFrame], pd.DataFrame] = None
 ) -> Dict[str, Any]:
     r"""
-
     **Streamline the entire process of data preprocessing, model selection, and tuning, delivering optimal model recommendations based on the data provided.**
 
     Depending on the inputs, this function can either perform statistical inference or predictive model selection using machine learning.
@@ -1525,7 +1524,7 @@ def predict_ml(
 
 
     Inference Pipeline Examples
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     **Simple Inference Example Using a Statistical Model:**
 

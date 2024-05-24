@@ -71,7 +71,7 @@ def evaluate_dtype(
         - If the `output` string does not correspond to one of the valid options.
 
     Examples:
-    --------
+    ---------
     Create an example DataFrame with mixed data types:
 
     >>> import datasafari

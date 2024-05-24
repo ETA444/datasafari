@@ -16,7 +16,7 @@ def evaluate_contingency_table(
     This function assesses the contingency table's suitability for chi-square tests, exact tests (Barnard's, Boschloo's, and Fisher's), and the application of Yates' correction within the chi-square test. It examines expected and observed frequencies, sample size, and table shape to guide the choice of appropriate statistical tests for hypothesis testing.
 
     Parameters:
-    ----------
+    -----------
     contingency_table : pd.DataFrame
         A contingency table generated from two categorical variables.
 
@@ -34,14 +34,14 @@ def evaluate_contingency_table(
             - ``False`` Output is not printed.
 
     Returns:
-    -------
+    --------
     dict or tuple
         Depending on the 'pipeline' parameter:
             - ``dict`` If pipeline=False, returns a dictionary with keys as test names ('chi2_contingency', 'yates_correction', 'barnard_exact', 'boschloo_exact', 'fisher_exact') and values as boolean indicators of their viability.
             - ``tuple`` If pipeline=True, returns a tuple of boolean values in the order: (chi2_viability, yates_correction_viability, barnard_viability, boschloo_viability, fisher_viability).
 
     Raises:
-    ------
+    -------
     TypeErrors:
         - If `contingency_table` is not a pandas DataFrame.
         - If `min_sample_size_yates` is not an integer.

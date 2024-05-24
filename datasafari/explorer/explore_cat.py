@@ -95,7 +95,7 @@ def explore_cat(
     >>> print(result_str)
 
     Notes:
-    -----
+    ------
     The ``'entropy'`` method provides a quantitative measure of the unpredictability or diversity within each specified categorical column, calculated as outlined in the documentation for 'calculate_entropy'. High entropy values indicate a more uniform distribution of categories, suggesting no single category overwhelmingly dominates.
     """
 

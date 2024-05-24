@@ -25,7 +25,7 @@ def hypothesis_predictor_core_n(
     This function performs hypothesis testing between groups defined by a categorical variable for a numerical target variable. It selects the appropriate statistical test based on the normality of the data and the homogeneity of variances across groups, utilizing t-tests, Mann-Whitney U tests, ANOVA, or Kruskal-Wallis tests as appropriate.
 
     Parameters:
-    ----------
+    -----------
     df : pd.DataFrame
         The DataFrame containing the data to be analyzed.
     target_variable : str
@@ -38,12 +38,12 @@ def hypothesis_predictor_core_n(
         A boolean indicating if the groups have equal variances.
 
     Returns:
-    -------
+    --------
     dict
         A dictionary containing the results of the hypothesis test, including test statistics, p-values, conclusions regarding the differences between groups, the name of the test used, and the assumptions tested (normality and equal variances).
 
     Raises:
-    ------
+    -------
     TypeErrors:
         - If `df` is not a pandas DataFrame.
         - If `target_variable` or `grouping_variable` is not a string.
@@ -141,7 +141,7 @@ def hypothesis_predictor_core_c(
     This function assesses the association between two categorical variables by applying a series of statistical tests. It evaluates the data's suitability for different tests based on the shape of the contingency table, the minimum expected and observed frequencies, and specific methodological preferences, including Yates' correction for chi-square tests and alternatives for exact tests.
 
     Parameters:
-    ----------
+    -----------
     contingency_table : pd.DataFrame
         A contingency table of the two categorical variables.
     chi2_viability : bool
@@ -158,12 +158,12 @@ def hypothesis_predictor_core_c(
         Specifies the alternative hypothesis for exact tests. Options include ``'two-sided'``, ``'less'``, or ``'greater'``.
 
     Returns:
-    -------
+    --------
     dict
         A comprehensive dictionary detailing the outcomes of the statistical tests performed, including test names, statistics, p-values, and conclusions about the association between the categorical variables. The dictionary also contains specific details about the application of Yates' correction and the chosen alternative hypothesis for exact tests.
 
     Raises:
-    ------
+    -------
     TypeErrors:
         - If `contingency_table` is not a pandas DataFrame.
         - If `chi2_viability`, `barnard_viability`, `boschloo_viability`, `fisher_viability`, or `yates_correction_viability` is not a boolean.
@@ -314,7 +314,7 @@ def predict_hypothesis(
 
 
     Parameters:
-    ----------
+    -----------
     df : pd.DataFrame
         The DataFrame containing the data for hypothesis testing.
 
