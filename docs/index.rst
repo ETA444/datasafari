@@ -64,8 +64,6 @@ DataSafari simplifies complex data science tasks into straightforward, powerful 
 
    Installation Guide <installation>
    General Index <genindex>
-   Module Index <modindex>
-   Search Page <search>
    Contact <contact>
 
 |
