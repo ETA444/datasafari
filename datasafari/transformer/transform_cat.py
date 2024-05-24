@@ -20,7 +20,7 @@ def transform_cat(
         target_variable: Optional[str] = None
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
-    **Transforms categorical variables in a DataFrame using various encoding and cleaning methods.**
+    **Transform categorical variables in a DataFrame through a range of encoding options and basic to advanced machine learning-based methods for uniform data cleaning.**
 
     This is a versatile tool designed for comprehensive transformation and encoding of categorical data in a DataFrame. It accommodates everything from simple text standardization to sophisticated category consolidation using ML and various encoding schemes, catering to both nominal and ordinal data.
 
