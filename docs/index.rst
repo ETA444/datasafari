@@ -20,7 +20,7 @@ DataSafari simplifies complex data science tasks into straightforward, powerful 
 
    Home <self>
    Quick Start <start>
-   Modules Overview <glance>
+   Subpackages Overview <glance>
 
 .. toctree::
    :maxdepth: 1
