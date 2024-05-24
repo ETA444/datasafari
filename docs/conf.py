@@ -30,13 +30,17 @@ import datasafari
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.napoleon',
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.viewcode',
+              'sphinx.ext.napoleon',
+              'sphinx.ext.autosummary',
               # 'sphinx_rtd_light_dark',  # Removed due to lack of support for sphinx > 7, replaced by furo theme
               'sphinx_favicon',  # Adds favicon functionality: https://pypi.org/project/sphinx-favicon/
               # 'sphinxext.opengraph',  # Adds metadata functionality: https://pypi.org/project/sphinxext-opengraph/
               'sphinx_prompt',  # Adds unselectable prompt functionality: https://pypi.org/project/sphinx-prompt/
               'sphinx_copybutton',  # Adds copy button to code blocks: https://pypi.org/project/sphinx-copybutton/
-              'sphinx.ext.mathjax' # Adds formula rendering functionality
+              'sphinx.ext.mathjax',  # Adds formula rendering functionality
+              'sphinxemoji.sphinxemoji'  # Adds emoji functionality: https://pypi.org/project/sphinxemoji/
               ]
 
 # Make function signature parameters parse one a new line
