@@ -17,6 +17,7 @@ DataSafari simplifies complex data science tasks into straightforward, powerful 
 .. toctree::
    :maxdepth: 1
    :hidden:
+
    Quick Start <start>
    Modules Overview <glance>
 
@@ -63,7 +64,7 @@ DataSafari simplifies complex data science tasks into straightforward, powerful 
    Installation Guide <installation>
    General Index <genindex>
    Module Index <modindex>
-   Search Page<search>
+   Search Page <search>
 
 .. toctree::
    :maxdepth: 1
