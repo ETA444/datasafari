@@ -1611,7 +1611,6 @@ def predict_ml(
         1. **Determination of Task Type:** First, the function identifies whether the analysis involves regression or classification. This categorization is based on the datatype of the target variable specified in the formula:
             - **Regression:** Applied if the target variable is numerical.
             - **Classification:** Applied if the target variable is categorical.
-            This step ensures that the appropriate statistical models and metrics are selected for the analysis.
 
         2. **Model Selection:** Based on the task type determined in the previous step, the function selects from a pre-defined set of models suitable for either regression or classification:
             - Models and their respective functions are predefined in the `models_classification_inference` or `models_regression_inference` dictionaries, depending on whether the task is classification or regression.

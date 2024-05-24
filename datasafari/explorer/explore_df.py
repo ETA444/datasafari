@@ -41,7 +41,7 @@ def explore_df(
             - ``'print'`` Prints the results to the console.
             - ``'return'`` Returns the results as a string.
 
-    **kwargs : dict
+    ``**kwargs`` : dict
         Additional arguments for pandas methods (e.g., ``'percentiles'`` for ``'desc'``). You can specify arguments applicable when 'method' is set to ``'all'``, which will be appropriately directed to each pandas method used. Note that the ``'buf'`` parameter in the ``'info'`` method is disabled and cannot be used.
 
     Return:
