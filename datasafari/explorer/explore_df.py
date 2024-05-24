@@ -20,7 +20,7 @@ def explore_df(
         **kwargs
 ) -> Optional[str]:
     """
-    **Gain a quick birds-eye view of a dataframe by checking summary statistics, NAs, data types and more.**
+    **Explore a DataFrame and gain a birds-eye view of summary statistics, NAs, data types and more.**
 
     The function combines the most common data exploration functions in one convenient output in your console.
 

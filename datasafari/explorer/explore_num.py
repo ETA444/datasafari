@@ -26,7 +26,7 @@ def explore_num(
         threshold_z: int = 3
 ) -> Optional[Tuple[Dict, pd.DataFrame]]:
     """
-    **Analyze numerical variables in a DataFrame for distribution characteristics, outlier detection using multiple methods (Z-score, IQR, Mahalanobis), normality tests, skewness, kurtosis, correlation analysis, and multicollinearity detection.**
+    **Explore numerical variables in a DataFrame and gain insights on distribution characteristics, outlier detection using multiple methods (Z-score, IQR, Mahalanobis), normality tests, skewness, kurtosis, correlation analysis, and multicollinearity detection.**
 
     Parameters:
     -----------
