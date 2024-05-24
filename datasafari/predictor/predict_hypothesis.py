@@ -303,7 +303,7 @@ def predict_hypothesis(
         yates_min_sample_size: int = 40
 ) -> dict:
     """
-    **Automatically selects and performs the appropriate hypothesis test based on input variables from a DataFrame.**
+    **Conduct the optimal hypothesis test on a DataFrame, tailoring the approach based on the variable types and automating the testing prerequisites and analyses, outputting test results and interpretation.**
 
     This function simplifies hypothesis testing to requiring only two variables and a DataFrame, intelligently determining the test type, assessing necessary assumptions, and providing detailed test outcomes and conclusions.
 

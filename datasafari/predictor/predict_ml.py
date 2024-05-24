@@ -1323,7 +1323,7 @@ def predict_ml(
 ) -> Dict[str, Any]:
     r"""
 
-    **Automates and simplifies data preprocessing, model selection and model tuning, culminating in a recommendation of the best model given the user's data.**
+    **Streamline the entire process of data preprocessing, model selection, and tuning, delivering optimal model recommendations based on the data provided.**
 
     Depending on the inputs, this function can either perform statistical inference or predictive model selection using machine learning.
         - **Machine Learning Pipeline**: Focuses on predictive model selection and hyperparameter tuning using scikit-learn. It includes preprocessing (optional), model recommendation based on specified metrics, and tuning using grid search, random search, or Bayesian optimization.
