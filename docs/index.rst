@@ -71,31 +71,22 @@ Machine Learning? You guessed it.
     # Find the best models for your data
     best_models = predictor.predict_ml(df_ml, x_cols, y_col)
 
-Explore the Documentation
--------------------------
-Dive deeper into what Data Safari can do for your data analysis tasks:
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Table of Contents
+**How DataSafari Simplifies Machine Learning Model Selection:**
 
-   introduction
-   installation
-   quickstart
-   examples
+- **Tailored Data Preprocessing**: The function automatically processes various types of data (numerical, categorical, text, datetime), preparing them optimally for machine learning.
+    - Numerical data might be scaled or normalized.
+    - Categorical data can be encoded.
+    - Text data might be vectorized using techniques suitable for the analysis.
 
-Subpackages
------------
-Data Safari is organized into several subpackages, each tailored to specific data science tasks:
+- **Intelligent Model Evaluation:** The function evaluates a variety of models using a composite score that synthesizes performance across multiple metrics, taking into account the multidimensional aspects of model performance.
+    - **Composite Score Calculation**: Scores for each metric are weighted according to specified priorities by the user, with lower weights assigned to non-priority metrics (e.g. RMSE over MAE). This composite score serves as a holistic measure of model performance, ensuring that the models recommended are not just good in one aspect but are robust across multiple criteria.
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Subpackages Overview
+- **Automated Hyperparameter Tuning:** Once the top models are identified based on the composite score, the pipeline employs techniques like grid search, random search, or Bayesian optimization to fine-tune the models.
+    - **Output of Tuned Models**: The best configurations for the models are output, along with their performance metrics, allowing users to make informed decisions about which models to deploy based on robust, empirically derived data.
 
-   explorers
-   transformers
-   evaluators
-   predictors
+- **Customization Options & Sensible Defaults:** Users can define custom hyperparameter grids, select specific tuning algorithms, prioritize models, tailor data preprocessing, and prioritize metrics.
+    - **Accessibility**: Every part of the process is in the hands of the user, but sensible defaults are provided for ultimate simplicity of use, which is the approach for ``datasafari`` in general.
 
 Explorers
 ---------
