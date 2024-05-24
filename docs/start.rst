@@ -1,10 +1,16 @@
 Quick Start
 -----------
-Getting started with DataSafari is as easy as installing the package and running a few lines of code:
+Getting started with DataSafari is as easy as installing the package with ``pip``:
 
 .. code-block:: bash
 
     pip install datasafari
+
+Import DataSafari in your Python script:
+
+.. code-block:: python
+
+    import datasafari as ds
 
 |
 
@@ -13,7 +19,7 @@ Hypothesis Testing? One line.
 
 .. code-block:: python
 
-    from datasafari import predictor
+    from datasafari.predictor import predict_hypothesis
     import pandas as pd
     import numpy as np
 
@@ -24,7 +30,7 @@ Hypothesis Testing? One line.
     })
 
     # Perform hypothesis testing
-    results = predictor.predict_hypothesis(df_hypothesis, 'Group', 'Score')
+    results = predict_hypothesis(df_hypothesis, 'Group', 'Score')
 
 
 **How DataSafari Streamlines Hypothesis Testing:**
@@ -48,7 +54,7 @@ Machine Learning? You guessed it.
 
 .. code-block:: python
 
-    from datasafari import predictor
+    from datasafari.predictor import predict_ml
     import pandas as pd
     import numpy as np
 
@@ -62,7 +68,7 @@ Machine Learning? You guessed it.
     y_col = 'Salary'  # Target column
 
     # Find the best models for your data
-    best_models = predictor.predict_ml(df_ml, x_cols, y_col)
+    best_models = predict_ml(df_ml, x_cols, y_col)
 
 
 **How DataSafari Simplifies Machine Learning Model Selection:**
