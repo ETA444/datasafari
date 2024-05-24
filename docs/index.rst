@@ -1,17 +1,22 @@
-Welcome to Data Safari's Documentation!
+Welcome to DataSafari's Documentation!
 =======================================
 
-Data Safari simplifies complex data science tasks into straightforward, powerful commands. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, Data Safari provides all the tools you need in one package.
+DataSafari simplifies complex data science tasks into straightforward, powerful commands. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.
+
+.. _quick-start:
 
 Quick Start
 -----------
-Getting started with Data Safari is as easy as installing the package and running a few lines of code:
+Getting started with DataSafari is as easy as installing the package and running a few lines of code:
 
 .. code-block:: bash
 
     pip install datasafari
 
-**Hypothesis Testing Example:**
+|
+
+Hypothesis Testing? One line.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -20,35 +25,51 @@ Getting started with Data Safari is as easy as installing the package and runnin
     import numpy as np
 
     # Create a sample DataFrame
-    df = pd.DataFrame({
+    df_hypothesis = pd.DataFrame({
         'Group': np.random.choice(['Control', 'Treatment'], size=100),
         'Score': np.random.normal(0, 1, 100)
     })
 
     # Perform hypothesis testing
-    results = predictor.predict_hypothesis(df, 'Group', 'Score')
-    print(results)
+    results = predictor.predict_hypothesis(df_hypothesis, 'Group', 'Score')
 
-- This function intelligently determines the best statistical test based on the data types and distribution:
-  - Automatically identifies whether to perform a T-test, ANOVA, or other relevant tests.
-  - Evaluates assumptions such as normality and homogeneity of variances if needed.
 
-**Machine Learning Model Selection Example:**
+**How DataSafari Streamlines Hypothesis Testing:**
+
+- **Automatic Test Selection**: Depending on the data types, ``predict_hypothesis()`` automatically selects the appropriate test. It uses Chi-square, Fisher's exact test or other exact tests for categorical pairs, and T-tests, ANOVA and others for categorical and numerical combinations, adapting based on group counts, sample size and data distribution.
+
+- **Assumption Verification**: Essential assumptions for the chosen tests are automatically checked.
+    - **Normality**: Normality is verified using tests like Shapiro-Wilk or Anderson-Darling, essential for parametric tests.
+    - **Variance Homogeneity**: Tests such as Levene’s or Bartlett’s are used to confirm equal variances, informing the choice between ANOVA types.
+
+- **Comprehensive Output**:
+    - **Justifications**: Provides comprehensive reasoning on all test choices.
+    - **Test Statistics**: Key quantitative results from the hypothesis test.
+    - **P-values**: Indicators of the statistical significance of the findings.
+    - **Conclusions**: Clear textual interpretations of whether the results support or reject the hypothesis.
+
+|
+
+Machine Learning? You guessed it.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-    # Assuming 'df' is a DataFrame loaded with relevant features and a target variable
-    x_cols = df.columns[:-1]  # Feature columns
-    y_col = df.columns[-1]    # Target column
+    from datasafari import predictor
+    import pandas as pd
+    import numpy as np
 
-    # Run the machine learning pipeline to recommend the best model
-    ml_results = predictor.predict_ml(df, x_cols=x_cols, y_col=y_col)
-    print(ml_results)
+    # Create another sample DataFrame for ML
+    df_ml = pd.DataFrame({
+        'Age': np.random.randint(20, 60, size=100),
+        'Salary': np.random.normal(50000, 15000, size=100),
+        'Experience': np.random.randint(1, 20, size=100)
+    })
+    x_cols = ['Age', 'Experience']  # Feature columns
+    y_col = 'Salary'  # Target column
 
-- The ML pipeline automates the entire process of model selection:
-  - Preprocesses data based on the types of variables.
-  - Evaluates several models and tunes them to find the best performer.
-  - Utilizes a composite score to assess and rank models, ensuring optimal selection.
+    # Find the best models for your data
+    best_models = predictor.predict_ml(df_ml, x_cols, y_col)
 
 Explore the Documentation
 -------------------------
