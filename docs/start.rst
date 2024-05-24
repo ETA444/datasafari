@@ -1,10 +1,12 @@
 Quick Start
 -----------
-Getting started with DataSafari is as easy as installing the package with ``pip``:
+Getting started with DataSafari is straightforward. Install it using pip in your terminal:
 
-.. code-block:: bash
+.. code-block:: console
 
     pip install datasafari
+
+For detailed installation options, including installing from the source, see the :doc:`Installation Guide <installation>`.
 
 Import DataSafari in your Python script:
 
