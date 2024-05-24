@@ -18,6 +18,7 @@ DataSafari simplifies complex data science tasks into straightforward, powerful 
    :maxdepth: 1
    :hidden:
 
+   Home <self>
    Quick Start <start>
    Modules Overview <glance>
 
@@ -65,10 +66,8 @@ DataSafari simplifies complex data science tasks into straightforward, powerful 
    General Index <genindex>
    Module Index <modindex>
    Search Page <search>
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Other
-   :hidden:
-
    Contact <contact>
+
+|
+
+    *Thank you very much for taking an interest in DataSafari.* |:heart:| - George
