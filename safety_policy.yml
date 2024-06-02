@@ -11,12 +11,9 @@ policy:
       - "Proprietary"
 
   exemptions:
-    packages:
-      - Jinja2
-    reasons:
-      - "This package is used in a context where the vulnerability does not pose a security risk for the user."
-    ids:
-      - 70612
+    - package: Jinja2
+      reason: "This package is used in a context where the vulnerability does not pose a security risk for the user."
+      id: 70612
 
 security:
-  ignore-unpinned-requirements: false
+  ignore_unpinned_requirements: false
