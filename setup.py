@@ -49,7 +49,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    description="DataSafari makes exploring, transforming and making predictions with your data simple, logical and potent.",
+    description="DataSafari simplifies complex data science tasks into straightforward, powerful commands. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.",
     install_requires=requirements,
     extras_require={
         'docs': [
@@ -64,13 +64,21 @@ setup(
         'dev': dev_requirements  # include all development dependencies
     },
     license="GNU General Public License v3",
-    long_description=readme + '\n\n' + history,
+    long_description=readme,
+    long_description_content_type="text/markdown",
     include_package_data=True,
-    keywords='datasafari',
+    keywords=[
+        'data science', 'data analysis', 'machine learning', 'data preprocessing',
+        'statistical testing', 'data transformation', 'predictive modeling',
+        'data visualization', 'exploratory data analysis', 'hypothesis testing',
+        'feature engineering', 'model evaluation', 'model tuning', 'data cleaning',
+        'data insights', 'numerical analysis', 'categorical data', 'statistics',
+        'ML automation', 'data workflow', 'data discovery', 'sklearn integration',
+        'statistical inference', 'automated machine learning', 'data exploration'
+    ],
     name='datasafari',
     packages=find_packages(include=['datasafari', 'datasafari.*']),
     test_suite='tests',
-    tests_require=test_requirements,
     url='https://github.com/ETA444/datasafari',
     version='1.0.0',
     zip_safe=False,
