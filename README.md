@@ -140,7 +140,14 @@ best_models = predict_ml(df_ml, x_cols, y_col)
 - **Customization Options & Sensible Defaults:** Users can define custom hyperparameter grids, select specific tuning algorithms, prioritize models, tailor data preprocessing, and prioritize metrics.
     - **Accessibility**: Every part of the process is in the hands of the user, but sensible defaults are provided for ultimate simplicity of use, which is the approach for ``datasafari`` in general.
 
+----
+## License
+
+DataSafari is licensed under the GNU General Public License v3.0. This ensures that all modifications and derivatives of this project remain open-source and freely available under the same terms.
+
 
 ## Contact
 
 Connect with me on [LinkedIn](https://www.linkedin.com/in/georgedreemer) or visit my [website](https://www.georgedreemer.com).
+
+> Thank you very much for taking an interest in DataSafari! :green_heart: - George
