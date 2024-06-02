@@ -290,14 +290,13 @@ def explore_num(
             stats_dict['anderson_stat'].append(anderson_stat.statistic)
 
         # construct df from stats_dict: distribution_df
+        distribution_dfs = []
         for stat, values in stats_dict.items():
-            distribution_df = pd.concat(
-                [distribution_df, pd.DataFrame({numerical_variables[i]: [values[i]] for i in range(len(values))}, index=[stat])]
-            )
+            temp_df = pd.DataFrame({stat: values}, index=numerical_variables)
+            distribution_dfs.append(temp_df)
 
-        # transpose df for easier readability (wide): index is variable name, column is statistic
-        distribution_df = distribution_df.T
-        distribution_df.columns = stats_functions
+        distribution_df = pd.concat(distribution_dfs, axis=1)
+        distribution_df.columns = stats_functions  # ensure the columns are named correctly
         distribution_df.index.name = 'Variable/Statistic'
 
         # appends (continued) #
