@@ -9,7 +9,7 @@ requirements = [
     'numpy',
     'pandas',
     'scikit-learn>=1.4,<1.5',
-    'scikit-optimize==0.10.1',
+    'scikit-optimize>=0.10.1',
     'scipy',
     'matplotlib',
     'seaborn',
