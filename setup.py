@@ -27,7 +27,7 @@ dev_requirements = [
     'twine',
     'cookiecutter',
     'sphinx',
-    'sphinx-furo',
+    'furo',
     'sphinx-favicon',
     'sphinx-prompt',
     'sphinx-copybutton',
