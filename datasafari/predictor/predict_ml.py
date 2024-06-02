@@ -7,7 +7,7 @@ import numpy as np
 from datasafari.evaluator.evaluate_dtype import evaluate_dtype
 from sklearn.base import TransformerMixin
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split, cross_validate, ParameterGrid
+from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, FunctionTransformer
 from sklearn.feature_extraction.text import CountVectorizer
