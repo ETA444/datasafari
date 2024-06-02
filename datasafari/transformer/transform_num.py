@@ -28,69 +28,85 @@ def transform_num(
         bin_map: Optional[Dict[str, List[float]]] = None
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Applies various numerical data transformations to improve machine learning model performance or data analysis.
+    **Transform numerical variables in a DataFrame through operations like standardization, log-transformation, various scalings, winsorization, interaction term creation and more.**
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     df : pd.DataFrame
         The DataFrame containing the numerical data to transform.
+
     numerical_variables : list
         A list of column names in `df` that are numerical and will be transformed.
+
     method : str
-        The transformation method to apply. Valid methods include:
-        - 'standardize': Mean=0, SD=1. Suitable for algorithms sensitive to variable scales.
-        - 'log': Natural logarithm transformation for positively skewed data.
-        - 'normalize': Scales data to a [0, 1] range. Useful for models sensitive to variable scales.
-        - 'quantile': Transforms data to follow a specified distribution, improving statistical analysis.
-        - 'robust': Scales data using the median and quantile range, reducing the influence of outliers.
-        - 'boxcox': Normalizes skewed data, requires positive values.
-        - 'yeojohnson': Similar to Box-Cox but suitable for both positive and negative values.
-        - 'power': Raises numerical variables to specified powers for distribution adjustment.
-        - 'winsorization': Caps extreme values to reduce impact of outliers.
-        - 'interaction': Creates new features by multiplying pairs of numerical variables.
-        - 'polynomial': Generates polynomial features up to a specified degree.
-        - 'bin': Groups numerical data into bins or intervals.
-    output_distribution : str, optional
-        Specifies the output distribution for 'quantile' method ('normal' or 'uniform'). Default is 'normal'.
-    n_quantiles : int, optional
-        Number of quantiles to use for 'quantile' method. Default is 1000.
-    random_state : int, optional
-        Random state for 'quantile' method. Default is 444.
-    with_centering : bool, optional
-        Whether to center data before scaling for 'robust' method. Default is True.
-    quantile_range : tuple, optional
-        Quantile range used for 'robust' method. Default is (25.0, 75.0).
-    power : float, optional
-        The power to raise each numerical variable for 'power' method. Default is None.
-    power_map : dict, optional
-        A dictionary mapping variables to their respective powers for 'power' method. Default is None.
-    lower_percentile : float, optional
-        Lower percentile for 'winsorization'. Default is 0.01.
-    upper_percentile : float, optional
-        Upper percentile for 'winsorization'. Default is 0.99.
-    winsorization_map : dict, optional
-        A dictionary specifying winsorization bounds per variable. Default is None.
-    interaction_pairs : list, optional
-        List of tuples specifying pairs of variables for creating interaction terms. Default is None.
-    degree : int, optional
+        The transformation method to apply.
+            - ``'standardize'`` Mean=0, SD=1. Suitable for algorithms sensitive to variable scales.
+            - ``'log'`` Natural logarithm transformation for positively skewed data.
+            - ``'normalize'`` Scales data to a [0, 1] range. Useful for models sensitive to variable scales.
+            - ``'quantile'`` Transforms data to follow a specified distribution, improving statistical analysis.
+            - ``'robust'`` Scales data using the median and quantile range, reducing the influence of outliers.
+            - ``'boxcox'`` Normalizes skewed data, requires positive values.
+            - ``'yeojohnson'`` Similar to Box-Cox but suitable for both positive and negative values.
+            - ``'power'`` Raises numerical variables to specified powers for distribution adjustment.
+            - ``'winsorization'`` Caps extreme values to reduce impact of outliers.
+            - ``'interaction'`` Creates new features by multiplying pairs of numerical variables.
+            - ``'polynomial'`` Generates polynomial features up to a specified degree.
+            - ``'bin'`` Groups numerical data into bins or intervals.
+
+    output_distribution : str, optional, default: 'normal'
+        Specifies the output distribution for 'quantile' method ('normal' or 'uniform').
+
+    n_quantiles : int, optional, default: 1000
+        Number of quantiles to use for 'quantile' method.
+
+    random_state : int, optional, default: 444
+        Random state for 'quantile' method.
+
+    with_centering : bool, optional, default: True
+        Whether to center data before scaling for 'robust' method.
+
+    quantile_range : tuple, optional, default: (25.0, 75.0)
+        Quantile range used for 'robust' method.
+
+    power : float, optional, default: None
+        The power to raise each numerical variable for 'power' method.
+
+    power_map : dict, optional, default: None
+        A dictionary mapping variables to their respective powers for 'power' method.
+
+    lower_percentile : float, optional, default: 0.01
+        Lower percentile for 'winsorization'.
+
+    upper_percentile : float, optional, default: 0.99
+        Upper percentile for 'winsorization'.
+
+    winsorization_map : dict, optional, default: None
+        A dictionary specifying winsorization bounds per variable.
+
+    interaction_pairs : list, optional, default: None
+        List of tuples specifying pairs of variables for creating interaction terms.
+
+    degree : int, optional, default: None
         The degree for polynomial features in 'polynomial' method. Default is None.
-    degree_map : dict, optional
-        A dictionary mapping variables to their respective degrees for 'polynomial' method. Default is None.
-    bins : int, optional
-        The number of equal-width bins to use for 'bin' method. Default is None.
-    bin_map : dict, optional
-        A dictionary specifying custom binning criteria per variable for 'bin' method. Default is None.
 
-    Returns
+    degree_map : dict, optional, default: None
+        A dictionary mapping variables to their respective degrees for 'polynomial' method.
+
+    bins : int, optional, default: None
+        The number of equal-width bins to use for 'bin' method.
+
+    bin_map : dict, optional, default: None
+        A dictionary specifying custom binning criteria per variable for 'bin' method.
+
+    Returns:
+    --------
+    Tuple[pd.DataFrame, pd.DataFrame]
+        - Original DataFrame with transformed numerical variables.
+        - A DataFrame containing only the transformed columns.
+
+    Raises:
     -------
-    transformed_df : pd.DataFrame
-        The DataFrame with transformed numerical variables.
-    transformed_columns : pd.DataFrame
-        A DataFrame containing only the transformed columns.
-
-    Raises
-    ------
-    TypeError
+    TypeErrors:
         - If `df` is not a pandas DataFrame.
         - If `numerical_variables` is not a list.
         - If `method` is not a string.
@@ -105,12 +121,13 @@ def transform_num(
         - If `interaction_pairs` is not a list of tuples, or tuples are not of length 2.
         - If `degree` is provided but not an integer.
         - If `bins` is provided but not an integer.
-    ValueError
-        - If the input DataFrame is empty, ensuring that there is data available for model fitting.
+
+    ValueErrors:
+        - If the input DataFrame is empty.
         - If 'numerical_variables' list is empty.
         - If variables provided through 'numerical_variables' are not numerical variables.
         - If any of the specified `numerical_variables` are not found in the DataFrame's columns.
-        - If the `method` specified is not one of the valid methods: 'standardize', 'log', 'normalize', 'quantile', 'robust', 'boxcox', 'yeojohnson', 'power', 'winsorization', 'interaction', 'polynomial', 'bin'.
+        - If the `method` specified is not one of the valid methods.
         - If `output_distribution` is not 'normal' or 'uniform' for the 'quantile' method.
         - If `n_quantiles` is not a positive integer for the 'quantile' method.
         - If `quantile_range` does not consist of two float values in the range 0 to 1 for the 'robust' method.
@@ -122,57 +139,78 @@ def transform_num(
         - If specified keys in `power_map`, `winsorization_map`, `degree_map`, or `bin_map` do not match any column in the DataFrame.
         - If the `interaction_pairs` specified do not consist of columns that exist in the DataFrame.
 
-    Examples
-    --------
+    Examples:
+    ---------
+    Import necessary libraries and generate a DataFrame for examples:
+
+    >>> import datasafari
     >>> import numpy as np
     >>> import pandas as pd
-    >>> df = pd.DataFrame({'Feature1': np.random.normal(0, 1, 100), 'Feature2': np.random.exponential(1, 100), 'Feature3': np.random.randint(1, 100, 100)})
+    >>> df = pd.DataFrame({
+    ...     'Feature1': np.random.normal(0, 1, 100),
+    ...     'Feature2': np.random.exponential(1, 100),
+    ...     'Feature3': np.random.randint(1, 100, 100)
+    ... })
     >>> num_cols = ['Feature1', 'Feature2', 'Feature3']
 
-    # Standardize
+    Standardize:
+
     >>> standardized_data, standardized_cols = transform_num(df, num_cols, method='standardize')
 
-    # Log transformation
+    Log transformation:
+
     >>> log_data, log_cols = transform_num(df, num_cols, method='log')
 
-    # Normalize
+    Normalize:
+
     >>> normalized_data, normalized_cols = transform_num(df, num_cols, method='normalize')
 
-    # Quantile transformation
+    Quantile transformation:
+
     >>> quant_transformed_data, quant_transformed_cols = transform_num(df, num_cols, method='quantile', output_distribution='normal', n_quantiles=1000, random_state=444)
 
-    # Robust scaling
+    Robust scaling:
+
     >>> robust_transformed_df, robust_transformed_columns = transform_num(df, num_cols, method='robust', with_centering=True, quantile_range=(25.0, 75.0))
 
-    # Box-Cox transformation
+    Box-Cox transformation:
+
     >>> boxcox_transformed_df, boxcox_transformed_columns = transform_num(df, num_cols, method='boxcox')
 
-    # Yeo-Johnson transformation
+    Yeo-Johnson transformation:
+
     >>> yeojohnson_transformed_df, yeojohnson_transformed_columns = transform_num(df, num_cols, method='yeojohnson')
 
-    # Power transformation using a uniform power
+    Power transformation using a uniform power:
+
     >>> power_transformed_df1, power_transformed_columns1 = transform_num(df, num_cols, method='power', power=2)
 
-    # Power transformation using a power map
+    Power transformation using a power map:
+
     >>> power_map = {'Feature1': 2, 'Feature2': 3, 'Feature3': 4}
     >>> power_transformed_df2, power_transformed_columns2 = transform_num(df, num_cols, method='power', power_map=power_map)
 
-    # Winsorization with global thresholds
+    Winsorization with global thresholds:
+
     >>> wins_transformed_df1, wins_transformed_columns1 = transform_num(df, num_cols, method='winsorization', lower_percentile=0.01, upper_percentile=0.99)
 
-    # Winsorization using a winsorization map
+    Winsorization using a winsorization map:
+
     >>> win_map = {'Feature1': (0.01, 0.99), 'Feature2': (0.05, 0.95), 'Feature3': [0.10, 0.90]}
     >>> wins_transformed_df2, wins_transformed_columns2 = transform_num(df, num_cols, method='winsorization', winsorization_map=win_map)
 
-    # Interaction terms
+    Interaction terms:
+
     >>> interactions = [('Feature1', 'Feature2'), ('Feature2', 'Feature3')]
     >>> inter_transformed_df, inter_columns = transform_num(df, num_cols, method='interaction', interaction_pairs=interactions)
 
-    # Polynomial features with a degree map
+    Polynomial features with a degree map:
+
     >>> degree_map = {'Feature1': 2, 'Feature2': 3}
     >>> poly_transformed_df, poly_features = transform_num(df, ['Feature1', 'Feature2'], method='polynomial', degree_map=degree_map)
 
-    # Binning with a bin map
+    Binning with a bin map:
+
     >>> bin_map = {'Feature2': {'bins': 5}, 'Feature3': {'edges': [1, 20, 40, 60, 80, 100]}}
     >>> bin_transformed_df, binned_columns = transform_num(df, ['Feature2', 'Feature3'], method='bin', bin_map=bin_map)
     """
@@ -264,7 +302,7 @@ def transform_num(
     # Check if variables are numerical
     numerical_types = evaluate_dtype(df, numerical_variables, output='list_n')
     if not all(numerical_types):
-        raise ValueError(f"transform_num(): The 'numerical_variables' list must contain only names of numerical variables.")
+        raise ValueError("transform_num(): The 'numerical_variables' list must contain only names of numerical variables.")
 
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in numerical_variables if var not in df.columns]
@@ -346,11 +384,11 @@ def transform_num(
 
     # Main Function #
     if method == 'standardize':
-        print(f"< STANDARDIZING DATA >")
-        print(f" This method centers the data around mean 0 with a standard deviation of 1, enhancing model performance and stability.")
-        print(f"  ✔ Standardizes each numerical variable to have mean=0 and variance=1.")
-        print(f"  ✔ Essential preprocessing step for many machine learning algorithms.\n")
-        print(f"✎ Note: Standardization is applied only to the specified numerical variables.\n")
+        print("< STANDARDIZING DATA >")
+        print(" This method centers the data around mean 0 with a standard deviation of 1, enhancing model performance and stability.")
+        print("  ✔ Standardizes each numerical variable to have mean=0 and variance=1.")
+        print("  ✔ Essential preprocessing step for many machine learning algorithms.\n")
+        print("✎ Note: Standardization is applied only to the specified numerical variables.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -374,11 +412,11 @@ def transform_num(
         return transformed_df, standardized_columns
 
     if method.lower() == 'log':
-        print(f"< LOG TRANSFORMATION >")
-        print(f" This method applies a natural logarithm transformation to positively skewed data.")
-        print(f"  ✔ Helps to stabilize variance and make the data more normally distributed.")
-        print(f"  ✔ Particularly useful for data with a heavy right tail (positively skewed).\n")
-        print(f"✎ Note: Log transformation is applied only to specified numerical variables. Zero or negative values in the data can cause issues and will skip those columns.\n")
+        print("< LOG TRANSFORMATION >")
+        print(" This method applies a natural logarithm transformation to positively skewed data.")
+        print("  ✔ Helps to stabilize variance and make the data more normally distributed.")
+        print("  ✔ Particularly useful for data with a heavy right tail (positively skewed).\n")
+        print("✎ Note: Log transformation is applied only to specified numerical variables. Zero or negative values in the data can cause issues and will skip those columns.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -414,12 +452,12 @@ def transform_num(
         return transformed_df, log_transformed_columns
 
     if method.lower() == 'normalize':
-        print(f"< NORMALIZATION TRANSFORMATION >")
-        print(f" This method scales numerical variables to a [0, 1] range, making them suitable for models sensitive to variable scales.")
-        print(f"  ✔ Adjusts each feature to a [0, 1] scale based on its minimum and maximum values.")
-        print(f"  ✔ Enhances model performance by ensuring numerical variables are on a similar scale.")
-        print(f"✎ Note: Ensure data is clean and outliers are handled for optimal results.\n")
-        print(f"☻ Tip: Use `explore_num()` for data inspection and outlier detection before applying normalization.\n")
+        print("< NORMALIZATION TRANSFORMATION >")
+        print(" This method scales numerical variables to a [0, 1] range, making them suitable for models sensitive to variable scales.")
+        print("  ✔ Adjusts each feature to a [0, 1] scale based on its minimum and maximum values.")
+        print("  ✔ Enhances model performance by ensuring numerical variables are on a similar scale.")
+        print("✎ Note: Ensure data is clean and outliers are handled for optimal results.\n")
+        print("☻ Tip: Use `explore_num()` for data inspection and outlier detection before applying normalization.\n")
 
         # initialize essentials
         transformed_df = df.copy()
@@ -443,11 +481,11 @@ def transform_num(
         return transformed_df, normalized_columns
 
     if method.lower() == 'quantile':
-        print(f"< QUANTILE TRANSFORMATION >")
+        print("< QUANTILE TRANSFORMATION >")
         print(f" This method maps the data to a '{output_distribution}' distribution and n_quantiles = {n_quantiles}. Random state set to {random_state}")
         print(f"  ✔ Transforms skewed or outlier-affected data to follow a standard {'normal' if output_distribution == 'normal' else 'uniform'} distribution, improving statistical analysis and ML model accuracy.")
         print(f"  ✔ Utilizes {n_quantiles} quantiles to finely approximate the empirical distribution, capturing the detailed data structure while balancing computational efficiency.\n")
-        print(f"☻ Tip: The choice of 1000 quantiles as a default provides a good compromise between detailed distribution mapping and practical computational demands. Adjust as needed based on dataset size and specificity.\n")
+        print("☻ Tip: The choice of 1000 quantiles as a default provides a good compromise between detailed distribution mapping and practical computational demands. Adjust as needed based on dataset size and specificity.\n")
 
         # initialize the DataFrame to work with
         transformed_df = df.copy()
@@ -472,10 +510,10 @@ def transform_num(
         return transformed_df, quantile_transformed_columns
 
     if method.lower() == 'robust':
-        print(f"< ROBUST SCALING TRANSFORMATION >")
-        print(f" This method scales your data by removing the median and scaling according to the quantile range.")
-        print(f"  ✔ Targets data with outliers by using median and quantiles, reducing the influence of extreme values.")
-        print(f"  ✔ Centers and scales data to be robust against outliers, improving model performance on skewed data.")
+        print("< ROBUST SCALING TRANSFORMATION >")
+        print(" This method scales your data by removing the median and scaling according to the quantile range.")
+        print("  ✔ Targets data with outliers by using median and quantiles, reducing the influence of extreme values.")
+        print("  ✔ Centers and scales data to be robust against outliers, improving model performance on skewed data.")
         print(f"✎ Note: With centering is {'enabled' if with_centering else 'disabled'}. Adjust `with_centering` as needed (provide bool).\n")
         print(f"☻ Tip: The quantile range is set to {quantile_range}. You can adjust it based on your data's distribution.\n")
 
@@ -502,11 +540,11 @@ def transform_num(
         return transformed_df, robust_scaled_columns
 
     if method.lower() == 'boxcox':
-        print(f"< BOX-COX TRANSFORMATION >")
-        print(f" This method applies the Box-Cox transformation to numerical variables to normalize their distribution.")
-        print(f"  ✔ Transforms skewed data to closely approximate a normal distribution.")
-        print(f"  ✔ Automatically finds and applies the optimal transformation parameter (lambda) for each variable.\n")
-        print(f"✎ Note: Box-Cox transformation requires all data to be positive. Columns with zero or negative values will be skipped.\n")
+        print("< BOX-COX TRANSFORMATION >")
+        print(" This method applies the Box-Cox transformation to numerical variables to normalize their distribution.")
+        print("  ✔ Transforms skewed data to closely approximate a normal distribution.")
+        print("  ✔ Automatically finds and applies the optimal transformation parameter (lambda) for each variable.\n")
+        print("✎ Note: Box-Cox transformation requires all data to be positive. Columns with zero or negative values will be skipped.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -542,10 +580,10 @@ def transform_num(
         return transformed_df, boxcox_transformed_columns
 
     if method.lower() == 'yeojohnson':
-        print(f"< YEO-JOHNSON TRANSFORMATION >")
-        print(f" This method transforms data to closely approximate a normal distribution, applicable to both positive and negative values.")
-        print(f"  ✔ Stabilizes variance and normalizes distribution.")
-        print(f"  ✔ Suitable for a wide range of data, including zero and negative values.\n")
+        print("< YEO-JOHNSON TRANSFORMATION >")
+        print(" This method transforms data to closely approximate a normal distribution, applicable to both positive and negative values.")
+        print("  ✔ Stabilizes variance and normalizes distribution.")
+        print("  ✔ Suitable for a wide range of data, including zero and negative values.\n")
 
         # initialize the DataFrame to work with
         transformed_df = df.copy()
@@ -571,12 +609,12 @@ def transform_num(
         return transformed_df, yeojohnson_transformed_columns
 
     if method.lower() == 'power' and (power is not None or power_map is not None):
-        print(f"< POWER TRANSFORMATION >")
-        print(f" This method raises numerical variables to specified powers, allowing for precise data distribution adjustments.")
-        print(f"  ✔ Individual powers can be set per variable using a 'power_map' for targeted transformations.")
-        print(f"  ✔ Alternatively, a single 'power' value applies uniformly to all specified numerical variables.")
-        print(f"  ✔ Facilitates skewness correction and distribution normalization to improve statistical analysis and ML model performance.\n")
-        print(f"☻ Tip: A power of 0.5 (square root) often works well for right-skewed data, while a square (power of 2) can help with left-skewed data. Choose the power that best fits your data characteristics.\n")
+        print("< POWER TRANSFORMATION >")
+        print(" This method raises numerical variables to specified powers, allowing for precise data distribution adjustments.")
+        print("  ✔ Individual powers can be set per variable using a 'power_map' for targeted transformations.")
+        print("  ✔ Alternatively, a single 'power' value applies uniformly to all specified numerical variables.")
+        print("  ✔ Facilitates skewness correction and distribution normalization to improve statistical analysis and ML model performance.\n")
+        print("☻ Tip: A power of 0.5 (square root) often works well for right-skewed data, while a square (power of 2) can help with left-skewed data. Choose the power that best fits your data characteristics.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -599,7 +637,7 @@ def transform_num(
 
         print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
         print(f"✔ Dataframe with only the power transformed columns:\n{power_transformed_columns.head()}\n")
-        print(f"☻ HOW TO: Apply this transformation using `transformed_df, power_transformed_columns = transform_num(your_df, your_numerical_variables, method='power', power_map=your_power_map)`.\n")
+        print("☻ HOW TO: Apply this transformation using `transformed_df, power_transformed_columns = transform_num(your_df, your_numerical_variables, method='power', power_map=your_power_map)`.\n")
 
         # sanity check
         print("< SANITY CHECK >")
@@ -610,9 +648,9 @@ def transform_num(
         return transformed_df, power_transformed_columns
 
     if method.lower() == 'winsorization' and (lower_percentile is not None and upper_percentile is not None) or winsorization_map is not None:
-        print(f"< WINSORIZATION TRANSFORMATION >")
-        print(f" This method caps extreme values in the data to reduce the impact of outliers.")
-        print(f"✎ Note: Specify `lower_percentile` and `upper_percentile` for all variables, or use `winsorization_map` for variable-specific thresholds.\n")
+        print("< WINSORIZATION TRANSFORMATION >")
+        print(" This method caps extreme values in the data to reduce the impact of outliers.")
+        print("✎ Note: Specify `lower_percentile` and `upper_percentile` for all variables, or use `winsorization_map` for variable-specific thresholds.\n")
 
         # initialize objects
         transformed_df = df.copy()
@@ -648,11 +686,11 @@ def transform_num(
         return transformed_df, winsorized_columns
 
     if method.lower() == 'interaction':
-        print(f"< INTERACTION TERMS TRANSFORMATION >")
-        print(f" This method creates new features by multiplying together pairs of numerical variables.")
-        print(f"  ✔ Captures the synergistic effects between variables that may impact the target variable.")
-        print(f"  ✔ Can unveil complex relationships not observable through individual variables alone.\n")
-        print(f"✎ Note: Specify pairs of variables using 'interaction_pairs', which is a list of tuples, where tuples are variable pairs.\n")
+        print("< INTERACTION TERMS TRANSFORMATION >")
+        print(" This method creates new features by multiplying together pairs of numerical variables.")
+        print("  ✔ Captures the synergistic effects between variables that may impact the target variable.")
+        print("  ✔ Can unveil complex relationships not observable through individual variables alone.\n")
+        print("✎ Note: Specify pairs of variables using 'interaction_pairs', which is a list of tuples, where tuples are variable pairs.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -684,11 +722,11 @@ def transform_num(
         return transformed_df, interaction_columns
 
     if method.lower() == 'polynomial' and (degree is not None or degree_map is not None):
-        print(f"< POLYNOMIAL FEATURES TRANSFORMATION >")
-        print(f" This method generates polynomial features up to a specified degree for numerical variables.")
-        print(f"  ✔ Captures non-linear relationships between variables and the target.")
-        print(f"  ✔ Enhances model performance by adding complexity through feature engineering.")
-        print(f"✎ Note: Specify the 'degree' for a global application or 'degree_map' for variable-specific degrees.\n")
+        print("< POLYNOMIAL FEATURES TRANSFORMATION >")
+        print(" This method generates polynomial features up to a specified degree for numerical variables.")
+        print("  ✔ Captures non-linear relationships between variables and the target.")
+        print("  ✔ Enhances model performance by adding complexity through feature engineering.")
+        print("✎ Note: Specify the 'degree' for a global application or 'degree_map' for variable-specific degrees.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -729,10 +767,10 @@ def transform_num(
         return transformed_df, poly_features
 
     if method.lower() == 'bin' and (bins is not None or bin_map is not None):
-        print(f"< BINNING TRANSFORMATION >")
-        print(f" This method groups numerical data into bins or intervals, simplifying relationships and reducing noise.")
-        print(f"  ✔ Users can specify a uniform number of bins for all variables or define custom binning criteria per variable.")
-        print(f"✎ Note: Binning can be specified globally with 'bins' or individually with 'bin_map'.\n")
+        print("< BINNING TRANSFORMATION >")
+        print(" This method groups numerical data into bins or intervals, simplifying relationships and reducing noise.")
+        print("  ✔ Users can specify a uniform number of bins for all variables or define custom binning criteria per variable.")
+        print("✎ Note: Binning can be specified globally with 'bins' or individually with 'bin_map'.\n")
 
         transformed_df = df.copy()
         binned_columns = pd.DataFrame()

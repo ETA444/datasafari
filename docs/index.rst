@@ -1,46 +1,72 @@
-Welcome to Data Safari's documentation!
+Welcome to DataSafari's Documentation!
 =======================================
 
-Introduction
-------------
-Data Safari is a powerful library for data analysis...
+DataSafari simplifies complex data science tasks into straightforward, powerful commands. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.
 
-Installation
-------------
-.. include:: installation.rst
+.. include:: start.rst
 
-Usage
------
-.. include:: usage.rst
+----
 
-Modules
--------
+.. include:: glance.rst
+
+----
+
+.. include:: contact.rst
+
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Modules:
+   :maxdepth: 1
+   :hidden:
 
-   datasafari.explorer.rst
-   datasafari.transformer.rst
-   datasafari.evaluator.rst
-   datasafari.predictor.rst
-   datasafari.utils.rst
-   datasafari.rst
-   modules.rst
+   Home <self>
+   Quick Start <start>
+   Subpackages Overview <glance>
 
-Contributing
-------------
-.. include:: contributing.rst
+.. toctree::
+   :maxdepth: 1
+   :caption: Explorers
+   :hidden:
 
-Authors
--------
-.. include:: authors.rst
+   datasafari.explorer.explore_df
+   datasafari.explorer.explore_num
+   datasafari.explorer.explore_cat
 
-History
--------
-.. include:: history.rst
+.. toctree::
+   :maxdepth: 1
+   :caption: Transformers
+   :hidden:
 
-Indices and tables
-==================
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   datasafari.transformer.transform_num
+   datasafari.transformer.transform_cat
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Evaluators
+   :hidden:
+
+   datasafari.evaluator.evaluate_normality
+   datasafari.evaluator.evaluate_variance
+   datasafari.evaluator.evaluate_dtype
+   datasafari.evaluator.evaluate_contingency_table
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Predictors
+   :hidden:
+
+   datasafari.predictor.predict_hypothesis
+   datasafari.predictor.predict_ml
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Other
+   :hidden:
+
+   Installation Guide <installation>
+   General Index <genindex>
+   License <license>
+   Contact <contact>
+
+|
+
+    *Thank you very much for taking an interest in DataSafari.* |:heart:| - George

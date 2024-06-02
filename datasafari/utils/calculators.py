@@ -4,7 +4,6 @@
 from typing import Union, Tuple
 import numpy as np
 import pandas as pd
-from numpy.linalg import inv
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.tools.tools import add_constant
 
@@ -109,7 +108,7 @@ def calculate_mahalanobis(
     It is scale-invariant and takes into account the correlations of the data set.
     """
     if len(x) != len(mean):
-        raise ValueError("The observation and mean must have the same length.")
+        raise ValueError("calculate_mahalanobis(): The observation and mean must have the same length.")
 
     x_minus_mu = x - mean
     try:

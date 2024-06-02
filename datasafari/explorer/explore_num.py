@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple, Dict
 import numpy as np
 from numpy.linalg import inv
 import pandas as pd
@@ -24,93 +24,104 @@ def explore_num(
         method: str = 'all',
         output: str = 'print',
         threshold_z: int = 3
-) -> Optional[str]:
+) -> Optional[Tuple[Dict, pd.DataFrame]]:
     """
-    Analyze numerical variables in a DataFrame for distribution characteristics, outlier detection using multiple methods (Z-score, IQR, Mahalanobis), normality tests, skewness, kurtosis, correlation analysis, and multicollinearity detection.
+    **Explore numerical variables in a DataFrame and gain insights on distribution characteristics, outlier detection using multiple methods (Z-score, IQR, Mahalanobis), normality tests, skewness, kurtosis, correlation analysis, and multicollinearity detection.**
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     df : pd.DataFrame
         The DataFrame containing the numerical data to analyze.
+
     numerical_variables : list
         A list of strings representing the column names in `df` to be analyzed.
-    method : str, optional, default 'all'
-        Specifies the analysis method to apply. Options include:
-        - 'correlation_analysis' for analyzing the correlation between numerical variables.
-        - 'distribution_analysis' for distribution characteristics, including skewness and kurtosis, and normality tests (Shapiro-Wilk, Anderson-Darling).
-        - 'outliers_zscore' for outlier detection using the Z-score method.
-        - 'outliers_iqr' for outlier detection using the Interquartile Range method.
-        - 'outliers_mahalanobis' for outlier detection using the Mahalanobis distance.
-        - 'multicollinearity' for detecting multicollinearity among the numerical variables.
-        - 'all' to perform all available analyses. Default is 'all'.
-    output : str, optional, default 'print'
-        Determines the output format. Options include:
-        - 'print' to print the analysis results to the console.
-        - 'return' to return the analysis results as a DataFrame or dictionaries, depending on the analysis type. Default is 'print'.
-    threshold_z : int, optional, default 3
-        Used in method 'outliers_zscore', users can define their preferred z-score threshold, if the default value does not fit their needs.
 
-    Returns
+    method : str, optional, default: 'all'
+        Specifies the analysis method to apply.
+            - ``'correlation_analysis'`` for analyzing the correlation between numerical variables.
+            - ``'distribution_analysis'`` for distribution characteristics, including skewness and kurtosis, and normality tests (Shapiro-Wilk, Anderson-Darling).
+            - ``'outliers_zscore'`` for outlier detection using the Z-score method.
+            - ``'outliers_iqr'`` for outlier detection using the Interquartile Range method.
+            - ``'outliers_mahalanobis'`` for outlier detection using the Mahalanobis distance.
+            - ``'multicollinearity'`` for detecting multicollinearity among the numerical variables.
+            - ``'all'`` to perform all available analyses.
+
+    output : str, optional, default: 'print'
+        Determines the output format.
+            - ``'print'`` to print the analysis results to the console.
+            - ``'return'`` to return the analysis results as a DataFrame or dictionaries, depending on the analysis type.
+
+    threshold_z : int, optional, default; 3
+        Used in method ``'outliers_zscore'``, users can define their preferred z-score threshold, if the default value does not fit their needs.
+
+    Returns:
+    --------
+    Tuple[Dict, pd.DataFrame] or None.
+        - ``Tuple[Dict, pd.DataFrame]`` For 'correlation_analysis', returns a DataFrame showing the correlation coefficients between variables if output is 'return'.
+        - ``Tuple[Dict, pd.DataFrame]`` For 'distribution_analysis', returns a DataFrame with distribution statistics if output is 'return'.
+        - ``Tuple[Dict, pd.DataFrame]`` For outlier detection methods ('outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis'), returns a dictionary mapping variables to their outlier values and a DataFrame of rows considered outliers if output is 'return'.
+        - ``Tuple[Dict, pd.DataFrame]`` For 'multicollinearity', returns a DataFrame or a Series indicating the presence of multicollinearity, such as VIF scores, if output is 'return'.
+        - ``Tuple[Dict, pd.DataFrame]`` If output='return' and method='all', returns a comprehensive summary of all analyses as text or a combination of DataFrames and dictionaries.
+        - ``None`` If output='print' and method='all', returns nothing, but prints results to console.
+
+    Raises:
     -------
-    Depending on the method and output chosen:
-    - For 'correlation_analysis', returns a DataFrame showing the correlation coefficients between variables if output is 'return'.
-    - For 'distribution_analysis', returns a DataFrame with distribution statistics if output is 'return'.
-    - For outlier detection methods ('outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis'), returns a dictionary mapping variables to their outlier values and a DataFrame of rows considered outliers if output is 'return'.
-    - For 'multicollinearity', returns a DataFrame or a Series indicating the presence of multicollinearity, such as VIF scores, if output is 'return'.
-    - If 'output' is set to 'return' and 'method' is 'all', returns a comprehensive summary of all analyses as text or a combination of DataFrames and dictionaries.
-
-    Raises
-    ------
-    TypeError
+    TypeErrors:
         - If `df` is not a pandas DataFrame.
         - If `numerical_variables` is not a list of strings.
         - If `method` is not a string.
         - If `output` is not a string.
         - If `threshold_z` is not a float or an int.
-    ValueError
-        - If the `df` is empty, indicating that there's no data to evaluate.
-        - If `method` is not one of the specified valid methods ('correlation_analysis', 'distribution_analysis', 'outliers_zscore', 'outliers_iqr', 'outliers_mahalanobis', 'multicollinearity', 'all').
+
+    ValueErrors:
+        - If the `df` is empty.
+        - If `method` is not one of the specified valid methods.
         - If `output` is not 'print' or 'return'.
         - If 'numerical_variables' list is empty.
         - If variables provided through 'numerical_variables' are not numerical variables.
         - If any specified variables in `numerical_variables` are not found in the DataFrame's columns.
 
-    Examples
-    --------
-    # Generating a sample DataFrame for demonstration
+    Examples:
+    ---------
+    Generating a sample DataFrame to demonstrate the functionality:
+
+    >>> import datasafari
     >>> import numpy as np
     >>> import pandas as pd
-    >>> np.random.seed(0) # For reproducible results
     >>> data = {
-    ...     'Feature1': np.random.normal(loc=0, scale=1, size=100), # Normally distributed data
-    ...     'Feature2': np.random.exponential(scale=2, size=100),   # Exponentially distributed data
-    ...     'Feature3': np.random.randint(low=1, high=100, size=100) # Uniformly distributed integers
+    ...    'Feature1': np.random.normal(loc=0, scale=1, size=100),
+    ...    'Feature2': np.random.exponential(scale=2, size=100),
+    ...    'Feature3': np.random.randint(low=1, high=100, size=100)
     ... }
     >>> df = pd.DataFrame(data)
 
-    # Importing the explore_num function (assuming it is defined elsewhere in your module)
-    # from your_module import explore_num
+    The full potential of ``explore_num()`` is unlocked by simply providing a dataframe and the numerical columns to explore:
 
-    # Performing correlation analysis and printing the results
+    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'])
+
+    Performing correlation analysis and printing the results:
+
     >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='correlation_analysis', output='print')
 
-    # Conducting distribution analysis and capturing the returned DataFrame for further analysis
+    Conducting distribution analysis and returning the results:
+
     >>> distribution_results = explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='distribution_analysis', output='return')
     >>> print(distribution_results)
 
-    # Detecting outliers using the IQR method and printing the results
+    Detecting outliers using the IQR method and printing the results:
+
     >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_iqr', output='print')
 
-    # Detecting outliers using the Z-score method with a custom threshold and printing the results
-    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_zscore', output='print', threshold_z=2.5)
+    Detecting outliers using the Z-score method with a custom threshold:
 
-    # Identifying outliers using the Mahalanobis distance method and printing the results
-    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_mahalanobis', output='print')
+    >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='outliers_zscore', threshold_z=2, output='print')
 
-    # Examining multicollinearity among the numerical features and printing the VIF scores
+    Identifying multicollinearity and printing VIF scores:
+
     >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='multicollinearity', output='print')
 
-    # Applying all available analyses and printing the comprehensive results
+    Applying all analyses and printing comprehensive results:
+
     >>> explore_num(df, ['Feature1', 'Feature2', 'Feature3'], method='all', output='print')
 
     Notes
@@ -127,19 +138,19 @@ def explore_num(
         raise TypeError("explore_num(): The df parameter must be a pandas DataFrame.")
 
     if not isinstance(numerical_variables, list):
-        raise TypeError(f"explore_num(): The categorical_variables parameter must be a list of variable names.\n Example: var_list = ['var1', 'var2', 'var3']")
+        raise TypeError("explore_num(): The categorical_variables parameter must be a list of variable names.\n Example: var_list = ['var1', 'var2', 'var3']")
     else:
         if not all(isinstance(var, str) for var in numerical_variables):
             raise TypeError("explore_num(): All items in the numerical_variables list must be strings representing column names.")
 
     if not isinstance(method, str):
-        raise TypeError(f"explore_num(): The method parameter must be a string.\n Example: method = 'all'")
+        raise TypeError("explore_num(): The method parameter must be a string.\n Example: method = 'all'")
 
     if not isinstance(output, str):
-        raise TypeError(f"explore_num(): The output parameter must be a string. \n Example: output = 'return'")
+        raise TypeError("explore_num(): The output parameter must be a string. \n Example: output = 'return'")
 
     if not isinstance(threshold_z, (float, int)):
-        raise TypeError(f"explore_num(): The value of threshold_z must be a float or int.\nExample: threshold_z = 3")
+        raise TypeError("explore_num(): The value of threshold_z must be a float or int.\nExample: threshold_z = 3")
 
     # ValueErrors
     # Check if df is empty
@@ -162,7 +173,7 @@ def explore_num(
     # Check if variables are numerical
     numerical_types = evaluate_dtype(df, numerical_variables, output='list_n')
     if not all(numerical_types):
-        raise ValueError(f"explore_num(): The 'numerical_variables' list must contain only names of numerical variables.")
+        raise ValueError("explore_num(): The 'numerical_variables' list must contain only names of numerical variables.")
 
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in numerical_variables if var not in df.columns]
@@ -213,9 +224,9 @@ def explore_num(
 
         # appends #
         # (1) title of method section
-        result.append(f"\n<<______DISTRIBUTION ANALYSIS______>>\n")
+        result.append("\n<<______DISTRIBUTION ANALYSIS______>>\n")
         # (2) subtitle
-        result.append(f"✎ Overview of Results*")
+        result.append("✎ Overview of Results*")
 
         # define #
         # define dist stats for dictionary
@@ -246,13 +257,13 @@ def explore_num(
 
             # interpretation tips #
             # skewness and kurtosis
-            skewness_tip = f"   ☻ Tip: Symmetric if ~0, left-skewed if <0, right-skewed if >0"
-            kurt_tip = f"   ☻ Tip: Mesokurtic if ~0, Platykurtic if <0, Leptokurtic if >0)"
+            skewness_tip = "   ☻ Tip: Symmetric if ~0, left-skewed if <0, right-skewed if >0"
+            kurt_tip = "   ☻ Tip: Mesokurtic if ~0, Platykurtic if <0, Leptokurtic if >0)"
             # shapiro-wilk interpretation and conclusion based on p
-            shapiro_tip = f"  • H0: Data is normally distributed.\n  • H1: Data is not normally distributed."
+            shapiro_tip = "  • H0: Data is normally distributed.\n  • H1: Data is not normally distributed."
             shapiro_conclusion = f"✘ Conclusion: ['{variable_name}'] is likely not normally distributed." if shapiro_p < 0.05 else "\n✔ Conclusion: ['{variable_name}'] is likely normally distributed."
             # anderson-darling
-            anderson_tip = f"   ☻ Tip: Compare the statistic to critical values. Data is likely not normally distributed if the statistic > critical value."
+            anderson_tip = "   ☻ Tip: Compare the statistic to critical values. Data is likely not normally distributed if the statistic > critical value."
 
             # construct console output
             result.append(f"\n< Distribution Analysis Summary for: ['{variable_name}'] >\n")
@@ -292,19 +303,19 @@ def explore_num(
         # appends (continued) #
         # method='distribution_analysis' info if method is all
         if method.lower() == 'all':
-            result.append(f"\n✎ * NOTE: If method='distribution_analysis', aside from the overview above, the function RETURNS:")
-            result.append(f"■ 1 - Dataframe: where index are your variables, columns are all the calculated statistic (wide format for readability)")
-            result.append(f"☻ HOW TO: df = explore_num(yourdf, yourlist, method='distribution_analysis')")
+            result.append("\n✎ * NOTE: If method='distribution_analysis', aside from the overview above, the function RETURNS:")
+            result.append("■ 1 - Dataframe: where index are your variables, columns are all the calculated statistic (wide format for readability)")
+            result.append("☻ HOW TO: df = explore_num(yourdf, yourlist, method='distribution_analysis')")
 
     if method.lower() in ['outliers_iqr', 'all']:
 
         # appends #
         # (1) title of method section
-        result.append(f"\n<<______OUTLIERS - IQR METHOD______>>\n")
+        result.append("\n<<______OUTLIERS - IQR METHOD______>>\n")
         # (2) suitability tip
-        result.append(f"☻ Tip: The IQR method is robust against extreme values, ideal for identifying outliers\nin skewed distributions by focusing on the data's middle 50%.\n")
+        result.append("☻ Tip: The IQR method is robust against extreme values, ideal for identifying outliers\nin skewed distributions by focusing on the data's middle 50%.\n")
         # (3) subtitle
-        result.append(f"✎ Overview of Results*\n")
+        result.append("✎ Overview of Results*\n")
 
         # main operation: quantile definitions, iqr and outlier classification
         for variable_name in numerical_variables:
@@ -333,7 +344,7 @@ def explore_num(
             outlier_count = len(outliers_iqr_dict[variable_name])
             if outlier_count == 0:
                 stats = f"➡ Number of outliers: {outlier_count}\n➡ Min: -\n➡ Max: -\n➡ Mean: -"
-                row_indices = f"➡ Location of outliers in your df (indices): -\n"
+                row_indices = "➡ Location of outliers in your df (indices): -\n"
                 result.append(stats)
                 result.append(row_indices)
             else:
@@ -349,9 +360,9 @@ def explore_num(
         # (6-9) method='outliers_iqr' info
         if method.lower() == 'all':
             result.append(f"\n✎ * NOTE: If method='outliers_iqr', aside from the overview above, the function RETURNS:")
-            result.append(f"■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
-            result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
-            result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_iqr')")
+            result.append("■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
+            result.append("■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
+            result.append("☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_iqr')")
 
     if method.lower() in ['outliers_zscore', 'all']:
 
@@ -360,11 +371,11 @@ def explore_num(
 
         # appends #
         # (1) title of method section
-        result.append(f"\n<<______OUTLIERS - Z-SCORE METHOD______>>\n")
+        result.append("\n<<______OUTLIERS - Z-SCORE METHOD______>>\n")
         # (2) suitability tip
-        result.append(f"☻ Tip: The Z-Score method excels at identifying outliers in data with a distribution\nclose to normal, highlighting values far from the mean.\n")
+        result.append("☻ Tip: The Z-Score method excels at identifying outliers in data with a distribution\nclose to normal, highlighting values far from the mean.\n")
         # (3) subtitle
-        result.append(f"✎ Overview of Results*\n")
+        result.append("✎ Overview of Results*\n")
 
         # main operation: z-score calculation per variable, and outlier classification.
         for variable_name in numerical_variables:
@@ -393,7 +404,7 @@ def explore_num(
             outlier_count = len(outliers_z_dict[variable_name])
             if outlier_count == 0:
                 stats = f"➡ Number of outliers: {outlier_count}\n➡ Min: -\n➡ Max: -\n➡ Mean: -"
-                row_indices = f"➡ Location of outliers in your df (indices): -\n"
+                row_indices = "➡ Location of outliers in your df (indices): -\n"
                 result.append(stats)
                 result.append(row_indices)
             else:
@@ -408,10 +419,10 @@ def explore_num(
         # appends (continued) #
         # (6-9) method='outliers_zscore' info
         if method.lower() == 'all':
-            result.append(f"\n✎ * NOTE: If method='outliers_zscore', aside from the overview above, the function RETURNS:")
-            result.append(f"■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
-            result.append(f"■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
-            result.append(f"☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_zscore')")
+            result.append("\n✎ * NOTE: If method='outliers_zscore', aside from the overview above, the function RETURNS:")
+            result.append("■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
+            result.append("■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
+            result.append("☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_zscore')")
 
     if method.lower() in ['outliers_mahalanobis', 'all']:
         # definitions #
@@ -438,16 +449,16 @@ def explore_num(
             data.drop(columns=['mahalanobis'], inplace=True)
 
             # construct console output
-            result.append(f"\n<<______OUTLIERS - MAHALANOBIS METHOD*______>>\n")
+            result.append("\n<<______OUTLIERS - MAHALANOBIS METHOD*______>>\n")
             result.append(f"Identified outliers based on Mahalanobis distance exceeding the critical value ({critical_value:.2f}) from the chi-square distribution (p-val < {p_value_threshold}.\n")
             result.append(outliers_mahalanobis_df.to_string())
 
             # appends (continued) #
             # (6-9) method='outliers_mahalanobis' info
             if method.lower() == 'all':
-                result.append(f"\n✎ * NOTE: If method='outliers_mahalanobis', aside from the overview above, the function RETURNS:")
-                result.append(f"■ 1 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
-                result.append(f"☻ HOW TO: df = explore_num(yourdf, yourlist, method='outliers_mahalanobis')")
+                result.append("\n✎ * NOTE: If method='outliers_mahalanobis', aside from the overview above, the function RETURNS:")
+                result.append("■ 1 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
+                result.append("☻ HOW TO: df = explore_num(yourdf, yourlist, method='outliers_mahalanobis')")
 
         except np.linalg.LinAlgError as error:
             result.append(f"Error calculating Mahalanobis distance: {error}")
@@ -459,7 +470,7 @@ def explore_num(
         data = data[numerical_variables].dropna()
 
         vifs = calculate_vif(data, numerical_variables)
-        result.append(f"\n<<______MULTICOLLINEARITY CHECK - VIF______>>\n")
+        result.append("\n<<______MULTICOLLINEARITY CHECK - VIF______>>\n")
         result.append(f"Variance Inflation Factors:\n{vifs.to_string()}\n")
         result.append("☻ Tip: VIF > 10 indicates potential multicollinearity concerns.")
 

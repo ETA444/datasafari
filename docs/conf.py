@@ -19,6 +19,7 @@
 #
 import os
 import sys
+import datetime
 sys.path.insert(0, os.path.abspath('../'))
 import datasafari
 
@@ -30,10 +31,21 @@ import datasafari
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.napoleon', 'sphinx_rtd_dark_mode']
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.viewcode',
+              'sphinx.ext.napoleon',
+              'sphinx.ext.autosummary',
+              # 'sphinx_rtd_light_dark',  # Removed due to lack of support for sphinx > 7, replaced by furo theme
+              'sphinx_favicon',  # Adds favicon functionality: https://pypi.org/project/sphinx-favicon/
+              'sphinxext.opengraph',  # Adds metadata functionality: https://pypi.org/project/sphinxext-opengraph/
+              'sphinx_prompt',  # Adds unselectable prompt functionality: https://pypi.org/project/sphinx-prompt/
+              'sphinx_copybutton',  # Adds copy button to code blocks: https://pypi.org/project/sphinx-copybutton/
+              'sphinx.ext.mathjax',  # Adds formula rendering functionality
+              'sphinxemoji.sphinxemoji'  # Adds emoji functionality: https://pypi.org/project/sphinxemoji/
+              ]
 
-# sphinx_rtd_dark_mode option: user starts in dark mode
-default_dark_mode = True
+# Make function signature parameters parse one a new line
+python_maximum_signature_line_length = 1
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -48,9 +60,18 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Data Safari'
-copyright = "2024, George Dreemer"
+project = 'DataSafari'
+current_year = datetime.datetime.now().year
+copyright = f"{current_year}, George Dreemer."
 author = "George Dreemer"
+
+# Metadata of project (opengraph)
+ogp_site_url = 'https://www.datasafari.dev/docs'  # Adjusted to your custom domain
+ogp_image = '_static/thumbs/ds-branding-thumb-main-docs.png'  # Ensure you upload a logo in your static directory
+ogp_description_length = 300
+ogp_type = 'website'
+ogp_description = 'DataSafari simplifies complex data science tasks into straightforward, powerful commands.'
+
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -66,7 +87,7 @@ release = datasafari.__version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -84,46 +105,44 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages. See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+# html_theme = 'sphinx_rtd_theme'  # removed due to lack of support for sphinx > 7
+# html_theme = 'sphinx_rtd_light_dark'  # removed due to lack of support for sphinx > 7
+html_theme = 'furo'  # https://pypi.org/project/furo/
 
 # Theme options are theme-specific and customize the look and feel of a
 # theme further. For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {
-    'display_version': True,
-    'prev_next_buttons_location': 'bottom',
-    'style_external_links': True,
-    'vcs_pageview_mode': 'edit',
-    'style_nav_header_background': 'white',
-    # Toc options
-    'collapse_navigation': True,
-    'sticky_navigation': True,
-    'navigation_depth': 4,
-    'includehidden': True,
-    'titles_only': False
-}
+# html_logo = "_static/logos/ds-branding-logo-big-darkmode.png"
 
-html_logo = "_static/test_logo_pic444.png"
+html_theme_options = {
+    "light_logo": "logos/ds-branding-logo-big-lightmode.png",  # Relative to _static
+    "dark_logo": "logos/ds-branding-logo-big-darkmode.png",  # Relative to _static
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# html_css_files = [
+#    'css/rtd_dark.css',
+# ]
+
+# sphinx_rtd_dark_mode option: user starts in dark mode
+# default_dark_mode = True
+
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
-html_sidebars = {
-    '**': [
-        'about.html',
-        'navigation.html',
-        'relations.html',  # needs 'show_related': True option to display
-        'searchbox.html',
-        'donate.html',
-    ]
-}
+# html_sidebars = { >>>incompatible with furo<<<
+#    '**': [
+#        'about.html',
+#        'navigation.html',
+#        'relations.html',  # needs 'show_related': True option to display
+#        'searchbox.html',
+#        'donate.html',
+#    ]
+#}
 
-# Optional logo. Uncomment the line below if you have a logo.
-# html_logo = "_static/my_logo.png"
 
 # If you have your own conf.py file, it's a good idea to merge this info with it,
 # ensuring that all settings are included correctly.

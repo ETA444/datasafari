@@ -8,13 +8,13 @@ Installation
 Stable release
 --------------
 
-To install Data Safari, run this command in your terminal:
+To install DataSafari, run this command in your terminal:
 
 .. code-block:: console
 
     $ pip install datasafari
 
-This is the preferred method to install Data Safari, as it will always install the most recent stable release.
+This is the preferred method to install DataSafari, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -26,7 +26,7 @@ you through the process.
 From sources
 ------------
 
-The sources for Data Safari can be downloaded from the `Github repo`_.
+The sources for DataSafari can be downloaded from the `Github repo`_.
 
 You can either clone the public repository:
 

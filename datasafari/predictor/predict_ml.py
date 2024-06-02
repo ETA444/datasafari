@@ -276,7 +276,7 @@ def data_preprocessing_core(
         df: pd.DataFrame,
         x_cols: List[str],
         y_col: str,
-        data_state: str,
+        data_state: str = 'unprocessed',
         test_size: float = 0.2,
         random_state: int = 42,
         numeric_imputer: TransformerMixin = SimpleImputer(strategy='median'),
@@ -288,55 +288,75 @@ def data_preprocessing_core(
         verbose: int = 1
 ) -> Tuple[np.ndarray, np.ndarray, pd.Series, pd.Series, str]:
     """
-    Performs comprehensive preprocessing on a dataset containing mixed data types.
+    **Performs comprehensive preprocessing on a dataset containing mixed data types.**
 
     This function prepares a dataset for machine learning by handling numerical, categorical, text, and datetime data. It supports flexible imputation, scaling, encoding, and vectorization methods to cater to a wide range of preprocessing needs. The function automatically splits the data into training and test sets and applies the preprocessing steps defined by the user. It accommodates custom preprocessing steps for various data types, enhancing flexibility and control over the preprocessing pipeline.
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     df : pd.DataFrame
         The DataFrame to preprocess.
+
     x_cols : list of str
         List of feature column names in `df` to include in the preprocessing.
+
     y_col : str
         The name of the target variable column in `df`.
-    data_state : str
-        Specifies the initial state of the data ('unprocessed' or 'preprocessed'). Default is 'unprocessed'.
-    test_size : float, optional
-        Proportion of the dataset to include in the test split. Default is 0.2.
-    random_state : int, optional
-        Controls the shuffling applied to the data before applying the split. Default is 42.
-    numeric_imputer : sklearn imputer object, optional
-        The imputation transformer for handling missing values in numerical data. Default is SimpleImputer(strategy='median').
-    numeric_scaler : sklearn scaler object, optional
-        The scaling transformer for numerical data. Default is StandardScaler().
-    categorical_imputer : sklearn imputer object, optional
-        The imputation transformer for handling missing values in categorical data. Default is SimpleImputer(strategy='constant', fill_value='missing').
-    categorical_encoder : sklearn encoder object, optional
-        The encoding transformer for categorical data. Default is OneHotEncoder(handle_unknown='ignore').
-    text_vectorizer : sklearn vectorizer object, optional
-        The vectorization transformer for text data. Default is CountVectorizer().
-    datetime_transformer : callable, optional
-        The transformation operation for datetime data. Default extracts year, month, and day as separate features.
-    verbose : int, optional
-        The higher value the more output and information the user receives. Default is 1.
 
-    Returns
-    -------
+    data_state : str, optional, default: 'unprocessed'
+        Specifies the initial state of the data ('unprocessed' or 'preprocessed').
+
+    test_size : float, optional, default: 0.2
+        Proportion of the dataset to include in the test split.
+
+    random_state : int, optional, default: 42
+        Controls the shuffling applied to the data before applying the split.
+
+    numeric_imputer : sklearn imputer object, optional, default: SimpleImputer(strategy='median')
+        The imputation transformer for handling missing values in numerical data.
+
+    numeric_scaler : sklearn scaler object, optional, default: StandardScaler()
+        The scaling transformer for numerical data.
+
+    categorical_imputer : sklearn imputer object, optional, default: SimpleImputer(strategy='constant', fill_value='missing')
+        The imputation transformer for handling missing values in categorical data.
+
+    categorical_encoder : sklearn encoder object, optional, default: OneHotEncoder(handle_unknown='ignore')
+        The encoding transformer for categorical data.
+
+    text_vectorizer : sklearn vectorizer object, optional, default: CountVectorizer()
+        The vectorization transformer for text data.
+
+    datetime_transformer : callable, optional, default: None
+        Transformer for datetime data.
+
+            *Note: This parameter defaults to a custom datetime transformer, which extracts year, month, and day as separate features.*
+
+    verbose : int, optional, default: 1
+        The higher value the more output and information the user receives.
+
+
+    Returns:
+    --------
     x_train_processed : ndarray
-        The preprocessed training feature set.
+        The preprocessed training feature set. *Note: The x_train will be untouched if ``data_state='preprocessed'``*
+
     x_test_processed : ndarray
-        The preprocessed test feature set.
+        The preprocessed test feature set. *Note: The x_train will be untouched if ``data_state='preprocessed'``*
+
     y_train : Series
         The training target variable.
+
     y_test : Series
         The test target variable.
+
     task_type : str
         The type of machine learning task inferred from the target variable ('regression' or 'classification').
 
-    Raises
-    ------
-    TypeError
+
+    Raises:
+    -------
+    TypeErrors:
         - If 'df' is not a pandas DataFrame.
         - If 'x_cols' is not a list of strings.
         - If 'y_col' is not a string.
@@ -345,8 +365,8 @@ def data_preprocessing_core(
         - If 'random_state' is not an integer.
         - If 'verbose' is not an integer
         - If numeric_imputer, numeric_scaler, categorical_imputer, categorical_encoder, text_vectorizer, or datetime_transformer do not support the required interface.
-    ValueError
-        - If the `df` is empty, indicating that there's no data to evaluate.
+    ValueErrors:
+        - If the `df` is empty.
         - If 'data_state' is not 'unprocessed' or 'preprocessed'.
         - If 'y_col' is not found in 'df'.
         - If specified 'x_cols' are not present in 'df'.
@@ -354,27 +374,16 @@ def data_preprocessing_core(
         - If 'df' does not contain enough data to split according to 'test_size'.
 
 
-    Examples
-    --------
-    >>> df = pd.DataFrame({
-    ...     'Age': np.random.randint(18, 35, size=100),
-    ...     'Salary': np.random.normal(50000, 12000, size=100),
-    ...     'Department': np.random.choice(['HR', 'Tech', 'Marketing'], size=100),
-    ...     'Review': ['Good review']*50 + ['Bad review']*50,
-    ...     'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
-    ... })
-    >>> x_cols = ['Age', 'Salary', 'Department', 'Review', 'Employment Date']
-    >>> y_col = 'Salary'
-    >>> processed_data = data_preprocessing_core(df, x_cols, y_col, test_size=0.25, random_state=123)
-
-    Notes
-    -----
-    The `data_preprocessing_core` function is an integral part of the `predict_ml()` pipeline, designed to automate the preprocessing steps for machine learning tasks. It handles various data types, including numerical, categorical, text, and datetime, providing a streamlined process for preparing data for model training. This function uses Scikit-learn's transformers and custom functions to perform imputation, scaling, encoding, and vectorization, allowing users to customize these steps according to their needs.
+    Notes:
+    ------
+    The ``data_preprocessing_core()`` function is an integral part of the ``predict_ml()`` pipeline, designed to automate the preprocessing steps for machine learning tasks. It handles various data types, including numerical, categorical, text, and datetime, providing a streamlined process for preparing data for model training. This function uses Scikit-learn's transformers and custom functions to perform imputation, scaling, encoding, and vectorization, allowing users to customize these steps according to their needs.
 
     This function supports flexible preprocessing, accommodating custom transformations through its parameters. By specifying transformers for different data types, users can adapt the preprocessing to fit their dataset's specific characteristics. The function also splits the data into training and test sets, facilitating model evaluation and selection later in the pipeline.
 
-    Designed with usability in mind, `data_preprocessing_core` includes console output options controlled by 'verbose' parameter. This feature provides users with insights into the preprocessing steps taken (verbose > 0), including information on processed features and tips for further customization (verbose > 1).
+    Designed with usability in mind, ``data_preprocessing_core()`` includes console output options controlled by 'verbose' parameter. This feature provides users with insights into the preprocessing steps taken (verbose > 0), including information on processed features and tips for further customization (verbose > 1).
     """
+    if datetime_transformer is None:
+        datetime_transformer = FunctionTransformer(datetime_feature_extractor, validate=False)
 
     # Error Handling
     # TypeErrors
@@ -426,7 +435,7 @@ def data_preprocessing_core(
         raise ValueError("data_preprocessing_core(): The 'test_size' parameter must be a float between 0 and 1.")
 
     if data_state.lower() not in ['unprocessed', 'preprocessed'] or None:
-        raise ValueError(f"data_preprocessing_core(): The data_state must be one of the following: \n- 'unprocessed': activates predict_ml() preprocessing capabilities.\n - 'preprocessed': user opts out of preprocessing (Warning: ensure your data is properly preprocessed for ML)")
+        raise ValueError("data_preprocessing_core(): The data_state must be one of the following: \n- 'unprocessed': activates predict_ml() preprocessing capabilities.\n - 'preprocessed': user opts out of preprocessing (Warning: ensure your data is properly preprocessed for ML)")
 
     if y_col not in df.columns:
         raise ValueError(f"data_preprocessing_core(): The specified target column '{y_col}' is not present in the DataFrame.")
@@ -489,8 +498,8 @@ def data_preprocessing_core(
 
         # construct console output
         if verbose > 0:
-            print(f"< PREPROCESSING DATA REPORT >")
-            print(f" ☻ Tip: You can define your own SciKit preprocessors using the appropriate parameters, please refer to documentation. \n") if verbose > 1 else ''
+            print("< PREPROCESSING DATA REPORT >")
+            print(" ☻ Tip: You can define your own SciKit preprocessors using the appropriate parameters, please refer to documentation. \n") if verbose > 1 else ''
             print(f"  ➡ Numerical features processed [using {numeric_processor_name}]: {', '.join(numeric_features) if numeric_features else 'None'}\n")
             print(f"  ➡ Categorical features processed [using {categorical_processor_name}]: {', '.join(categorical_features) if categorical_features else 'None'}\n")
             print(f"  ➡ Text features processed [using {text_processor_name}]: {', '.join(text_features) if text_features else 'None'}\n")
@@ -513,51 +522,53 @@ def data_preprocessing_core(
 
 def calculate_composite_score(scores: dict, metric_weights: dict) -> float:
     """
-    Calculates a composite score based on individual metric scores and their respective weights.
+    **Calculates a composite score based on individual metric scores and their respective weights.**
 
     This function aggregates multiple evaluation metrics into a single composite score by weighting each metric according to its importance, as defined in 'metric_weights'. A higher weight signifies greater importance of the metric towards the composite score. This approach allows for a balanced evaluation of model performance across various aspects.
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     scores : dict
         A dictionary where keys are metric names (str) and values are their corresponding scores (float).
-        Example: {'Accuracy': 0.95, 'Precision': 0.90}
+            - Example: ``{'Accuracy': 0.95, 'Precision': 0.90}``
+
     metric_weights : dict
         A dictionary where keys are metric names (str) and values are the weights (int or float) assigned to each metric.
-        Example: {'Accuracy': 5, 'Precision': 1}
+            - Example: ``{'Accuracy': 5, 'Precision': 1}``
 
-    Returns
-    -------
+    Returns:
+    --------
     float
         The composite score calculated as the weighted average of the provided metric scores.
 
-    Raises
-    ------
-    TypeError
-        If 'scores' or 'metric_weights' is not a dictionary.
-    ValueError
-        If 'scores' or 'metric_weights' is empty.
-        If there are missing metric weights for any of the metrics provided in 'scores'.
+    Raises:
+    -------
+    TypeError:
+        - If 'scores' or 'metric_weights' is not a dictionary.
+    ValueErrors:
+        - If 'scores' or 'metric_weights' is empty.
+        - If there are missing metric weights for any of the metrics provided in 'scores'.
 
-    Examples
-    --------
+    Examples:
+    ---------
     >>> scores = {'Accuracy': 0.95, 'Precision': 0.90}
     >>> metric_weights = {'Accuracy': 5, 'Precision': 1}
     >>> composite_score = calculate_composite_score(scores, metric_weights)
     >>> print(f"Composite Score: {composite_score:.2f}")
 
-    Notes
-    -----
+    Notes:
+    ------
     - This function is utilized within the `model_recommendation_core()` of the `predict_ml()` pipeline, aimed at recommending the top `n` models based on a synthesized performance evaluation.
     - The composite score is derived by assigning weights to various scoring metrics, thereby enabling a prioritized and balanced assessment of model performance across multiple criteria.
     - Metrics for which lower values are traditionally better (e.g., RMSE) are transformed (either inverted or negated) prior to weight application, aligning all metrics to the "higher is better" principle for composite score calculation.
     - The calculation involves weighting each metric's score, summing these weighted scores, and normalizing the sum by the total weight, as detailed in the following formula:
 
-    $$
-    C = \frac{\sum_{m \in M} (w_m \cdot \text{adj}(s_m))}{\sum_{m \in M} w_m}
-    $$
+        $$
+        C = \frac{\sum_{m \in M} (w_m \cdot \text{adj}(s_m))}{\sum_{m \in M} w_m}
+        $$
 
-    where $\text{adj}(s_m)$ is the score adjustment function, ensuring a consistent interpretation across metrics, $w_m$ represents the weight of metric $m$, and $M$ is the set of all metrics.
+        where $\text{adj}(s_m)$ is the score adjustment function, ensuring a consistent interpretation across metrics, $w_m$ represents the weight of metric $m$, and $M$ is the set of all metrics.
+
     - The inversion or negation of scores for metrics where lower values are preferable ensures the composite score accurately reflects a model's overall efficacy, facilitating straightforward comparisons across diverse model configurations.
     - Review of metrics' adherence to the 'higher is better' framework indicates the systematic alignment of evaluation metrics, reinforcing the utility and interpretability of the composite scoring approach in model selection processes.
     """
@@ -594,42 +605,46 @@ def model_recommendation_core(
         verbose: int = 1
 ) -> Dict[str, Any]:
     """
-    Recommends top N machine learning models based on composite scores derived from multiple evaluation metrics.
+    **Recommends top N machine learning models based on composite scores derived from multiple evaluation metrics.**
 
-    This function is part of a broader machine learning pipeline, designed to facilitate model selection by
-    automatically evaluating a range of models against a set of performance metrics, tailored to the specific
-    needs of the analysis.
+    This function is part of a broader machine learning pipeline, designed to facilitate model selection by automatically evaluating a range of models against a set of performance metrics, tailored to the specific needs of the analysis.
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     x_train : Union[pd.DataFrame, np.ndarray]
         Training feature dataset.
+
     y_train : Union[pd.Series, np.ndarray]
         Training target variable.
-    task_type : str
-        Specifies the type of machine learning task: 'classification' or 'regression'.
-    priority_metrics : List[str], optional
-        List of metric names given priority in model scoring. Default is an empty list.
-    cv: int, optional
-        Determines the cross-validation splitting strategy. Default is 5, to use the default 5-fold cross validation.
-    n_top_models : int, optional
-        Number of top models to recommend. Default is 3.
-    verbose : int, optional
-        The higher value the more output and information the user receives. Default is 1.
 
-    Returns
-    -------
+    task_type : str
+        Specifies the type of machine learning task: ``'classification'`` or ``'regression'``.
+
+    priority_metrics : List[str], optional, default: []
+        List of metric names given priority in model scoring.
+
+    cv: int, optional, default: 5
+        Determines the cross-validation splitting strategy.
+
+    n_top_models : int, optional, default: 3
+        Number of top models to recommend.
+
+    verbose : int, optional, verbose: 1
+        The higher value the more output and information the user receives.
+
+    Returns:
+    --------
     Dict[str, Any]
         Dictionary of top N recommended models, keyed by model name with model object as value.
 
-    Raises
-    ------
-    TypeError
+    Raises:
+    -------
+    TypeErrors:
         - If 'x_train' is not a pandas DataFrame or NumPy ndarray.
         - If 'y_train' is not a pandas Series or NumPy ndarray.
         - If 'priority_metrics' is not a list.
         - If 'verbose' is not an integer.
-    ValueError
+    ValueErrors:
         - If 'task_type' is not 'classification' or 'regression'.
         - If 'n_top_models' is not an integer greater than 0.
         - If 'x_train' and 'y_train' do not have the same number of rows.
@@ -640,28 +655,17 @@ def model_recommendation_core(
         - If 'n_top_models' exceeds the number of available models for the specified 'task_type'.
 
 
-    Examples
-    --------
-    >>> from sklearn.datasets import load_iris
-    >>> from sklearn.model_selection import train_test_split
-    >>> X, y = load_iris(return_X_y=True)
-    >>> x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-    >>> recommended_models = model_recommendation_core(x_train, y_train, task_type='classification', priority_metrics=['Accuracy'], n_top_models=2)
-    >>> print(list(recommended_models.keys()))
+    Notes:
+    ------
+    The core leverages a composite score for model evaluation, which synthesizes scores across multiple metrics, weighted by the specified priorities. This method enables a holistic and nuanced model comparison, taking into account the multidimensional aspects of model performance.
 
-    Notes
-    -----
-    The core leverages a composite score for model evaluation, which synthesizes scores across multiple metrics,
-    weighted by the specified priorities. This method enables a holistic and nuanced model comparison,
-    taking into account the multidimensional aspects of model performance.
+        - **Priority Metrics:** Assigning weights (default: 5 for prioritized metrics, 1 for others) allows users to emphasize metrics they find most relevant, affecting the composite score calculation.
 
-        - Priority Metrics: Assigning weights (default: 5 for prioritized metrics, 1 for others) allows users to emphasize metrics they find most relevant, affecting the composite score calculation.
+        - **Composite Score:** Calculated as a weighted average of metric scores, normalized by the total weight. This score serves as a basis for ranking models.
 
-        - Composite Score: Calculated as a weighted average of metric scores, normalized by the total weight. This score serves as a basis for ranking models.
+        - **Tips and Guidance:** Optional tips provide insights on interpreting and leveraging different metrics, enhancing informed decision-making in model selection.
 
-        - Tips and Guidance: Optional tips provide insights on interpreting and leveraging different metrics, enhancing informed decision-making in model selection.
-
-        - Ensuring 'Higher is Better' Across All Metrics: For metrics where traditionally a lower score is better (e.g., RMSE), scores are transformed to align with the 'higher is better' principle used in composite score calculation. This transformation is inherent to the scoring configurations and does not require manual adjustment.
+        - **Ensuring 'Higher is Better' Across All Metrics:** For metrics where traditionally a lower score is better (e.g., RMSE), scores are transformed to align with the 'higher is better' principle used in composite score calculation. This transformation is inherent to the scoring configurations and does not require manual adjustment.
     """
 
     # Error handling #
@@ -761,11 +765,11 @@ def model_recommendation_core(
     top_models = sorted(composite_scores, key=composite_scores.get, reverse=True)[:n_top_models]
 
     if verbose > 0:
-        print(f"< MODEL RECOMMENDATIONS >")
+        print("< MODEL RECOMMENDATIONS >")
         print(f"The recommendation core has prioritized the following scoring metrics while choosing the best models: {', '.join([metric_name for metric_name, metric_func in scoring.items() if metric_func in priority_metrics])}\n") if priority_metrics else print(f"The recommendation core has not prioritized any metrics.\nTo prioritize a metric add it's name to the 'priority_metrics' list parameter. (e.g. priority_metrics=['explained_variance', 'neg_root_mean_squared_error']")
         [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") if scoring_metric in priority_metrics else '' for scoring_metric, score_tip in tips_scoring.items()] if verbose == 2 else ''
         [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") for scoring_metric, score_tip in tips_scoring.items()] if verbose == 3 else ''
-        print(f"Best untuned models:")
+        print("Best untuned models:")
         [print(f"  ➡ {model_name}()") for model_name in top_models]
         for model_name in top_models:
             print(f"\n► {model_name} (Composite Score: {composite_scores[model_name]:.4f}):")
@@ -782,7 +786,7 @@ def model_tuning_core(
         task_type: str,
         models: dict,
         priority_metrics: List[str] = None,
-        refit_metric: Optional[Union[str, Callable]] = None,
+        refit_metric: str = None,
         priority_tuners: List[str] = None,
         custom_param_grids: dict = None,
         n_jobs: int = -1,
@@ -793,55 +797,62 @@ def model_tuning_core(
         random_state: int = 42
 ) -> Dict[str, Any]:
     """
-    Conducts hyperparameter tuning on a set of models using specified tuning methods and parameter grids,
-    and returns the best tuned models along with their scores.
+    **Conducts hyperparameter tuning on a set of models using specified tuning methods and parameter grids, and returns the best tuned models along with their scores.**
 
-    This function systematically applies grid search, random search, or Bayesian optimization to explore the
-    hyperparameter space of given models. It supports customization of the tuning process through various parameters
-    and outputs the best found configurations.
+    This function systematically applies grid search, random search, or Bayesian optimization to explore the hyperparameter space of given models. It supports customization of the tuning process through various parameters and outputs the best found configurations.
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     x_train : Union[pd.DataFrame, np.ndarray]
         Training feature dataset.
+
     y_train : Union[pd.Series, np.ndarray]
         Training target variable.
+
     task_type : str
-        Specifies the type of machine learning task: 'classification' or 'regression'.
+        Specifies the type of machine learning task: ``'classification'`` or ``'regression'``.
+
     models : dict
         Dictionary with model names as keys and model instances as values.
-    priority_metrics : List[str], optional
-        List of metric names given priority in model scoring. Default is None, which uses default metrics.
-    refit_metric : Optional[Union[str, Callable]], optional
-        Metric to use for refitting the models. A string (name of the metric) or a scorer callable object/function
-        with signature scorer(estimator, X, y). If None, the first metric listed in priority_metrics is used.
-    priority_tuners : List[str], optional
-        List of tuner names to use for hyperparameter tuning. Valid tuners are 'grid', 'random', 'bayesian'.
-    custom_param_grids : dict, optional
-        Custom parameter grids to use, overriding the default grids if provided. Each entry should be a model name
-        mapped to its corresponding parameter grid.
-    n_jobs : int, optional
-        Number of jobs to run in parallel. -1 means using all processors. Default is -1.
-    cv : int, optional
-        Number of cross-validation folds. Default is 5.
-    n_iter_random : int, optional
-        Number of iterations for random search. If None, default is set to 10.
-    n_iter_bayesian : int, optional
-        Number of iterations for Bayesian optimization. If None, default is set to 50.
-    verbose : int, optional
-        Level of verbosity. The higher the number, the more detailed the logging. Default is 1.
-    random_state : int, optional
-        Seed used by the random number generator. Default is 42.
 
-    Returns
-    -------
+    priority_metrics : List[str], optional, default: None
+        List of metric names given priority in model scoring.
+
+    refit_metric : str, optional, default: None
+        Metric to use for refitting the models in the machine learning pipeline. If ``None``, the function will use the first member of ``priority_matrics``. If no ``priority_metrics`` are provided, the function defaults to ``'Accuracy'`` for classification models and ``'MSE'`` for regression models.
+
+    priority_tuners : List[str], optional, default: None
+        List of tuner names to use for hyperparameter tuning. Valid tuners are ``'grid'``, ``'random'``, ``'bayesian'``.
+
+    custom_param_grids : dict, optional, default: None
+        Custom parameter grids to use, overriding the default grids if provided. Each entry should be a model name mapped to its corresponding parameter grid.
+
+    n_jobs : int, optional, default: -1
+        Number of jobs to run in parallel. -1 means using all processors/parallel processing.
+
+    cv : int, optional, default: 5
+        Number of cross-validation folds.
+
+    n_iter_random : int, optional, default: 10
+        Number of iterations for random search.
+
+    n_iter_bayesian : int, optional, default: 50
+        Number of iterations for Bayesian optimization.
+
+    verbose : int, optional, default: 1
+        Level of verbosity. The higher the number, the more detailed the console output.
+
+    random_state : int, optional, default: 42
+        Seed used by the random number generator.
+
+    Returns:
+    --------
     Dict[str, Any]
-        A dictionary containing the best models under each provided model name as keys. Values are dictionaries
-        with keys: 'best_model' storing the model object of the best estimator and 'best_score' storing the corresponding score.
+        A dictionary containing the best models under each provided model name as keys. Values are dictionaries with keys: 'best_model' storing the model object of the best estimator and 'best_score' storing the corresponding score.
 
-    Raises
-    ------
-    TypeError
+    Raises:
+    -------
+    TypeErrors:
         - If 'x_train' is not a pandas DataFrame or NumPy ndarray.
         - If 'y_train' is not a pandas Series or NumPy ndarray.
         - If 'task_type' is not a string.
@@ -853,8 +864,7 @@ def model_tuning_core(
         - If 'cv' is less than 1.
         - If 'n_iter_random' or 'n_iter_bayesian' is less than 1 when not None.
         - If 'refit_metric' is provided as a string but is not a callable or recognized metric name.
-
-    ValueError
+    ValueErrors:
         - If 'task_type' is not 'classification' or 'regression'.
         - If 'x_train' and 'y_train' do not have the same number of rows.
         - If 'x_train' or 'y_train' is empty (has zero elements).
@@ -865,18 +875,8 @@ def model_tuning_core(
         - If 'n_iter_random_adjusted' or 'n_iter_bayesian_adjusted' becomes zero due to all combinations being previously tested, implying there are no new combinations to explore.
         - If 'n_iter_random' or 'n_iter_bayesian' is set to zero or a negative number.
 
-
-    Examples
-    --------
-    >>> from sklearn.datasets import load_iris
-    >>> from sklearn.model_selection import train_test_split
-    >>> X, y = load_iris(return_X_y=True)
-    >>> x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    >>> models = {'logistic_regression': LogisticRegression(), 'random_forest': RandomForestClassifier()}
-    >>> tuned_models = model_tuning_core(x_train, y_train, 'classification', models, priority_metrics=['accuracy', 'f1'], priority_tuners=['bayesian'], n_iter_random=20, verbose=2)
-
-    Notes
-    -----
+    Notes:
+    ------
         - **Integration with Tuning Methods**: This function utilizes scikit-learn's `GridSearchCV` and `RandomizedSearchCV`, along with scikit-optimize's `BayesSearchCV` for hyperparameter tuning. The choice of tuning method (`grid`, `random`, or `bayesian`) depends on the entries provided in the `priority_tuners` list.
 
         - **Skipping Repeated Combinations**: For Bayesian optimization (`BayesSearchCV`), the function is designed to skip evaluations of previously tested parameter combinations. This approach aims to enhance the efficiency and performance of the tuning process by reducing redundant computations.
@@ -1018,12 +1018,12 @@ def model_tuning_core(
         print(f"  ➡ Refit metric: {refit_metric}")
 
         if custom_param_grids:
-            print(f"  ➡ Parameter grid: Custom (defined by user)")
+            print("  ➡ Parameter grid: Custom (defined by user)")
         else:
             print("  ➡ Parameter grid: Default")
 
         if n_jobs == -1:
-            print(f"  ➡ Parallel processing: ON")
+            print("  ➡ Parallel processing: ON")
         else:
             print(f"  ➡ Parallel processing: OFF (n_jobs = {n_jobs})")
 
@@ -1109,50 +1109,57 @@ def model_recommendation_core_inference(
         verbose: int = 1
 ) -> Dict[str, Any]:
     """
-    Recommends top statistical models for inference based on user-specified preferences and formula.
-    This function evaluates various statistical models from statsmodels, each suitable for either
-    regression or classification tasks determined dynamically by the nature of the target variable.
+    **Recommends top statistical models for inference based on user-specified preferences and formula.**
 
-    Parameters
-    ----------
+    This function evaluates various statistical models from statsmodels, each suitable for either regression or classification tasks determined dynamically by the nature of the target variable.
+
+
+    Parameters:
+    -----------
     df : pd.DataFrame
         DataFrame containing the data to fit the models.
+
     formula : str
-        A patsy formula specifying the model. The target variable is on the left of '~'.
-    priority_models : List[str], optional
+        A patsy formula specifying the model. The independent variable is on the left of '~', while the dependent variables are on the right.
+
+    priority_models : List[str], optional, default: None
         A list of model names to restrict the evaluation to specific models, otherwise all applicable models are evaluated.
-    n_top_models : int, optional
-        Number of top-performing models to return based on sorted metrics. Defaults to 3.
-    model_kwargs : dict, optional
-        Dictionary mapping model names to dictionaries of additional keyword arguments to pass to the model constructors.
-        This can be used to pass additional parameters required by specific models.
-    verbose : int, optional
+
+    n_top_models : int, optional, default: 3
+        Number of top-performing models to return based on sorted metrics.
+
+    model_kwargs : dict, optional, default: None
+        Dictionary mapping model names to dictionaries of additional keyword arguments to pass to the model constructors. This can be used to pass additional parameters required by specific models.
+
+    verbose : int, optional, default: 1
         The verbosity level: 0 means silent, 1 outputs summary results, 2 includes detailed model summaries.
 
-    Raises
-    ------
-    TypeError
+
+    Returns:
+    --------
+    Dict[str, Any]
+        A dictionary with model names as keys and dictionaries as values. Each dictionary contains the 'model' object, 'metrics' dictionary with performance metrics, and potentially 'summary' if verbose > 1.
+
+
+    Raises:
+    -------
+    TypeErrors:
         - If 'df' is not a pandas DataFrame, ensuring that the input data structure is correct for model fitting.
         - If 'formula' is not a string, verifying that the model formula is correctly specified as a string.
         - If 'priority_models' is provided and is not a list of strings, ensuring the user specifies a proper list of model names.
         - If 'model_kwargs' is provided and is not a dictionary, ensuring the correct format for passing additional keyword arguments to model constructors.
         - If 'verbose' is not an integer, verifying that the verbosity level is specified as an integer.
-
-    ValueError
-        - If the input DataFrame is empty, ensuring that there is data available for model fitting.
+    ValueErrors:
+        - If the input DataFrame is empty.
         - If 'formula' does not contain exactly one '~', which is necessary to separate the dependent and independent variables in the model specification.
         - If the specified target variable from 'formula' is not found in the DataFrame, ensuring the formula correctly references a column in the DataFrame.
         - If any variables specified in the 'formula' for independent variables are not found in the DataFrame, checking for the presence of all required variables in the DataFrame.
         - If 'n_top_models' is not a positive integer, ensuring that the number of models to return is specified correctly.
 
-    Returns
-    -------
-    Dict[str, Any]
-        A dictionary with model names as keys and dictionaries as values. Each dictionary contains the 'model' object,
-        'metrics' dictionary with performance metrics, and potentially 'summary' if verbose > 1.
 
-    Examples
-    --------
+    Examples:
+    ---------
+    >>> import datasafari
     >>> import numpy as np
     >>> import pandas as pd
     >>> df = pd.DataFrame({
@@ -1175,23 +1182,17 @@ def model_recommendation_core_inference(
     >>> best_model_aic = best_inference_models[best_model_name]['metrics']['AIC']
     >>> print(f"The best model according to AIC is {best_model_name} with an AIC of {best_model_aic:.2f}")
 
-    Notes
+    Notes:
     -----
-    - **Dynamic Model Evaluation**: Depending on the datatype of the target variable specified in the formula,
-      the function dynamically decides whether to treat the problem as a regression or classification task,
-      using appropriate metrics and models for each.
+    - **Dynamic Model Evaluation**: Depending on the datatype of the target variable specified in the formula, the function dynamically decides whether to treat the problem as a regression or classification task, using appropriate metrics and models for each.
 
-    - **Handling Model Specific Requirements**: This function allows passing custom arguments to model constructors
-      to handle models that require specific parameters via `model_kwargs`.
+    - **Handling Model Specific Requirements**: This function allows passing custom arguments to model constructors to handle models that require specific parameters via `model_kwargs`.
 
-    - **Metric Adjustments**: For metrics where a lower value is better (e.g., AIC, BIC), these are adjusted
-      to be compared directly alongside higher-is-better metrics like R-squared, by negating their values during sorting.
+    - **Metric Adjustments**: For metrics where a lower value is better (e.g., AIC, BIC), these are adjusted to be compared directly alongside higher-is-better metrics like R-squared, by negating their values during sorting.
 
-    - **Verbose Output**: The function provides different levels of output detail which can help in diagnosing model fit
-      or understanding model performance.
+    - **Verbose Output**: The function provides different levels of output detail which can help in diagnosing model fit or understanding model performance.
 
-    - **Error Handling**: The function will report and skip models that encounter errors during fitting, allowing for
-      robust execution even if some models are not applicable to the provided data or formula.
+    - **Error Handling**: The function will report and skip models that encounter errors during fitting, allowing for robust execution even if some models are not applicable to the provided data or formula.
     """
 
     # Error handling #
@@ -1280,8 +1281,8 @@ def model_recommendation_core_inference(
     )[:n_top_models]
 
     if verbose > 0:
-        print(f"\n< MODEL RECOMMENDATIONS >")
-        print(f" ☻ Tip: Use verbose = 2 to see model summaries, or access the models directly in the returned dictionary object.") if verbose < 2 else ''
+        print("\n< MODEL RECOMMENDATIONS >")
+        print(" ☻ Tip: Use verbose = 2 to see model summaries, or access the models directly in the returned dictionary object.") if verbose < 2 else ''
         for name, details in sorted_models:
             print(f"\n\n ➡ Model: {name}")
             for metric, value in details['metrics'].items():
@@ -1304,7 +1305,7 @@ def predict_ml(
         cv: int = 5,
         random_state: int = 42,
         priority_metrics: List[str] = [],
-        refit_metric: Optional[Union[str, Callable]] = None,
+        refit_metric: str = None,
         priority_tuners: List[str] = None,
         custom_param_grids: dict = None,
         n_jobs: int = -1,
@@ -1318,77 +1319,145 @@ def predict_ml(
         categorical_imputer: TransformerMixin = SimpleImputer(strategy='constant', fill_value='missing'),
         categorical_encoder: TransformerMixin = OneHotEncoder(handle_unknown='ignore'),
         text_vectorizer: TransformerMixin = CountVectorizer(),
-        datetime_transformer: Callable[[pd.DataFrame], pd.DataFrame] = FunctionTransformer(datetime_feature_extractor, validate=False)
+        datetime_transformer: Callable[[pd.DataFrame], pd.DataFrame] = None
 ) -> Dict[str, Any]:
-    """
-    Automates and simplifies data preprocessing, model selection and model tuning, culminating in a recommendation of the best model given the user's data.
+    r"""
+    **Streamline the entire process of data preprocessing, model selection, and tuning, delivering optimal model recommendations based on the data provided.**
 
     Depending on the inputs, this function can either perform statistical inference or predictive model selection using machine learning.
-        - **Machine Learning Pipeline**: Focuses on predictive model selection and hyperparameter tuning using scikit-learn. It includes preprocessing, model recommendation based on specified metrics, and tuning using grid search, random search, or Bayesian optimization.
-        - **Inference Pipeline**: Utilizes statsmodels for detailed statistical analysis and model fitting based on a specified formula. This pipeline is tailored for users seeking statistical inference, providing metrics such as AIC, BIC, and R-squared.
+        - **Machine Learning Pipeline**: Focuses on predictive model selection and hyperparameter tuning using scikit-learn. It includes preprocessing (optional), model recommendation based on specified metrics, and tuning using grid search, random search, or Bayesian optimization.
+        - **Inference Pipeline**: Utilizes statsmodels for detailed statistical analysis and model fitting based on a specified formula. This pipeline is tailored for users seeking statistical inference, providing metrics such as AIC, BIC, and R-squared. This pipeline assumes the data to have been preprocessed appropriately beforehand.
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     df : pd.DataFrame
         The DataFrame containing the dataset to be analyzed.
-    x_cols : List[str], optional
+
+    x_cols : List[str], optional, default: None
         List of column names to be used as features for machine learning model recommendation.
-    y_col : str, optional
+
+    y_col : str, optional, default: None
         Column name to be used as the target for machine learning model recommendation.
-    formula : str, optional
+
+    formula : str, optional, default: None
         A Patsy formula for specifying the model in the case of statistical inference.
-    data_state : str, optional
-        Specifies the initial state of the data ('unprocessed' or 'preprocessed'). Default is 'unprocessed'.
-    test_size : float, optional
-        Proportion of the dataset to be used as the test set. Default is 0.2.
-    cv : int, optional
-        Number of cross-validation folds. Default is 5.
-    random_state : int, optional
-        Controls the shuffling applied to the data before applying the split.
-    priority_metrics : List[str], optional
-        Metrics to prioritize in model evaluation in the machine learning pipeline.
-    refit_metric : Optional[Union[str, Callable]], optional
-        Metric to use for refitting the models in the machine learning pipeline.
-    priority_tuners : List[str], optional
-        Tuners to use for hyperparameter tuning in the machine learning pipeline.
-    custom_param_grids : dict, optional
-        Custom parameter grids for tuning in the machine learning pipeline.
-    n_jobs : int, optional
-        Number of jobs to run in parallel. -1 means using all processors. Default is -1.
-    n_iter_random : int, optional
-        Number of iterations for random search tuning in the machine learning pipeline.
-    n_iter_bayesian : int, optional
-        Number of iterations for Bayesian optimization in the machine learning pipeline.
-    n_top_models : int, optional
+
+    data_state : str, optional, default: 'unprocessed'
+        Specifies the initial state of the data (``'unprocessed'`` or ``'preprocessed'``).
+
+        - ``'unprocessed'`` will trigger the customizable preprocessing procedure.
+        - ``'preprocessed'`` will omit the preprocessing procedure. *Only suitable for preprocessed data!*
+
+    n_top_models : int, optional, default: 3
         Number of top models to recommend from the evaluation.
-    priority_models : List[str], optional
-        Specific models to evaluate in the inference pipeline.
-    model_kwargs : dict, optional
+
+    test_size : float, optional, default: 0.2
+        Proportion of the dataset to be used as the test set.
+
+    cv : int, optional, default: 5
+        Number of cross-validation folds.
+
+    random_state : int, optional, default: 42
+        Controls the shuffling applied to the data before applying the split.
+
+    priority_metrics : List[str], optional, default: []
+        Metrics to prioritize in model evaluation in the machine learning pipeline. *Note: The list members must be in the correct format as specified below.*
+
+            **Available Metrics:**
+
+            - **Regression:** ``'explained_variance'``, ``'neg_mean_absolute_error'``, ``'neg_mean_squared_error'``, ``'neg_root_mean_squared_error'``, ``'neg_mean_squared_log_error'``, ``'neg_median_absolute_error'``, ``'r2'``, ``'neg_mean_poisson_deviance'``, ``'neg_mean_gamma_deviance'``, ``'neg_mean_absolute_percentage_error'``
+            - **Classification:** ``'accuracy'``, ``'balanced_accuracy'``, ``'average_precision'``, ``'neg_brier_score'``, ``'f1_micro'``, ``'f1_macro'``, ``'f1_weighted'``, ``'neg_log_loss'``, ``'precision_micro'``, ``'precision_macro'``, ``'precision_weighted'``, ``'recall_micro'``, ``'recall_macro'``, ``'recall_weighted'``, ``'jaccard_micro'``, ``'jaccard_macro'``, ``'jaccard_weighted'``, ``'roc_auc_ovr'``, ``'roc_auc_ovo'``
+
+    refit_metric : str, optional, default: None
+        Metric to use for refitting the models in the machine learning pipeline. *Note: The string must be in the correct format as specified below.*
+
+        - If ``None``, the function will use the first member of ``priority_matrics``.
+        - If ``None`` and no ``priority_metrics`` are provided, the function defaults to ``'Accuracy'`` for classification models and ``'MSE'`` for regression models.
+
+            **Available Refit Metrics:**
+
+            - **Regression:** ``'EV'``, ``'MAE'``, ``'MSE'``, ``'RMSE'``, ``'MSLE'``, ``'MedAE'``, ``'R2'``, ``'MPD'``, ``'MGD'``, ``'MAPE'``
+            - **Classification:** ``'Accuracy'``, ``'Balanced Accuracy'``, ``'Average Precision'``, ``'Neg Brier Score'``, ``'F1 (Micro)'``, ``'F1 (Macro)'``, ``'F1 (Weighted)'``, ``'Neg Log Loss'``, ``'Precision (Micro)'``, ``'Precision (Macro)'``, ``'Precision (Weighted)'``, ``'Recall (Micro)'``, ``'Recall (Macro)'``, ``'Recall (Weighted)'``, ``'Jaccard (Micro)'``, ``'Jaccard (Macro)'``, ``'Jaccard (Weighted)'``, ``'ROC AUC (OVR)'``, ``'ROC AUC (OVO)'``
+
+    priority_tuners : List[str], optional, default: None
+        Tuners to use for hyperparameter tuning in the machine learning pipeline. *Note: The list members must be in the correct format as specified below.*
+
+            **Available Tuners:** ``'grid'``, ``'random'``, ``'bayesian'``
+
+    custom_param_grids : dict, optional, default: None
+        Custom parameter grids for tuning in the machine learning pipeline. *Note: Template dictionaries are provided at the end of this page.*
+
+    n_jobs : int, optional, default: -1
+        Number of jobs to run in parallel. -1 means using all processors/parallel processing.
+
+    n_iter_random : int, optional, default: None
+        Number of iterations for random search tuning in the machine learning pipeline.
+
+    n_iter_bayesian : int, optional, default: None
+        Number of iterations for Bayesian optimization in the machine learning pipeline.
+
+    priority_models : List[str], optional, default: None
+        Specific models to evaluate in the inference pipeline. *Note: The list members must be in the correct format as specified below.*
+
+        - If ``None`` the function will assess all appropriate models.
+
+            **Available Inferential Models:**
+
+            - **Regression:** ``'OLS'``, ``'WLS'``, ``'GLS'``, ``'RLM'``, ``'QuantReg'``, ``'GLSAR'``, ``'MixedLM'``, ``'PHReg'``
+            - **Classification:** ``'Logit'``, ``'Probit'``, ``'MNLogit'``, ``'Poisson'``, ``'NegativeBinomial'``, ``'GEE'``, ``'NominalGEE'``, ``'OrdinalGEE'``
+
+    model_kwargs : dict, optional, default: None
         Keyword arguments to pass to model constructors in the inference pipeline.
-    verbose : int, optional
+
+    verbose : int, optional, default: 1
         Level of verbosity in output.
-    numeric_imputer : TransformerMixin, optional
-        Imputer for handling missing values in numerical data.
-    numeric_scaler : TransformerMixin, optional
-        Scaler for numerical data.
-    categorical_imputer : TransformerMixin, optional
-        Imputer for handling missing values in categorical data.
-    categorical_encoder : TransformerMixin, optional
-        Encoder for categorical data.
-    text_vectorizer : TransformerMixin, optional
-        Vectorizer for text data.
-    datetime_transformer : callable, optional
-        Transformer for datetime data.
 
-    Returns
-    -------
-    Dict[str, Any]
-        Depending on the operation mode, returns either:
-        - a dictionary of top machine learning models and their evaluation metrics,
-        - a dictionary of statistical models along with their fit statistics.
+    numeric_imputer : TransformerMixin, optional, default: SimpleImputer(strategy='median')
+        Imputer for handling missing values in numerical data, if ``data_state='unprocessed'``.
 
-    Examples
+            Any imputer from ``scikit.impute`` can be used instead of the default.
+
+    numeric_scaler : TransformerMixin, optional, default: StandardScaler()
+        Scaler for numerical data, if ``data_state='unprocessed'``.
+
+           Any scaler from ``scikit.preprocessing`` can be used instead of the default.
+
+    categorical_imputer : TransformerMixin, optional, default: SimpleImputer(strategy='constant', fill_value='missing')
+        Imputer for handling missing values in categorical data, if ``data_state='unprocessed'``.
+
+           Any imputer from ``scikit.preprocessing`` can be used instead of the default.
+
+    categorical_encoder : TransformerMixin, optional, default: OneHotEncoder(handle_unknown='ignore')
+        Encoder for categorical data, if ``data_state='unprocessed'``.
+
+            Any enoder from ``scikit.preprocessing`` can be used instead of the default.
+
+    text_vectorizer : TransformerMixin, optional, default: CountVectorizer()
+        Vectorizer for text data, if ``data_state='unprocessed'``.
+
+            Any vectorizer from ``sklearn.feature_extraction.text`` can be used instead of the default.
+
+    datetime_transformer : callable, optional, default: None
+        Transformer for datetime data, if ``data_state='unprocessed'``.
+
+            *Note: This parameter defaults to a custom datetime transformer, which extracts year, month, and day as separate features. This is an experimental feature and it is not recommended to use other solutions.*
+
+
+    Returns:
     --------
+    Dict[str, Any]
+        Depending on the operation mode, the dictionary contains either:
+            - top machine learning models and their evaluation metrics,
+            - top statistical models along with their fit statistics.
+
+
+    Examples:
+    ---------
+    **Import necessary libraries and generate a DataFrame for examples:**
+
+    >>> import datasafari
+    >>> import pandas as pd
+    >>> import numpy as np
     >>> df = pd.DataFrame({
     ...     'Age': np.random.randint(18, 35, size=100),
     ...     'Salary': np.random.normal(50000, 12000, size=100),
@@ -1396,26 +1465,332 @@ def predict_ml(
     ...     'Review': ['Good review']*50 + ['Bad review']*50,
     ...     'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
     ... })
-    >>> # Machine Learning Pipeline
+
+    Machine Learning Pipeline Examples
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    **Simple Machine Learning Pipeline:**
+
     >>> x_cols = ['Age', 'Salary', 'Department', 'Review', 'Employment Date']
     >>> y_col = 'Salary'
     >>> ml_models = predict_ml(df, x_cols=x_cols, y_col=y_col, verbose=2)
-    >>> # Inference Pipeline
-    >>> formula = 'Salary ~ Age + C(Department)'
-    >>> inference_models = predict_ml(df, formula=formula, verbose=2)
 
-    Notes
-    -----
-        1. Machine Learning Pipeline
-            1.1. Data Preprocessing (optional): prepares a dataset for machine learning by handling numerical, categorical, text, and datetime data. It supports flexible imputation, scaling, encoding, and vectorization methods to cater to a wide range of preprocessing needs. The function automatically splits the data into training and test sets and applies the preprocessing steps defined by the user. It accommodates custom preprocessing steps for various data types, enhancing flexibility and control over the preprocessing pipeline.
-            1.2. Evaluation of Untuned models: leverages a composite score for model evaluation, which synthesizes scores across multiple metrics, weighted by the specified priorities. This method enables a holistic and nuanced model comparison, taking into account the multidimensional aspects of model performance.
-                - Priority Metrics: Assigning weights (default: 5 for prioritized metrics, 1 for others) allows users to emphasize metrics they find most relevant, affecting the composite score calculation.
-                - Composite Score: Calculated as a weighted average of metric scores, normalized by the total weight. This score serves as a basis for ranking models.
-            1.3. Model Tuning: Uses top N untuned models to tune. Systematically applies grid search, random search, or Bayesian optimization to explore the hyperparameter space of given models. It supports customization of the tuning process through various parameters and outputs the best found configurations.
-        2. Statistical Inference Pipeline
-            - Recommends top statistical models for inference based on user-specified preferences and formula.
-            - This function evaluates various statistical models from statsmodels, each suitable for either regression or classification tasks determined dynamically by the nature of the target variable.
+    **Utilizing Priority Metrics and Refit Metric in Machine Learning Pipeline:**
+
+    >>> priority_metrics = ['neg_mean_squared_error', 'r2']
+    >>> ml_models_priority_metrics = predict_ml(
+    ...     df,
+    ...     x_cols=x_cols,
+    ...     y_col=y_col,
+    ...     priority_metrics=priority_metrics,
+    ...     refit_metric='r2',
+    ...     verbose=2
+    ... )
+
+    **Integrating Priority Tuners with Custom Parameter Grids:**
+
+    >>> custom_grids = {
+    ...     'RandomForestClassifier': {
+    ...         'n_estimators': [100, 200],
+    ...         'max_depth': [None, 10, 20]
+    ...     }
+    ... }
+    >>> priority_tuners = ['random', 'grid']
+    >>> ml_models_with_custom_tuning = predict_ml(
+    ...     df,
+    ...     x_cols=x_cols,
+    ...     y_col=y_col,
+    ...     priority_metrics=priority_metrics,
+    ...     refit_metric='r2',
+    ...     priority_tuners=priority_tuners,
+    ...     custom_param_grids=custom_grids,
+    ...     verbose=2
+    ... )
+
+    **Advanced Machine Learning Pipeline Using Bayesian Optimization:**
+
+    >>> priority_tuners = ['bayesian']
+    >>> n_iter_bayesian = 50
+    >>> ml_models_bayesian = predict_ml(
+    ...     df,
+    ...     x_cols=x_cols,
+    ...     y_col=y_col,
+    ...     priority_metrics=priority_metrics,
+    ...     refit_metric='r2',
+    ...     priority_tuners=priority_tuners,
+    ...     n_iter_bayesian=n_iter_bayesian,
+    ...     verbose=2
+    ... )
+
+
+    Inference Pipeline Examples
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    **Simple Inference Example Using a Statistical Model:**
+
+    Find the relationship between `Salary` and `Age` using Ordinary Least Squares (OLS) regression:
+
+    >>> formula = 'Salary ~ Age'
+    >>> inference_result_ols = predict_ml(df, formula=formula, verbose=2)
+
+    **Using a Categorical Predictor with OLS:**
+
+    Incorporate a categorical variable (`Department`) in the model to examine its effect on `Salary`:
+
+    >>> formula = 'Salary ~ Age + C(Department)'
+    >>> inference_result_ols_categorical = predict_ml(df, formula=formula, verbose=2)
+
+    **Advanced Inference with Multiple Models and Specific Metrics:**
+
+    Compare multiple regression models focusing on their fit statistics:
+
+    >>> priority_models = ['OLS', 'WLS', 'GLS']
+    >>> advanced_inference_models = predict_ml(
+    ...     df,
+    ...     formula=formula,
+    ...     priority_models=priority_models,
+    ...     verbose=2
+    ... )
+
+    **Inference with Robust Regression Model:**
+
+    Utilize Robust Linear Models (RLM) to mitigate the influence of outliers:
+
+    >>> formula = 'Salary ~ Age + C(Department)'
+    >>> robust_inference_result = predict_ml(
+    ...     df,
+    ...     formula=formula,
+    ...     priority_models=['RLM'],
+    ...     verbose=2
+    ... )
+
+    **Mixed Linear Model for Hierarchical or Longitudinal Data:**
+
+    Apply a Mixed Linear Model (MixedLM) if the data structure involves nested or grouped observations:
+
+    >>> formula = 'Salary ~ Age + C(Department) + (1|Employment Date)'
+    >>> mixedlm_inference_result = predict_ml(
+    ...     df,
+    ...     formula=formula,
+    ...     priority_models=['MixedLM'],
+    ...     verbose=2
+    ... )
+
+
+    Notes:
+    ------
+
+    Pipelines Explained
+    ^^^^^^^^^^^^^^^^^^^
+
+    Machine Learning Pipeline
+    +++++++++++++++++++++++++
+        1. **Data Preprocessing (optional):** optionally prepares a dataset for machine learning by handling numerical, categorical, text, and datetime data.
+            - It supports flexible imputation, scaling, encoding, and vectorization methods to cater to a wide range of preprocessing needs.
+            - The function automatically splits the data into training and test sets and applies the preprocessing steps defined by the user.
+            - It accommodates custom preprocessing steps for various data types, enhancing flexibility and control over the preprocessing pipeline.
+
+        2. **Evaluation of Untuned Models:** leverages a composite score for model evaluation, which synthesizes scores across multiple metrics, weighted by the specified priorities. This method enables a holistic and nuanced model comparison, taking into account the multidimensional aspects of model performance.
+            - **Priority Metrics:** Assigning weights (default: 5 for prioritized metrics, 1 for others) allows users to emphasize metrics they find most relevant, affecting the composite score calculation.
+            - **Composite Score:** Calculated as a weighted average of metric scores, normalized by the total weight. This score serves as a basis for ranking models. The formula for the composite score is given by:
+
+            .. math::
+
+                C = \frac{\sum_{m \in M} (w_m \cdot \text{adj}(s_m))}{\sum_{m \in M} w_m}
+
+            Where:
+                - :math:`\text{adj}(s_m)` is the score adjustment function, ensuring a consistent interpretation across metrics. Metrics for which lower values are traditionally better (e.g., RMSE, MAE) are inverted or negated prior to weight application, aligning all metrics to the "higher is better" principle for score calculation.
+                - :math:`w_m` represents the weight of metric :math:`m`.
+                - :math:`M` is the set of all metrics considered in the evaluation.
+
+        3. **Model Tuning:** Uses top N untuned models to tune. Systematically applies grid search, random search, or Bayesian optimization to explore the hyperparameter space of given models. It supports customization of the tuning process through various parameters and outputs the best found configurations.
+
+
+    Statistical Inference Pipeline
+    ++++++++++++++++++++++++++++++
+        1. **Determination of Task Type:** First, the function identifies whether the analysis involves regression or classification. This categorization is based on the datatype of the target variable specified in the formula:
+            - **Regression:** Applied if the target variable is numerical.
+            - **Classification:** Applied if the target variable is categorical.
+
+        2. **Model Selection:** Based on the task type determined in the previous step, the function selects from a pre-defined set of models suitable for either regression or classification:
+            - Models and their respective functions are predefined in the `models_classification_inference` or `models_regression_inference` dictionaries, depending on whether the task is classification or regression.
+            - The user has the option to limit the evaluation to a subset of models through the `priority_models` parameter, enhancing focus and computational efficiency.
+
+        3. **Model Evaluation:** Each selected model is fitted to the data using the formula provided:
+            - The function iterates over each model, passing any user-defined keyword arguments specific to that model using the `model_kwargs` dictionary. This allows for customized model configurations.
+            - Models are fitted using their respective statistical functions from the statsmodels API, adhering to the specifications in the formula.
+
+        4. **Metrics Calculation:** After fitting, the function evaluates each model using a set of predefined metrics appropriate for the task type:
+            - Certain metrics, particularly those for which a lower value indicates better performance (e.g., AIC, BIC), are adjusted to fit a common scoring scheme where higher values indicate better model performance.
+
+        5. **Model Ranking and Output:** Finally, the models are ranked based on their performance metrics:
+            - A sorted list of models is generated based on the adjusted metrics, allowing the top-performing models to be identified.
+            - The function returns the top `n_top_models` as specified, including their fitted model objects and performance metrics, facilitating further analysis or validation by the user.
+            - If verbose output is enabled, the function provides detailed summaries of the top models, aiding in interpretive and diagnostic processes.
+
+
+
+
+    Available Metadata
+    ^^^^^^^^^^^^^^^^^^^
+
+    Below you can find all of the models, scoring metrics and tuners ``predict_ml()`` is equipped with. We also provide default parameter grids for users who do not wish to provide it.
+
+    ML-oriented Models
+    ++++++++++++++++++
+
+        **Classification Models**
+            - **LogisticRegression**: Provides logistic regression for binary classification.
+            - **DecisionTreeClassifier**: Offers decision tree algorithms for classification.
+            - **RandomForestClassifier**: Implements a random forest for classification.
+            - **GradientBoostingClassifier**: Applies gradient boosting techniques for classification.
+            - **SVC**: Support Vector Classifier with enabled probability estimates.
+            - **KNeighborsClassifier**: Utilizes k-nearest neighbors voting classification.
+
+        **Regression Models**
+            - **LinearRegression**: Ordinary least squares Linear Regression.
+            - **Ridge**: Ridge regression with L2 regularization.
+            - **Lasso**: Lasso regression with L1 regularization.
+            - **DecisionTreeRegressor**: Regression based on decision trees.
+            - **RandomForestRegressor**: Random forest algorithm for regression.
+            - **GradientBoostingRegressor**: Gradient boosting for regression.
+            - **SVR**: Epsilon-Support Vector Regression.
+            - **KNeighborsRegressor**: Regression based on k-nearest neighbors.
+
+    Inference-oriented Models
+    +++++++++++++++++++++++++
+
+    These models are specifically used for statistical inference, allowing for detailed statistical analysis.
+
+        **Classification Inference Models**
+            - **Logit**: Logistic regression for binary classification.
+            - **Probit**: Probit model for binary classification.
+            - **MNLogit**: Multinomial logistic regression for handling multiple categories.
+            - **Poisson**: Poisson model for count data.
+            - **NegativeBinomial**: Negative binomial model for count data with over-dispersion.
+            - **GEE**: Generalized Estimating Equations for longitudinal data.
+            - **NominalGEE**: Generalized Estimating Equations for nominal responses.
+            - **OrdinalGEE**: Generalized Estimating Equations for ordinal responses.
+
+        **Regression Inference Models**
+            - **OLS**: Ordinary Least Squares for linear regression.
+            - **WLS**: Weighted Least Squares for cases with non-constant variance.
+            - **GLS**: Generalized Least Squares for regression with correlated errors.
+            - **RLM**: Robust Linear Models for regression with outliers.
+            - **QuantReg**: Quantile Regression for modeling different quantiles.
+            - **GLSAR**: GLS with autoregressive error model.
+            - **MixedLM**: Mixed Linear Model for hierarchical or longitudinal data.
+            - **PHReg**: Proportional Hazards model for survival analysis.
+
+    Scoring Metrics
+    +++++++++++++++
+
+        **Classification Scoring Metrics**
+            - **Accuracy, Balanced Accuracy**: Measures overall and balanced accuracy.
+            - **Average Precision, F1 Score Variants**: Assesses precision-recall balance.
+            - **Negative Log Loss**: Negative log-likelihood of the classifier.
+            - **Precision, Recall, Jaccard Index**: Evaluates the positive identified samples.
+            - **ROC AUC**: Area Under the ROC Curve for model discrimination capability.
+
+        **Regression Scoring Metrics**
+            - **Explained Variance, MAE, MSE, RMSE, MSLE, MedAE**: Measures of error and variance explained by the model.
+            - **R2, MPD, MGD, MAPE**: Metrics for accuracy and prediction deviation.
+
+    Model Tuners
+    ++++++++++++
+        - **GridSearchCV**: Exhaustive search over specified parameter values.
+        - **RandomizedSearchCV**: Randomized search on hyper parameters.
+        - **BayesSearchCV**: Bayesian approach to hyperparameter optimization.
+
+    Default Parameter Grids
+    +++++++++++++++++++++++
+
+    We provide default parameter grids for users who do not wish to provide it. Feel free to use the ones below as a template for your own to use with ``predict_ml(custom_param_grids=..)``
+
+    **Parameter Grid for Classification Model Tuning**
+
+    >>> default_param_grids_classification = {
+    ...     'LogisticRegression': {
+    ...         'C': [0.1, 1, 10, 100],
+    ...         'penalty': ['l2'],
+    ...         'solver': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
+    ...     },
+    ...     'DecisionTreeClassifier': {
+    ...         'max_depth': [None, 10, 20, 30, 40, 50],
+    ...         'min_samples_split': [2, 5, 10],
+    ...         'min_samples_leaf': [1, 2, 4]
+    ...     },
+    ...     'RandomForestClassifier': {
+    ...         'n_estimators': [100, 200, 300, 400],
+    ...         'max_features': ['auto', 'sqrt'],
+    ...         'max_depth': [None, 10, 20, 30, 40],
+    ...         'min_samples_split': [2, 5, 10],
+    ...         'min_samples_leaf': [1, 2, 4]
+    ...     },
+    ...     'GradientBoostingClassifier': {
+    ...         'n_estimators': [100, 200, 300],
+    ...         'learning_rate': [0.01, 0.1, 0.2, 0.5],
+    ...         'max_depth': [3, 5, 7, 9]
+    ...     },
+    ...     'SVC': {
+    ...         'C': [0.1, 1, 10, 100, 1000],
+    ...         'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
+    ...         'gamma': ['scale', 'auto']
+    ...     },
+    ...     'KNeighborsClassifier': {
+    ...         'n_neighbors': [3, 5, 7, 9],
+    ...         'weights': ['uniform', 'distance'],
+    ...         'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute']
+    ...     }
+    ... }
+
+
+    **Parameter Grid for Regression Model Tuning**
+
+    >>> default_param_grids_regression = {
+    ...     'LinearRegression': {
+    ...         # Linear Regression usually does not need hyperparameter tuning except for regularization
+    ...     },
+    ...     'Ridge': {
+    ...         'alpha': [0.1, 1.0, 10.0, 100.0],
+    ...         'solver': ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']
+    ...     },
+    ...     'Lasso': {
+    ...         'alpha': [0.1, 1.0, 10.0, 100.0],
+    ...         'selection': ['cyclic', 'random']
+    ...     },
+    ...     'DecisionTreeRegressor': {
+    ...         'max_depth': [None, 10, 20, 30, 40, 50],
+    ...         'min_samples_split': [2, 5, 10],
+    ...         'min_samples_leaf': [1, 2, 4]
+    ...     },
+    ...     'RandomForestRegressor': {
+    ...         'n_estimators': [100, 200, 300, 400],
+    ...         'max_features': ['auto', 'sqrt'],
+    ...         'max_depth': [None, 10, 20, 30, 40],
+    ...         'min_samples_split': [2, 5, 10],
+    ...         'min_samples_leaf': [1, 2, 4]
+    ...     },
+    ...     'GradientBoostingRegressor': {
+    ...         'n_estimators': [100, 200, 300],
+    ...         'learning_rate': [0.01, 0.1, 0.2, 0.5],
+    ...         'max_depth': [3, 5, 7, 9]
+    ...     },
+    ...     'SVR': {
+    ...         'C': [0.1, 1, 10, 100, 1000],
+    ...         'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
+    ...         'gamma': ['scale', 'auto']
+    ...     },
+    ...     'KNeighborsRegressor': {
+    ...         'n_neighbors': [3, 5, 7, 9],
+    ...         'weights': ['uniform', 'distance'],
+    ...         'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute']
+    ...     }
+    ... }
+
     """
+    if datetime_transformer is None:
+        datetime_transformer = FunctionTransformer(datetime_feature_extractor, validate=False)
 
     if formula and df is not None:
         # Inference pipeline

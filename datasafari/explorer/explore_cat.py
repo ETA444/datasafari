@@ -11,52 +11,54 @@ def explore_cat(
         output: str = 'print'
 ) -> Optional[str]:
     """
-    Explores categorical variables within a DataFrame, providing insights through various methods. The exploration
-    can yield unique values, counts and percentages of those values, and the entropy to quantify data diversity.
+    **Explore categorical variables within a DataFrame and gain insights on unique values, counts and percentages, and the entropy of variables to quantify data diversity.**
 
     Parameters:
-    ----------
+    -----------
     df : pd.DataFrame
         The DataFrame containing the data to be explored.
 
     categorical_variables : list
         A list of strings specifying the names of the categorical columns to explore.
 
-    method : str, default 'all'
-        Specifies the method of exploration to apply. Options include:
-            - 'unique_values': Lists unique values for each specified categorical variable.
-            - 'counts_percentage': Shows counts and percentages for the unique values of each variable.
-            - 'entropy': Calculates the entropy for each variable, providing a measure of data diversity. See the 'calculate_entropy' function for more details on entropy calculation.
-            - 'all': Applies all the above methods sequentially.
+    method : str, default: 'all'
+        Specifies the method of exploration to apply.
+            - ``'unique_values'`` Lists unique values for each specified categorical variable.
+            - ``'counts_percentage'`` Shows counts and percentages for the unique values of each variable.
+            - ``'entropy'`` Calculates the entropy for each variable, providing a measure of data diversity. See the 'calculate_entropy' function for more details on entropy calculation.
+            - ``'all'`` Applies all the above methods sequentially.
 
-    output : str, default 'print'
-        Determines how the exploration results are outputted. Options are:
-            - 'print': Prints the results to the console.
-            - 'return': Returns the results as a single formatted string.
+    output : str, default: 'print'
+        Determines the output format.
+            - ``'print'`` Prints the results to the console.
+            - ``'return'`` Returns the results as a single formatted string.
 
     Returns:
     --------
     str or None
-        - If output='return', a string containing the formatted exploration results is returned.
-        - If output='print', results are printed to the console, and the function returns None.
+        - ``str`` If output='return', a string containing the formatted exploration results is returned.
+        - ``None`` If output='print', results are printed to the console, and the function returns None.
 
-    Raises
-    ------
-    TypeError
+    Raises:
+    -------
+    TypeErrors:
         - If `df` is not a pandas DataFrame.
         - If `categorical_variables` is not a list or contains non-string elements.
         - If `method` or `output` is not a string.
-    ValueError
-        - If the `df` is empty, indicating that there's no data to evaluate.
-        - If `method` is not one of the valid options ('unique_values', 'counts_percentage', 'entropy', 'all').
-        - If `output` is not one of the valid options ('print', 'return').
+
+    ValueErrors:
+        - If the `df` is empty.
+        - If `method` is not one of the valid options.
+        - If `output` is not one of the valid options.
         - If 'categorical_variables' list is empty.
         - If variables provided through 'categorical_variables' are not categorical variables.
         - If any of the specified categorical variables are not found in the DataFrame.
 
     Examples:
-    --------
-    # Create a sample DataFrame to use in the examples:
+    ---------
+    Create a sample DataFrame to use in the examples:
+
+    >>> import datasafari
     >>> import numpy as np
     >>> import pandas as pd
     >>> data = {
@@ -66,29 +68,35 @@ def explore_cat(
     ... }
     >>> df = pd.DataFrame(data)
 
-    # Display unique values for 'Category1' and 'Category2'
+    The full potential of ``explore_cat()`` is unlocked by simply providing a dataframe and the categorical columns to explore:
+
+    >>> explore_cat(df, ['Category1', 'Category2', 'Category3'])
+
+    Display unique values for 'Category1' and 'Category2':
+
     >>> explore_cat(df, ['Category1', 'Category2'], method='unique_values', output='print')
 
-    # Explore counts and percentages for 'Category1' and 'Category2', then print the results
+    Explore counts and percentages for 'Category1' and 'Category2', then print the results:
+
     >>> explore_cat(df, ['Category1', 'Category2'], method='counts_percentage', output='print')
 
-    # Calculate and return the entropy of 'Category1', 'Category2', and 'Category3'
+    Calculate and return the entropy of 'Category1', 'Category2', and 'Category3':
+
     >>> result = explore_cat(df, ['Category1', 'Category2', 'Category3'], method='entropy', output='return')
     >>> print(result)
 
-    # Comprehensive exploration of all specified methods for 'Category1', 'Category2', and 'Category3', displaying to console
+    Comprehensive exploration of all specified methods for 'Category1', 'Category2', and 'Category3', displaying to console:
+
     >>> explore_cat(df, ['Category1', 'Category2', 'Category3'], method='all', output='print')
 
-    # Using 'all' method to explore 'Category1' and 'Category2', returning the results as a string
+    Using 'all' method to explore 'Category1' and 'Category2', returning the results as a string:
+
     >>> result_str = explore_cat(df, ['Category1', 'Category2'], method='all', output='return')
     >>> print(result_str)
 
     Notes:
-    -----
-    The 'entropy' method provides a quantitative measure of the unpredictability or
-    diversity within each specified categorical column, calculated as outlined in the
-    documentation for 'calculate_entropy'. High entropy values indicate a more uniform
-    distribution of categories, suggesting no single category overwhelmingly dominates.
+    ------
+    The ``'entropy'`` method provides a quantitative measure of the unpredictability or diversity within each specified categorical column, calculated as outlined in the documentation for 'calculate_entropy'. High entropy values indicate a more uniform distribution of categories, suggesting no single category overwhelmingly dominates.
     """
 
     # Error Handling #
@@ -97,16 +105,16 @@ def explore_cat(
         raise TypeError("explore_cat(): The df parameter must be a pandas DataFrame.")
 
     if not isinstance(categorical_variables, list):
-        raise TypeError(f"explore_cat(): The categorical_variables parameter must be a list of variable names.\n Example: var_list = ['var1', 'var2', 'var3']")
+        raise TypeError("explore_cat(): The categorical_variables parameter must be a list of variable names.\n Example: var_list = ['var1', 'var2', 'var3']")
     else:
         if not all(isinstance(var, str) for var in categorical_variables):
             raise TypeError("explore_cat(): All items in the categorical_variables list must be strings representing column names.")
 
     if not isinstance(method, str):
-        raise TypeError(f"explore_cat(): The method parameter must be a string.\n Example: method = 'all'")
+        raise TypeError("explore_cat(): The method parameter must be a string.\n Example: method = 'all'")
 
     if not isinstance(output, str):
-        raise TypeError(f"explore_cat(): The output parameter must be a string. \n Example: output = 'return'")
+        raise TypeError("explore_cat(): The output parameter must be a string. \n Example: output = 'return'")
 
     # ValueErrors
 
@@ -130,7 +138,7 @@ def explore_cat(
     # Check if variables are categorical
     categorical_types = evaluate_dtype(df, categorical_variables, output='list_c')
     if not all(categorical_types):
-        raise ValueError(f"explore_cat(): The 'categorical_variables' list must contain only names of categorical variables.")
+        raise ValueError("explore_cat(): The 'categorical_variables' list must contain only names of categorical variables.")
 
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in categorical_variables if var not in df.columns]
@@ -142,7 +150,7 @@ def explore_cat(
 
     if method.lower() in ['unique_values', 'all']:
         # initial append for title of method section
-        result.append(f"<<______UNIQUE VALUES PER VARIABLE______>>\n")
+        result.append("<<______UNIQUE VALUES PER VARIABLE______>>\n")
 
         # get the unique values per variable in categorical_variables list
         for variable_name in categorical_variables:
@@ -151,7 +159,7 @@ def explore_cat(
 
     if method.lower() in ['counts_percentage', 'all']:
         # initial append for title of method section
-        result.append(f"<<______COUNTS & PERCENTAGE______>>\n")
+        result.append("<<______COUNTS & PERCENTAGE______>>\n")
 
         # get the counts and percentages per unique value of variable in categorical_variables list
         for variable_name in categorical_variables:

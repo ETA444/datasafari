@@ -20,105 +20,138 @@ def transform_cat(
         target_variable: Optional[str] = None
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Transforms categorical variables in a DataFrame using various encoding and cleaning methods.
+    **Transform categorical variables in a DataFrame through a range of encoding options and basic to advanced machine learning-based methods for uniform data cleaning.**
 
-    Parameters
-    ----------
+    This is a versatile tool designed for comprehensive transformation and encoding of categorical data in a DataFrame. It accommodates everything from simple text standardization to sophisticated category consolidation using ML and various encoding schemes, catering to both nominal and ordinal data.
+
+    Parameters:
+    -----------
     df : pd.DataFrame
         The DataFrame containing the categorical data to transform.
+
     categorical_variables : list
         A list of strings representing the names of the categorical columns to be transformed.
+
     method : str
-        The method to use for transforming the categorical variables. Valid options and their descriptions include:
-            - 'uniform_simple': Basic cleaning transformations to standardize text, such as lowercase conversion, whitespace trimming, and special character removal. Also fills missing values with a specified placeholder.
-            - 'uniform_smart': Advanced cleaning that leverages Levenshtein distance for textual similarity and hierarchical clustering to group and normalize similar categories. Builds on 'uniform_simple' preprocessing steps.
-            - 'uniform_mapping': Allows for manual mapping of categories based on user-defined rules to handle specific cases that automated methods might not cover.
-            - 'encode_onehot': Converts categories into binary columns for each category. Suitable for nominal data where no ordinal relationship exists.
-            - 'encode_ordinal': Maps categories to an integer array based on the order defined in `ordinal_map`. Suitable for ordinal data where the order of categories is important.
-            - 'encode_freq': Transforms categories based on the frequency of each category, replacing the category name with its frequency count.
-            - 'encode_target': Encodes categories based on the mean of the target variable for each category. This method should be used cautiously to avoid data leakage and is recommended to be applied within a cross-validation loop.
-            - 'encode_binary': Utilizes binary encoding to transform categories into binary columns, reducing dimensionality and dataset size compared to one-hot encoding. Ideal for high cardinality features.
-    na_placeholder : str, optional
-        The placeholder value to use for missing values during transformations. Default is 'Unknown'.
-    abbreviation_map : dict, optional
-        A dictionary specifying manual mappings for categories, used with the 'uniform_mapping' method. Each key should be the name of a categorical variable, and its value should be another dictionary mapping original category values to their new values. This is useful for correcting typos, consolidating similar categories, or applying any specific transformations that automated methods cannot handle.
-    ordinal_map : dict, optional
-        A dictionary specifying the order of categories for ordinal encoding, used with the 'encode_ordinal' method. Each key should be the name of a categorical variable, and its value should be a list of categories in the desired order. This method treats the order of categories as meaningful and encodes them as integers based on the provided order.
-    target_variable : str, optional
+        The method to use for transforming the categorical variables.
+            - ``'uniform_simple'`` Basic cleaning transformations to standardize text, such as lowercase conversion, whitespace trimming, and special character removal. Also fills missing values with a specified placeholder.
+            - ``'uniform_smart'`` Advanced cleaning that leverages Levenshtein distance for textual similarity and hierarchical clustering to group and normalize similar categories. Builds on 'uniform_simple' preprocessing steps.
+            - ``'uniform_mapping'`` Allows for manual mapping of categories based on user-defined rules to handle specific cases that automated methods might not cover.
+            - ``'encode_onehot'`` Converts categories into binary columns for each category. Suitable for nominal data where no ordinal relationship exists.
+            - ``'encode_ordinal'`` Maps categories to an integer array based on the order defined in `ordinal_map`. Suitable for ordinal data where the order of categories is important.
+            - ``'encode_freq'`` Transforms categories based on the frequency of each category, replacing the category name with its frequency count.
+            - ``'encode_target'`` Encodes categories based on the mean of the target variable for each category. This method should be used cautiously to avoid data leakage and is recommended to be applied within a cross-validation loop.
+            - ``'encode_binary'`` Utilizes binary encoding to transform categories into binary columns, reducing dimensionality and dataset size compared to one-hot encoding. Ideal for high cardinality features.
+
+    na_placeholder : str, optional, default: 'Unknown'
+        The placeholder value to use for missing values during transformations.
+
+    abbreviation_map : dict, optional, default: None
+        A dictionary specifying manual mappings for categories, used with the 'uniform_mapping' method.
+            - Each key should be the name of a categorical variable, and its value should be another dictionary mapping original category values to their new values.
+
+    ordinal_map : dict, optional, default: None
+        A dictionary specifying the order of categories for ordinal encoding, used with the 'encode_ordinal' method.
+            - Each key should be the name of a categorical variable, and its value should be a list of categories in the desired order. This method treats the order of categories as meaningful and encodes them as integers based on the provided order.
+
+    target_variable : str, optional, default: None
         The name of the target variable for target encoding. Used with the 'encode_target' method.
 
-    Returns
-    -------
-    transformed_df : pd.DataFrame
-        The DataFrame with transformed categorical variables.
-    transformed_columns : pd.DataFrame
-        A DataFrame containing only the transformed columns.
+    Returns:
+    --------
+    Tuple[pd.DataFrame, pd.DataFrame]
+        - Original DataFrame with transformed categorical variables.
+        - A DataFrame containing only the transformed columns.
 
-    Raises
-    ------
-    TypeError
+    Raises:
+    -------
+    TypeErrors:
         - If `df` is not a pandas DataFrame.
         - If `categorical_variables` is not a list or contains elements that are not strings.
-        - If `method`, `na_placeholder`, or `target_variable` (if provided) is not a string.
-        - If `abbreviation_map` or `ordinal_map` (if provided) is not a dictionary.
-    ValueError
-        - If the input DataFrame is empty, ensuring that there is data available for model fitting.
+        - If `method`, `na_placeholder`, or `target_variable` is not a strings.
+        - If `abbreviation_map` or `ordinal_map`  is not a dictionary.
+
+    ValueErrors:
+        - If the input DataFrame is empty.
         - If 'categorical_variables' list is empty.
         - If variables provided through 'categorical_variables' are not categorical variables.
         - If any variable specified in `categorical_variables` is not found in the DataFrame's columns.
-        - If `method` is not one of the valid options: 'uniform_simple', 'uniform_smart', 'uniform_mapping', 'encode_onehot', 'encode_ordinal', 'encode_freq', 'encode_target', 'encode_binary'.
+        - If `method` is not one of the valid options.
         - If `method` is 'encode_ordinal' and `ordinal_map` is not provided.
         - If `method` is 'encode_target' and `target_variable` is not provided.
         - If `method` is 'uniform_mapping' and `abbreviation_map` is not provided.
         - If `target_variable` is specified but not found in the DataFrame's columns.
         - If keys specified in `abbreviation_map` or `ordinal_map` are not found in the DataFrame's columns.
 
-    Examples
-    --------
-    # Import necessary libraries
+    Examples:
+    ---------
+    Import necessary libraries and generate a DataFrame for examples:
+
+    >>> import datasafari
     >>> import pandas as pd
-
-    # Generate a DataFrame for examples
+    >>> import numpy as np
     >>> df = pd.DataFrame({
-    ...     'Category': ['Student', 'student', 'STUDENT', 'StUdEnT', 'high school', 'High School', 'high   school', 'hgh schl', 'A', 'B', 'A', 'C', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
-    ...     'Target': [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
-    ... })
+        ...     'Category': ['Student', 'student', 'STUDENT', 'StUdEnT', 'high school', 'High School', 'high   school', 'hgh schl'],
+        ...     'Target': np.random.randint(0, 2, 8)
+        ... })
 
-    # Apply 'uniform_simple' method
-    >>> transform_cat(df, ['Category'], method='uniform_simple')
+    Apply ``'uniform_simple'`` method to clean up ```Category`` column:
 
-    # Apply 'uniform_smart' method
-    >>> transform_cat(df, ['Category'], method='uniform_smart')
+    >>> transformed_df, uniform_simple_cols = transform_cat(df, ['Category'], method='uniform_simple')
 
-    # Apply 'uniform_mapping' method with a custom abbreviation map
+    Apply ``'uniform_smart'`` method to clean up more complex issues in the column using ML techniques:
+
+    >>> transformed_df, uniform_smart_cols = transform_cat(transformed_df, ['Category'], method='uniform_smart')
+    >>> # Note: 'uniform_smart' already has 'uniform_simple' built-in, however to save resources you can run smart only if needed.
+
+    Apply ``'uniform_mapping'`` method with a custom abbreviation map to clean up the more stubborn issues that ``uniform_smart`` did not catch:
+
     >>> abbreviation_map = {'Category': {'hgh schl': 'high school'}}
-    >>> transform_cat(df, ['Category'], method='uniform_mapping', abbreviation_map=abbreviation_map)
+    >>> transformed_df, uniform_mapped_cols = transform_cat(transformed_df, ['Category'], method='uniform_mapping', abbreviation_map=abbreviation_map)
 
-    # Apply 'encode_onehot' method
-    >>> transform_cat(df, ['Category'], method='encode_onehot')
+    Using the various encoding methods now that the data is clean:
 
-    # Apply 'encode_ordinal' method with a custom ordinal map
-    >>> ordinal_map = {'Category': ['A', 'B', 'C']}
-    >>> transform_cat(df, ['Category'], method='encode_ordinal', ordinal_map=ordinal_map)
+    >>> # Apply 'encode_onehot' method:
+    >>> transformed_onehot_df, onehot_cols = transform_cat(transformed_df, ['Category'], method='encode_onehot')
+    ...
+    >>> # Apply 'encode_ordinal' method with a custom ordinal map:
+    >>> ordinal_map = {'Category': ['student', 'high school']}
+    >>> transformed_ordinal_df, ordinal_cols = transform_cat(transformed_df, ['Category'], method='encode_ordinal', ordinal_map=ordinal_map)
+    ...
+    >>> # Apply 'encode_freq' method:
+    >>> transformed_freq_df, freq_cols = transform_cat(transformed_df, ['Category'], method='encode_freq')
+    ...
+    >>> # Apply 'encode_target' method with a specified target variable:
+    >>> transformed_target_df, target_cols = transform_cat(transformed_df, ['Category'], method='encode_target', target_variable='Target')
+    ...
+    >>> # Apply 'encode_binary' method:
+    >>> transformed_binary_df, binary_cols = transform_cat(transformed_df, ['Category'], method='encode_binary')
 
-    # Apply 'encode_freq' method
-    >>> transform_cat(df, ['Category'], method='encode_freq')
+    Notes:
+    ------
+    **`uniform_simple` Method:**
+    This method provides a foundational approach to cleaning categorical data by implementing several straightforward transformations to standardize and simplify the text data. Here’s a breakdown of the steps involved:
 
-    # Apply 'encode_target' method with a specified target variable
-    >>> transform_cat(df, ['Category'], method='encode_target', target_variable='Target')
+        1. **Lowercase Conversion**: All characters in the text are converted to lowercase to eliminate inconsistencies caused by varied capitalizations.
 
-    # Apply 'encode_binary' method
-    >>> transform_cat(df, ['Category'], method='encode_binary')
+        2. **Whitespace Trimming**: Leading and trailing spaces are removed from each string to ensure cleanliness and uniformity in the text data.
 
+        3. **Special Characters Removal**: Non-alphanumeric characters are removed to standardize the text and reduce noise in the data. This step is crucial for preparing data for machine learning models, which may be sensitive to such variations.
 
-    Notes
-    -----
-    The 'uniform_smart' method uses advanced techniques, including Levenshtein distance and hierarchical clustering,
-    to group and normalize similar categories. It's particularly useful for datasets with slight variations in
-    categorical data entries.
+        4. **Missing Values Handling**: Missing values are replaced with a specified placeholder, defaulting to 'Unknown'. This ensures that no data point is lost due to absence of information, and helps maintain the integrity of the dataset during further transformations.
 
-    The 'encode_target' method should ideally be applied within a cross-validation loop to avoid data leakage and
-    ensure that the mean target encoding is calculated separately for each fold of the data.
+    **`uniform_smart` Method:**
+    Building on the principles of `uniform_simple`, the `uniform_smart` method incorporates advanced techniques to address more complex variations in text data that simple transformations might miss:
+
+        1. **Initial Preprocessing**: Executes all steps of `uniform_simple` to prepare the data, setting a standardized baseline for further processing.
+
+        2. **Textual Similarity Evaluation**: Utilizes the Levenshtein distance, a measure of the difference between two strings, to quantify the similarity between categories. This metric helps identify and group textually similar categories, even if they are not exactly the same.
+
+        3. **Hierarchical Clustering**: Applies hierarchical clustering to the similarity matrix generated from the Levenshtein distances. This statistical method groups categories based on their textual closeness, which allows for the aggregation of variations of the same category.
+
+        4. **Cluster Representative Selection**: Within each identified cluster, a representative category is chosen to stand for all the categories within that cluster. Typically, the most frequent category within the cluster is selected as the representative, ensuring that the most common terminology is used in the dataset.
+
+        5. **Category Normalization**: Each original category is mapped to its cluster representative, normalizing the dataset by reducing the variation due to synonyms, misspellings, and other irregularities.
     """
 
     # Error-Handling #
@@ -172,7 +205,7 @@ def transform_cat(
     # Check if variables are categorical
     categorical_types = evaluate_dtype(df, categorical_variables, output='list_c')
     if not all(categorical_types):
-        raise ValueError(f"transform_cat(): The 'categorical_variables' list must contain only names of categorical variables.")
+        raise ValueError("transform_cat(): The 'categorical_variables' list must contain only names of categorical variables.")
 
     # Check if method is valid
     valid_methods = ['uniform_simple', 'uniform_smart', 'uniform_mapping', 'encode_onehot', 'encode_ordinal', 'encode_freq', 'encode_target', 'encode_binary']
@@ -205,12 +238,12 @@ def transform_cat(
 
     # Main Function #
     if method.lower() == 'uniform_simple':
-        print(f"< UNIFORM SIMPLE TRANSFORMATION* >")
-        print(f" This method applies basic but effective transformations to make categorical data uniform:")
-        print(f"  ✔ Lowercases all text to fix capitalization inconsistencies.")
-        print(f"  ✔ Trims leading and trailing whitespaces for cleanliness.")
-        print(f"  ✔ Removes special characters to standardize text.")
-        print(f"  ✔ Fills missing values with a placeholder to maintain data integrity. (use na_placeholder = '...', default 'Unknown')")
+        print("< UNIFORM SIMPLE TRANSFORMATION* >")
+        print(" This method applies basic but effective transformations to make categorical data uniform:")
+        print("  ✔ Lowercases all text to fix capitalization inconsistencies.")
+        print("  ✔ Trims leading and trailing whitespaces for cleanliness.")
+        print("  ✔ Removes special characters to standardize text.")
+        print("  ✔ Fills missing values with a placeholder to maintain data integrity. (use na_placeholder = '...', default 'Unknown')")
 
         # initialize dataframe to work with
         transformed_df = df.copy()
@@ -224,7 +257,7 @@ def transform_cat(
                 .fillna(na_placeholder)  # Customize this placeholder as needed
                 .str.lower()
                 .str.strip()
-                .str.replace('[^a-zA-Z0-9\s]', '', regex=True)
+                .str.replace(r'[^a-zA-Z0-9\s]', '', regex=True)
             )
             transformed_df[variable] = transformed_column
             uniform_columns = pd.concat([uniform_columns, transformed_column], axis=1)
@@ -244,13 +277,13 @@ def transform_cat(
         return transformed_df, uniform_columns
 
     if method.lower() == 'uniform_smart':
-        print(f"< UNIFORM SMART TRANSFORMATION* >")
-        print(f" This method leverages advanced data cleaning techniques for categorical variables, enhancing uniformity across your dataset:")
-        print(f"  ✔ Utilizes the `uniform_simple` method for initial preprocessing steps.")
-        print(f"  ✔ Employs Levenshtein distance to evaluate textual similarity among categories.")
-        print(f"  ✔ Applies hierarchical clustering to group similar categories together.")
-        print(f"  ✔ Selects the most representative category within each cluster to ensure data consistency.")
-        print(f"  ✔ Fills missing values with a placeholder to maintain data integrity. (default 'Unknown', customize with na_placeholder = '...')\n")
+        print("< UNIFORM SMART TRANSFORMATION* >")
+        print(" This method leverages advanced data cleaning techniques for categorical variables, enhancing uniformity across your dataset:")
+        print("  ✔ Utilizes the `uniform_simple` method for initial preprocessing steps.")
+        print("  ✔ Employs Levenshtein distance to evaluate textual similarity among categories.")
+        print("  ✔ Applies hierarchical clustering to group similar categories together.")
+        print("  ✔ Selects the most representative category within each cluster to ensure data consistency.")
+        print("  ✔ Fills missing values with a placeholder to maintain data integrity. (default 'Unknown', customize with na_placeholder = '...')\n")
 
         # initialize dataframe to work with
         transformed_df = df.copy()
@@ -308,7 +341,7 @@ def transform_cat(
         return transformed_df, uniform_columns
 
     if method.lower() == 'uniform_mapping' and abbreviation_map:
-        print(f"< MANUAL CATEGORY MAPPING >")
+        print("< MANUAL CATEGORY MAPPING >")
         print(" This method allows for manual mapping of categories to address specific cases:")
         print("  ✔ Maps categories based on user-defined rules.")
         print("  ✔ Useful for stubborn categories that automated methods can't uniformly transform.")
@@ -335,12 +368,12 @@ def transform_cat(
         return transformed_df, uniform_columns
 
     if method.lower() == 'encode_onehot':
-        print(f"< ONE-HOT ENCODING TRANSFORMATION >")
-        print(f" This method converts categorical variables into a form that could be provided to ML algorithms to do a better job in prediction:")
-        print(f"  ✔ Converts each category value into a new column and assigns a 1 or 0 (notation for true/false).")
-        print(f"  ✔ Ensures the data is ready for machine learning models without assuming any ordinal relationship.")
-        print(f"  ✔ Helps to tackle the issue of 'curse of dimensionality' in a controlled manner.")
-        print(f"✎ Note: Before encoding, ensure data uniformity and cleanliness.\n☻ Tip: Use `uniform_simple` or `uniform_smart` from `transform_cat()` for advanced categorical data cleaning.\n")
+        print("< ONE-HOT ENCODING TRANSFORMATION >")
+        print(" This method converts categorical variables into a form that could be provided to ML algorithms to do a better job in prediction:")
+        print("  ✔ Converts each category value into a new column and assigns a 1 or 0 (notation for true/false).")
+        print("  ✔ Ensures the data is ready for machine learning models without assuming any ordinal relationship.")
+        print("  ✔ Helps to tackle the issue of 'curse of dimensionality' in a controlled manner.")
+        print("✎ Note: Before encoding, ensure data uniformity and cleanliness.\n☻ Tip: Use `uniform_simple` or `uniform_smart` from `transform_cat()` for advanced categorical data cleaning.\n")
 
         # initialize dataframe to work with
         transformed_df = df.copy()
@@ -376,9 +409,9 @@ def transform_cat(
         return transformed_df, encoded_columns
 
     if method.lower() == 'encode_ordinal' and ordinal_map:
-        print(f"< ORDINAL ENCODING TRANSFORMATION >")
-        print(f" This method assigns an integer to each category value based on the provided ordinal order.")
-        print(f"✎ Note: Ensure the provided ordinal map correctly reflects the desired order of categories for each variable.")
+        print("< ORDINAL ENCODING TRANSFORMATION >")
+        print(" This method assigns an integer to each category value based on the provided ordinal order.")
+        print("✎ Note: Ensure the provided ordinal map correctly reflects the desired order of categories for each variable.")
         print("☻ Tip: An ordinal map dictionary looks like this: {'your_variable': ['level1', 'level2', 'level3'], ...}\n")
 
         # initialize dataframe to work with
@@ -409,10 +442,10 @@ def transform_cat(
         return transformed_df, encoded_columns
 
     if method.lower() == 'encode_freq':
-        print(f"< FREQUENCY ENCODING TRANSFORMATION >")
-        print(f" This method transforms categorical variables based on the frequency of each category.")
-        print(f"✎ Note: Frequency encoding helps to retain the information about the category's prevalence.")
-        print(f"☻ Tip: Useful for models where the frequency significance of categories impacts the prediction.\n")
+        print("< FREQUENCY ENCODING TRANSFORMATION >")
+        print(" This method transforms categorical variables based on the frequency of each category.")
+        print("✎ Note: Frequency encoding helps to retain the information about the category's prevalence.")
+        print("☻ Tip: Useful for models where the frequency significance of categories impacts the prediction.\n")
 
         # initialize dataframe to work with
         transformed_df = df.copy()
@@ -439,10 +472,10 @@ def transform_cat(
         return transformed_df, encoded_columns
 
     if method.lower() == 'encode_target' and target_variable:
-        print(f"< TARGET ENCODING TRANSFORMATION* >")
-        print(f" This method encodes categorical variables based on the mean of the target variable for each category.")
-        print(f"✎ Note: Target encoding captures the 'effect' of each category on the target variable.")
-        print(f"☻ Tip: To prevent data leakage and overfitting, apply target encoding within a cross-validation loop, ensuring it's computed separately for each fold.\n")
+        print("< TARGET ENCODING TRANSFORMATION* >")
+        print(" This method encodes categorical variables based on the mean of the target variable for each category.")
+        print("✎ Note: Target encoding captures the 'effect' of each category on the target variable.")
+        print("☻ Tip: To prevent data leakage and overfitting, apply target encoding within a cross-validation loop, ensuring it's computed separately for each fold.\n")
 
         # initialize dataframe to work with
         transformed_df = df.copy()
@@ -470,11 +503,11 @@ def transform_cat(
         return transformed_df, encoded_columns
 
     if method.lower() == 'encode_binary':
-        print(f"< BINARY ENCODING TRANSFORMATION >")
-        print(f" This method transforms categorical variables into binary columns, significantly reducing dimensionality for high cardinality features.")
-        print(f"  ✔ Efficiently handles categories by representing them with binary codes.")
-        print(f"  ✔ Reduces dataset size and model complexity compared to one-hot encoding.")
-        print(f"✎ Note: Ideal for categorical variables with many unique categories.\n☻ Tip: For categories with limited unique values, consider if binary encoding aligns with your data strategy.\n")
+        print("< BINARY ENCODING TRANSFORMATION >")
+        print(" This method transforms categorical variables into binary columns, significantly reducing dimensionality for high cardinality features.")
+        print("  ✔ Efficiently handles categories by representing them with binary codes.")
+        print("  ✔ Reduces dataset size and model complexity compared to one-hot encoding.")
+        print("✎ Note: Ideal for categorical variables with many unique categories.\n☻ Tip: For categories with limited unique values, consider if binary encoding aligns with your data strategy.\n")
 
         # initialize dataframe to work with
         transformed_df = df.copy()

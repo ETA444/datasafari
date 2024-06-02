@@ -13,63 +13,96 @@ def evaluate_normality(
         pipeline: bool = False
 ) -> Union[dict, bool]:
     """
-    Evaluates the normality of a numeric variable within groups defined by a grouping variable.
+    **Evaluate normality of numerical data within groups defined by a categorical variable, employing multiple statistical tests, dynamically chosen based on data suitability.**
 
-    This function offers a comprehensive approach to testing the normality of a distribution within subsets of data. It supports multiple statistical tests and a consensus method that combines the results of all tests to determine normality. It's designed to be flexible for use both as a standalone function and as part of a larger pipeline for hypothesis testing.
+    This function offers a comprehensive examination of the distribution's normality by utilizing tests like Shapiro-Wilk, Anderson-Darling, D'Agostino and Pearson's test, and Lilliefors. Each test provides insights into different aspects of normality, and the consensus method integrates these perspectives to make a more informed decision.
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     df : pd.DataFrame
         The DataFrame containing the data to be tested.
+
     target_variable : str
         The name of the numeric variable to test for normality.
+
     grouping_variable : str
         The name of the categorical variable used to create subsets of data for normality testing.
-    method : str, optional
-        The method to use for testing normality. Options include:
-            - 'shapiro': Shapiro-Wilk test
-            - 'anderson': Anderson-Darling test
-            - 'normaltest': D'Agostino and Pearson's test
-            - 'lilliefors': Lilliefors test
-            - 'consensus': A combination of the above tests, defaulting to consensus if normality is indicated by the majority.
-        Default is 'consensus'.
-    pipeline : bool, optional
-        If True, the function returns a simple boolean indicating normality instead of detailed test results. Useful for integrating with other testing pipelines. Default is False.
 
-    Returns
+    method : str, optional, default: 'consensus'
+        The method to use for testing normality.
+            - ``'shapiro'`` Shapiro-Wilk test
+            - ``'anderson'`` Anderson-Darling test
+            - ``'normaltest'`` D'Agostino and Pearson's test
+            - ``'lilliefors'`` Lilliefors test
+            - ``'consensus'`` A combination of the above tests.
+
+    pipeline : bool, optional, default: False
+        - ``True`` Simplifies the output to a boolean indicating the consensus on normality. Useful for integration into automated analysis pipelines.
+        - ``False`` The output is a dictionary containing results of the respective test(s).
+
+    Returns:
+    --------
+    dict or bool
+        - ``dict`` If pipeline=False, returns a dictionary with test names as keys and test results, including statistics, p-values, and normality conclusions, as values.
+        - ``bool`` If pipeline=True, returns a boolean indicating the consensus on normality across all tests, or if consensus method was not used a boolean indicating the result of that test.
+
+    Raises:
     -------
-    output_info : dict or bool
-        - If `pipeline` is False, returns a dictionary with test names as keys and test results, including statistics, p-values, and normality conclusions, as values.
-        - If `pipeline` is True, returns a boolean indicating the consensus on normality across all tests, or if consensus method was not used a boolean indicating the result of that test.
-
-    Raises
-    ------
-    TypeError
+    TypeErrors:
         - If `df` is not a pandas DataFrame.
         - If `target_variable` or `grouping_variable` is not a string.
         - If `method` is not a string.
         - If `pipeline` is not a boolean.
-    ValueError
-        - If the `df` is empty, indicating that there's no data to evaluate.
-        - If the `target_variable` or `grouping_variable` does not exist in the DataFrame.
-        - If the `method` specified is not supported. Allowed methods are: 'shapiro', 'anderson', 'normaltest', 'lilliefors', 'consensus'.
-        - If the `target_variable` is not numerical.
-        - If the `grouping_variable` is not categorical.
 
-    Examples
-    --------
+    ValueErrors:
+        - If the `df` is empty.
+        - If the `target_variable` or `grouping_variable` does not exist in the DataFrame.
+        - If the `method` specified is not supported.
+        - If the `target_variable` is not numerical, or if the `grouping_variable` is not categorical, as determined by evaluating their data types with :doc:`evaluate_dtype() <datasafari.evaluator.evaluate_dtype>`.
+
+    Examples:
+    ---------
+    Example 1: Using the consensus method to evaluate normality in a DataFrame:
+
+    >>> import datasafari
     >>> import pandas as pd
     >>> import numpy as np
-    >>> df = pd.DataFrame({'Group': np.random.choice(['A', 'B', 'C'], 100), 'Data': np.random.normal(0, 1, 100)})
-    # Using the most robust method 'consensus'
-    >>> result_dictionary = evaluate_normality(df, 'Data', 'Group')
-    # Focusing on using 'shapiro'
-    >>> evaluate_normality(df, 'Data', 'Group', method='shapiro')
-    # Integrating the function into your own pipeline
-    >>> normality = evaluate_normality(df, 'Data', 'Group', pipeline=True)
-    >>> if normality:
-    >>>     # ...
+    >>> df = pd.DataFrame({
+    ...     'Group': np.random.choice(['A', 'B', 'C'], size=100),
+    ...     'Data': np.random.normal(0, 1, size=100)
+    ... })
+    >>> normality_result = evaluate_normality(df, 'Data', 'Group')
+
+    Example 2: Using the function in a comprehensive evaluation pipeline:
+
+    >>> pipeline_result = evaluate_normality(df, 'Data', 'Group', pipeline=True)
+    >>> if pipeline_result:
+    ...     # your pipeline in the case normality is validated
+    ... else:
+    ...     # your pipeline in the case normality is not validated
+
+    Notes:
+    ------
+    **Consensus Method:**
+    The consensus method integrates results from multiple statistical tests to provide a comprehensive assessment of the normality of data distributions.
+
+        Here is how the consensus method operates:
+            1. **Test Execution**:
+
+               - **Shapiro-Wilk Test**: Assesses normality based on the correlation between data and corresponding normal scores, ideal for small sample sizes.
+               - **Anderson-Darling Test**: Focuses more on the tails of the distribution, suitable for any sample size.
+               - **D'Agostino-Pearson Test**: Combines skewness and kurtosis to assess normality, best for larger datasets.
+               - **Lilliefors Test**: An adaptation of the Kolmogorov-Smirnov test that does not require known mean and variance, useful for small to medium samples.
+
+            2. **Outcome Evaluation**: Each test provides a conclusion on whether the data follow a normal distribution.
+
+            3. **Majority Rule**: The final consensus on normality is based on the majority of test outcomes. If more tests conclude 'normal', the consensus is that the data are normally distributed. Conversely, if more tests conclude 'non-normal', the consensus is that the data are not normally distributed.
+
+            4. **Tie-Breaker**: In the event of a tie (an equal number of 'normal' and 'non-normal' outcomes), the results of the Shapiro-Wilk and Anderson-Darling tests are given precedence. These tests are chosen because of their robustness and widespread acceptance in statistical testing. If both agree, their conclusion is adopted; if they disagree, further analysis may be required to determine normality.
+
+    This structured approach ensures a thorough and balanced evaluation of normality, accommodating different sample sizes and distribution characteristics, which enhances the reliability of the statistical analysis.
     """
+
     # Error Handling
     # TypeErrors
     # Check if 'df' is a pandas DataFrame
@@ -131,7 +164,7 @@ def evaluate_normality(
         # save the info for return and text for output
         shapiro_info = {group: {'stat': shapiro_stats[n], 'p': shapiro_pvals[n], 'normality': shapiro_normality[n]} for n, group in enumerate(groups)}
         shapiro_text = [f"Results for '{key}' group in variable ['{target_variable}']:\n  ➡ statistic: {value['stat']}\n  ➡ p-value: {value['p']}\n{(f'  ∴ Normality: Yes (H0 cannot be rejected)' if value['normality'] else f'  ∴ Normality: No (H0 rejected)')}\n\n" for key, value in shapiro_info.items()]
-        shapiro_title = f"< NORMALITY TESTING: SHAPIRO-WILK >\n\n"
+        shapiro_title = "< NORMALITY TESTING: SHAPIRO-WILK >\n\n"
         shapiro_tip = "☻ Tip: The Shapiro-Wilk test is particularly well-suited for small sample sizes (n < 50) and is considered one of the most powerful tests for assessing normality. It is sensitive to departures from normality, making it a preferred choice for rigorous normality assessments in small datasets.\n"
 
         # save info in return object and conditionally print to console
@@ -152,7 +185,7 @@ def evaluate_normality(
         # save the info for return and text for output
         anderson_info = {group: {'stat': anderson_stats[n], 'p': anderson_critical_values[n], 'normality': anderson_normality[n]} for n, group in enumerate(groups)}
         anderson_text = [f"Results for '{key}' group in variable ['{target_variable}']:\n  ➡ statistic: {value['stat']}\n  ➡ p-value: {value['p']}\n{(f'  ∴ Normality: Yes (H0 cannot be rejected)' if value['normality'] else f'  ∴ Normality: No (H0 rejected)')}\n\n" for key, value in anderson_info.items()]
-        anderson_title = f"< NORMALITY TESTING: ANDERSON-DARLING >\n\n"
+        anderson_title = "< NORMALITY TESTING: ANDERSON-DARLING >\n\n"
         anderson_tip = "☻ Tip: The Anderson-Darling test is a versatile test that can be applied to any sample size and is especially useful for comparing against multiple distribution types, not just the normal. It places more emphasis on the tails of the distribution than the Shapiro-Wilk test, making it useful for detecting outliers or heavy-tailed distributions.\n"
 
         # saving info
@@ -173,7 +206,7 @@ def evaluate_normality(
         # save the info for return and text for output
         normaltest_info = {group: {'stat': normaltest_stats[n], 'p': normaltest_pvals[n], 'normality': normaltest_normality[n]} for n, group in enumerate(groups)}
         normaltest_text = [f"Results for '{key}' group in variable ['{target_variable}']:\n  ➡ statistic: {value['stat']}\n  ➡ p-value: {value['p']}\n{(f'  ∴ Normality: Yes (H0 cannot be rejected)' if value['normality'] else f'  ∴ Normality: No (H0 rejected)')}\n\n" for key, value in normaltest_info.items()]
-        normaltest_title = f"< NORMALITY TESTING: D'AGOSTINO-PEARSON NORMALTEST >\n\n"
+        normaltest_title = "< NORMALITY TESTING: D'AGOSTINO-PEARSON NORMALTEST >\n\n"
         normaltest_tip = "☻ Tip: The D'Agostino-Pearson normality test, or simply 'normaltest', is best applied when the sample size is larger, as it combines skewness and kurtosis to form a test statistic. This test is useful for detecting departures from normality that involve asymmetry and tail thickness, offering a good balance between sensitivity and specificity in medium to large sample sizes.\n"
 
         # saving info
@@ -194,7 +227,7 @@ def evaluate_normality(
         # save the info for return and text for output
         lilliefors_info = {group: {'stat': lilliefors_stats[n], 'p': lilliefors_pvals[n], 'normality': lilliefors_normality[n]} for n, group in enumerate(groups)}
         lilliefors_text = [f"Results for '{key}' group in variable ['{target_variable}']:\n  ➡ statistic: {value['stat']}\n  ➡ p-value: {value['p']}\n{(f'  ∴ Normality: Yes (H0 cannot be rejected)' if value['normality'] else f'  ∴ Normality: No (H0 rejected)')}\n\n" for key, value in lilliefors_info.items()]
-        lilliefors_title = f"< NORMALITY TESTING: LILLIEFORS' TEST >\n\n"
+        lilliefors_title = "< NORMALITY TESTING: LILLIEFORS' TEST >\n\n"
         lilliefors_tip = "☻ Tip: The Lilliefors test is an adaptation of the Kolmogorov-Smirnov test for normality with the benefit of not requiring the mean and variance to be known parameters. It's particularly useful for small to moderately sized samples and is sensitive to deviations from normality in the center of the distribution rather than the tails. This makes it complementary to tests like the Anderson-Darling when a comprehensive assessment of normality is needed.\n"
 
         # saving info
