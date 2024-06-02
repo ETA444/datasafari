@@ -243,7 +243,7 @@ def evaluate_normality(
         # the logic is that more than half of the tests need to give True for the consensus to be True
         true_count = [group_normality_consensus for test_name, group_normality_consensus in normality_info.items()].count(True)
         false_count = [group_normality_consensus for test_name, group_normality_consensus in normality_info.items()].count(False)
-        half_point = len(normality_info)/2
+        half_point = len(normality_info) / 2
         if true_count > half_point:
             consensus_percent = (true_count / len(normality_info)) * 100
             normality_consensus_result = f"  ➡ Result: Consensus is reached.\n  ➡ {consensus_percent}% of tests suggest Normality. *\n\n* Detailed results of each test are provided below.\n"
