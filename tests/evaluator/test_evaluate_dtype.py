@@ -11,8 +11,7 @@ def sample_dataframe():
         'Age': np.random.randint(18, 35, 100),
         'Income': np.random.normal(50000, 15000, 100),
         'Department': np.random.choice(['HR', 'Tech', 'Admin'], 100),
-        'EntryDate': pd.date_range(start='1/1/2020', periods=100, freq='M'),
-        'Sentence': np.random.choice(['Lorem ipsum dolor sit amet', 'Others are also mentioned but their origin is not clear', 'Many heroes wore capes but some of them did not so generalizing is not advisable'], 100)
+        'EntryDate': pd.date_range(start='1/1/2020', periods=100, freq='M')
     })
 
 
@@ -198,14 +197,15 @@ def test_evaluate_dtype_small_numerical(sample_dataframe):
 def test_evaluate_dtype_small_mixed_data(sample_dataframe):
     """Test handling of small dataset with mixed data types."""
     small_df = sample_dataframe.sample(n=60)
-    result = evaluate_dtype(small_df, ['Age', 'Income', 'Department', 'EntryDate', 'Sentence'], output='dict')
+    small_df['ShortText'] = ['short'] * 60
+    result = evaluate_dtype(small_df, ['Age', 'Income', 'Department', 'EntryDate', 'ShortText'], output='dict')
     print(result)
     expected = {
         'Age': 'numerical',
         'Income': 'numerical',
         'Department': 'categorical',
         'EntryDate': 'datetime',
-        'Sentence': 'text'
+        'ShortText': 'text'
     }
     print(result)
     assert result == expected, "Mixed columns in small dataset should be identified correctly"
