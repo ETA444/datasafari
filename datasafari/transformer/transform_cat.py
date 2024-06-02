@@ -297,7 +297,7 @@ def transform_cat(
                 .fillna(na_placeholder)  # Customize this placeholder as needed
                 .str.lower()
                 .str.strip()
-                .str.replace('[^a-zA-Z0-9\s]', '', regex=True)
+                .str.replace(r'[^a-zA-Z0-9\s]', '', regex=True)
             )
             unique_categories = categories.unique()
 

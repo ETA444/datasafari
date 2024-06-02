@@ -520,7 +520,7 @@ def data_preprocessing_core(
 
 
 def calculate_composite_score(scores: dict, metric_weights: dict) -> float:
-    """
+    r"""
     **Calculates a composite score based on individual metric scores and their respective weights.**
 
     This function aggregates multiple evaluation metrics into a single composite score by weighting each metric according to its importance, as defined in 'metric_weights'. A higher weight signifies greater importance of the metric towards the composite score. This approach allows for a balanced evaluation of model performance across various aspects.
