@@ -1,5 +1,4 @@
 policy:
-
   fail_on:
     severity:
       - high
@@ -16,3 +15,8 @@ policy:
       - Jinja2
     reasons:
       - "This package is used in a context where the vulnerability does not pose a security risk for the user."
+    ids:
+      - 70612
+
+security:
+  ignore_unpinned: false
