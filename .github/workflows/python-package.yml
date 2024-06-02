@@ -43,9 +43,8 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pip install pytest-cov codecov
+          pip install pytest-cov
           pytest --cov=datasafari --cov-report=xml
-          codecov
 
       - name: Build and check the package
         run: |
