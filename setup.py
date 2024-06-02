@@ -31,7 +31,8 @@ dev_requirements = [
     'sphinx-prompt>=1.8.0',
     'sphinx-copybutton>=0.5.2',
     'sphinxemoji>=0.3.1',
-    'sphinxext-opengraph>=0.6.0'
+    'sphinxext-opengraph>=0.6.0',
+    'Jinja2!=3.1.4'
 ]
 
 setup(
