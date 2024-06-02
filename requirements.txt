@@ -7,7 +7,5 @@ seaborn
 statsmodels
 category-encoders
 python-Levenshtein
-
-# pinned due to ImportError: cannot import name 'check_pandas_support' from 'sklearn.utils'
 scikit-learn>=1.4,<1.5
-scikit-optimize==0.10.1
+scikit-optimize>=0.10.1
