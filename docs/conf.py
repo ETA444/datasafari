@@ -37,7 +37,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
               # 'sphinx_rtd_light_dark',  # Removed due to lack of support for sphinx > 7, replaced by furo theme
               'sphinx_favicon',  # Adds favicon functionality: https://pypi.org/project/sphinx-favicon/
-              # 'sphinxext.opengraph',  # Adds metadata functionality: https://pypi.org/project/sphinxext-opengraph/
+              'sphinxext.opengraph',  # Adds metadata functionality: https://pypi.org/project/sphinxext-opengraph/
               'sphinx_prompt',  # Adds unselectable prompt functionality: https://pypi.org/project/sphinx-prompt/
               'sphinx_copybutton',  # Adds copy button to code blocks: https://pypi.org/project/sphinx-copybutton/
               'sphinx.ext.mathjax',  # Adds formula rendering functionality
@@ -64,6 +64,14 @@ project = 'DataSafari'
 current_year = datetime.datetime.now().year
 copyright = f"{current_year}, George Dreemer."
 author = "George Dreemer"
+
+# Metadata of project (opengraph)
+ogp_site_url = 'https://www.datasafari.dev/docs'  # Adjusted to your custom domain
+ogp_image = '_static/thumbs/ds-branding-thumb-main-docs.png'  # Ensure you upload a logo in your static directory
+ogp_description_length = 300
+ogp_type = 'website'
+ogp_description = 'DataSafari simplifies complex data science tasks into straightforward, powerful commands.'
+
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
