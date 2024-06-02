@@ -1,0 +1,40 @@
+version: '3.0'
+
+scanning-settings:
+  max-depth: 6
+  exclude:
+    - "node_modules"
+    - "tests/**"
+    - "**/*.js"
+  include-files:
+    - path: requirements.txt
+      file-type: requirements.txt
+    - path: dev-requirements.txt
+      file-type: requirements.txt
+
+report:
+  dependency-vulnerabilities:
+    enabled: true
+    auto-ignore-in-report:
+      python:
+        environment-results: true
+        unpinned-requirements: true
+      cvss-severity: []
+      vulnerabilities:
+        70612:
+          reason: "Jinja2 vulnerability does not impact our use case as we do not use affected features."
+          expires: '2024-12-31'
+
+fail-scan-with-exit-code:
+  dependency-vulnerabilities:
+    enabled: true
+    fail-on-any-of:
+      cvss-severity:
+        - critical
+        - high
+        - medium
+
+security-updates:
+  dependency-vulnerabilities:
+    auto-security-updates-limit:
+      - patch

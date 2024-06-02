@@ -61,10 +61,10 @@ jobs:
           pip install bandit
           bandit -r .
 
-      - name: Check for dependency vulnerabilities
+      - name: Scan for dependency vulnerabilities (Safety CLI 3)
         run: |
           pip install safety
-          safety check --policy-file=safety_policy.yml
+          safety scan
 
       - name: Environment information
         run: |
