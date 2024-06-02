@@ -260,7 +260,7 @@ def evaluate_normality(
 
         elif true_count == half_point:
             # the logic is that we default to the decisions of shapiro-wilk and anderson-darling (if both true then true) - internal use only
-            normality_consensus_result = f"  ➡ Result: Consensus is not reached. (50% Normality / 50% Non-normality)\n\n∴ Please refer to the results of each test below:\n"
+            normality_consensus_result = "  ➡ Result: Consensus is not reached. (50% Normality / 50% Non-normality)\n\n∴ Please refer to the results of each test below:\n"
 
             # used only within predict_hypothesis() pipeline
             normality_consensus = all([normality_info['shapiro_group_consensus'], normality_info['anderson_group_consensus']])

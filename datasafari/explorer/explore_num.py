@@ -359,7 +359,7 @@ def explore_num(
         # appends (continued) #
         # (6-9) method='outliers_iqr' info
         if method.lower() == 'all':
-            result.append(f"\n✎ * NOTE: If method='outliers_iqr', aside from the overview above, the function RETURNS:")
+            result.append("\n✎ * NOTE: If method='outliers_iqr', aside from the overview above, the function RETURNS:")
             result.append("■ 1 - Dictionary: key=variable name, value=list of outlier values for that row")
             result.append("■ 2 - Dataframe: Rows from the original df that were classified as outliers. (preserved index)")
             result.append("☻ HOW TO: dict, df = explore_num(yourdf, yourlist, method='outliers_iqr')")

@@ -124,7 +124,7 @@ def explore_df(
         raise TypeError("explore_df(): The method parameter must be a string.\nExample: method = 'all'")
 
     if not isinstance(output, str):
-        raise TypeError(f"explore_df(): The output parameter must be a string.\nExample: output = 'print'")
+        raise TypeError("explore_df(): The output parameter must be a string.\nExample: output = 'print'")
 
     # ValueErrors
     # Check if df is empty

@@ -235,7 +235,7 @@ def evaluate_variance(
 
         elif true_count == half_point:
             # the logic is that we default to the decisions of levene - internal use only
-            variance_consensus_text = f"  ➡ Result: Consensus is not reached.\n\n∴ Please refer to the results of each test below:\n"
+            variance_consensus_text = "  ➡ Result: Consensus is not reached.\n\n∴ Please refer to the results of each test below:\n"
 
             # used only within predict_hypothesis() pipeline
             variance_consensus = variance_info['levene']
@@ -243,6 +243,6 @@ def evaluate_variance(
         print(f"< VARIANCE TESTING: CONSENSUS >\nThe consensus method bases its conclusion on 2-3 tests: Levene test, Fligner-Killeen test, Bartlett test. (Note: More than 50% must have the same outcome to reach consensus.)\n\n{variance_consensus_text}")
         print(levene_title, levene_text, levene_tip)
         print(fligner_title, fligner_text, fligner_tip)
-        print(bartlett_title, bartlett_text, bartlett_tip) if normality_info else f"\n\n< NOTE ON BARTLETT >\nBartlett was not used in consensus as no normality info has been provided or data is non-normal. Accuracy of Bartlett's test results rely heavily on normality."
+        print(bartlett_title, bartlett_text, bartlett_tip) if normality_info else "\n\n< NOTE ON BARTLETT >\nBartlett was not used in consensus as no normality info has been provided or data is non-normal. Accuracy of Bartlett's test results rely heavily on normality."
 
         return output_info if not pipeline else variance_consensus
