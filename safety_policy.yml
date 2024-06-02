@@ -19,4 +19,4 @@ policy:
       - 70612
 
 security:
-  ignore_unpinned: false
+  ignore-unpinned-requirements: false
