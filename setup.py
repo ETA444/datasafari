@@ -8,8 +8,8 @@ with open('README.md') as readme_file:
 requirements = [
     'numpy',
     'pandas',
-    'scikit-learn',
-    'scikit-optimize',
+    'scikit-learn==1.4.1.post1',
+    'scikit-optimize==0.10.1',
     'scipy',
     'matplotlib',
     'seaborn',
