@@ -16,4 +16,4 @@ policy:
       id: 70612
 
 security:
-  ignore_unpinned_requirements: false
+  ignore-unpinned-requirements: false
