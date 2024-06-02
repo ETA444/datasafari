@@ -1,0 +1,18 @@
+policy:
+
+  fail_on:
+    severity:
+      - high
+    confidence:
+      - high
+      - medium
+
+  license:
+    blocklist:
+      - "Proprietary"
+
+  exemptions:
+    packages:
+      - Jinja2
+    reasons:
+      - "This package is used in a context where the vulnerability does not pose a security risk for the user."
