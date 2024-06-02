@@ -385,8 +385,7 @@ def explore_num(
 
             # calculate z-score for col
             data[z_col] = (
-                (data[variable_name] - data[variable_name].mean())
-                / data[variable_name].std()
+                (data[variable_name] - data[variable_name].mean()) / data[variable_name].std()
             )
 
             # outlier classification
