@@ -24,6 +24,7 @@ dev_requirements = [
     'tox>=4.12.1',
     'twine>=5.0.0',
     'wheel>=0.37.0',
+    'setuptools>=58.0.0',
     'cookiecutter>=2.5.0',
     'sphinx>=7.3.7',
     'furo>=2024.5.6',
