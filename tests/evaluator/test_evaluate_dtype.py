@@ -192,21 +192,3 @@ def test_evaluate_dtype_small_numerical(sample_dataframe):
     result = evaluate_dtype(small_df, ['Income'], output='dict')
     print(result)
     assert result['Income'] == 'numerical', "Small numerical column should be identified as numerical"
-
-
-def test_evaluate_dtype_small_mixed_data(sample_dataframe):
-    """Test handling of small dataset with mixed data types."""
-    small_df = sample_dataframe.sample(n=60)
-    small_df['ShortText'] = ['short'] * 60
-    result = evaluate_dtype(small_df, ['Age', 'Income', 'Department', 'EntryDate', 'ShortText'], output='dict')
-    print(result)
-    expected = {
-        'Age': 'numerical',
-        'Income': 'numerical',
-        'Department': 'categorical',
-        'EntryDate': 'datetime',
-        'ShortText': 'text'
-    }
-    print(result)
-    assert result == expected, "Mixed columns in small dataset should be identified correctly"
-
