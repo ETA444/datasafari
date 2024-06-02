@@ -7,24 +7,33 @@ from setuptools import setup, find_packages
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.md') as history_file:
-    history = history_file.read()
-
 requirements = [
-    'numpy==1.26.2',
-    'pandas==2.1.4',
-    'scikit-learn==1.0.2',
-    'scikit-optimize==0.10.1',
-    'scipy==1.12.0',
-    'matplotlib==3.8.2',
-    'seaborn==0.13.0',
-    'statsmodels==0.13.2',
-    'category-encoders==2.6.3',
-    'Levenshtein==0.25.0'
+    'numpy>=1.26.2',
+    'pandas>=2.1.4',
+    'scikit-learn>=1.0.2',
+    'scikit-optimize>=0.10.1',
+    'scipy>=1.12.0',
+    'matplotlib>=3.8.2',
+    'seaborn>=0.13.0',
+    'statsmodels>=0.13.2',
+    'category-encoders>=2.6.3',
+    'Levenshtein>=0.25.0'
 ]
 
-
-test_requirements = ['pytest>=3', ]
+dev_requirements = [
+    'pytest>=3',
+    'flake8>=7.0.0',
+    'tox>=4.12.1',
+    'twine>=5.0.0',
+    'cookiecutter>=2.5.0',
+    'sphinx>=7.3.7',
+    'sphinx-basic-ng>=1.0.0b2',
+    'furo>=2024.5.6',
+    'sphinx-favicon>=1.0.1',
+    'sphinx-prompt>=1.8.0',
+    'sphinx-copybutton>=0.5.2',
+    'schnxemoji>=0.3.1'
+]
 
 setup(
     author="George Dreemer",
@@ -45,13 +54,14 @@ setup(
     extras_require={
         'docs': [
             'sphinx',
-            'sphinx_rtd_theme',
-            'sphinx-autobuild',  # If you want live reloading during development
+            'furo',  # docs theme
+            'sphinx-autobuild',  # for live reloading the docs
+            'sphinx_favicon',  # for favicon functionality
+            'sphinx_prompt',  # for adding unselectable prompts to code snippets
+            'sphinx_copybutton',  # for adding a copy button to code blocks
+            'sphinxemoji',  # for emoji support in the docs
         ],
-        'test': [
-            'pytest>=3',
-            # any additional testing tools
-        ]
+        'dev': dev_requirements  # include all development dependencies
     },
     license="GNU General Public License v3",
     long_description=readme + '\n\n' + history,
