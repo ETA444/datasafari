@@ -61,10 +61,10 @@ jobs:
           pip install bandit
           bandit -r .
 
-      - name: Scan for dependency vulnerabilities (Safety CLI 3)
-        run: |
-          pip install safety
-          safety scan
+      - name: Scan for dependency vulnerabilities with Safety CLI 3
+        uses: pyupio/safety-3-beta/safety-3@main
+        with:
+          api-key: ${{ secrets.SAFETY_CLI_API_KEY }}
 
       - name: Environment information
         run: |
