@@ -112,7 +112,12 @@ html_theme = 'furo'  # https://pypi.org/project/furo/
 # Theme options are theme-specific and customize the look and feel of a
 # theme further. For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {}
+# html_logo = "_static/logos/ds-branding-logo-big-darkmode.png"
+
+html_theme_options = {
+    "light_logo": "logos/ds-branding-logo-big-lightmode.png",  # Relative to _static
+    "dark_logo": "logos/ds-branding-logo-big-darkmode.png",  # Relative to _static
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -138,8 +143,6 @@ html_static_path = ['_static']
 #    ]
 #}
 
-# Optional logo. Uncomment the line below if you have a logo.
-html_logo = "_static/my_logo.png"
 
 # If you have your own conf.py file, it's a good idea to merge this info with it,
 # ensuring that all settings are included correctly.
