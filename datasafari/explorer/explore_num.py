@@ -281,7 +281,7 @@ def explore_num(
             stats_dict['max'].append(var_max)
             stats_dict['mean'].append(mean)
             stats_dict['median'].append(median)
-            stats_dict['mode'].append(mode[0] if len(mode) != 0 else pd.NA) # handle special case of multiple modes
+            stats_dict['mode'].append(mode[0] if len(mode) != 0 else pd.NA)  # handle special case of multiple modes
             stats_dict['variance'].append(variance)
             stats_dict['std_dev'].append(std_dev)
             stats_dict['skewness'].append(skewness)
