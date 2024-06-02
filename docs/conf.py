@@ -19,6 +19,7 @@
 #
 import os
 import sys
+import datetime
 sys.path.insert(0, os.path.abspath('../'))
 import datasafari
 
@@ -59,8 +60,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Data Safari'
-copyright = "2024, George Dreemer"
+project = 'DataSafari'
+current_year = datetime.datetime.now().year
+copyright = f"{current_year}, George Dreemer."
 author = "George Dreemer"
 
 # The version info for the project you're documenting, acts as replacement
