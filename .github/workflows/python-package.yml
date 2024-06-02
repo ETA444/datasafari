@@ -15,10 +15,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
-          python-version: ${{ matrix.python-xversion }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Cache pip packages
         uses: actions/cache@v2
@@ -34,23 +35,43 @@ jobs:
           pip install -r requirements.txt
           pip install -r dev-requirements.txt
 
-      - name: Check installed packages
-        run: |
-          pip show scikit-learn
-          pip show scikit-optimize
-
       - name: Lint with flake8
         run: |
-          # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      - name: Test with pytest
+      - name: Run tests with coverage
         run: |
-          pytest
+          pip install pytest-cov codecov
+          pytest --cov=datasafari --cov-report=xml
+          codecov
 
       - name: Build and check the package
         run: |
           python setup.py sdist bdist_wheel
           twine check dist/*
+
+      - name: Build documentation
+        run: |
+          cd docs
+          make html
+
+      - name: Static security scan with Bandit
+        run: |
+          pip install bandit
+          bandit -r .
+
+      - name: Check for dependency vulnerabilities
+        run: |
+          pip install safety
+          safety check
+
+      - name: Environment information
+        run: |
+          python --version
+          pip freeze
+
+      # - name: SonarQube Scan
+      #   uses: sonarsource/sonarqube-scan-action@v1
+      #   with:
+      #     projectBaseDir: .
