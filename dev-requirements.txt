@@ -1,0 +1,13 @@
+# Development dependencies
+pytest
+flake8
+tox
+twine
+cookiecutter
+sphinx
+sphinx-furo
+sphinx-favicon
+sphinx-prompt
+sphinx-copybutton
+sphinxemoji
+sphinx-opengraph
