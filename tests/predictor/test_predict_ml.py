@@ -19,7 +19,7 @@ def sample_data_dpc():
         'Age': np.random.randint(18, 35, size=100),
         'Salary': np.random.normal(50000, 12000, size=100),
         'Department': np.random.choice(['HR', 'Tech', 'Marketing'], size=100),
-        'Review': ['Good review']*50 + ['Bad review']*50,
+        'Review': ['Good review'] * 50 + ['Bad review'] * 50,
         'Employment Date': pd.date_range(start='2010-01-01', periods=100, freq='M')
     })
 

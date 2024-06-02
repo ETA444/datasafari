@@ -788,7 +788,7 @@ def transform_num(
                     n_bins = specs.get('bins')
                     bin_edges = specs.get('edges', None)
                     if bin_edges:
-                        transformed_df[variable], _ = pd.cut(transformed_df[variable], bins=bin_edges, retbins=True, labels=range(len(bin_edges)-1))
+                        transformed_df[variable], _ = pd.cut(transformed_df[variable], bins=bin_edges, retbins=True, labels=range(len(bin_edges) - 1))
                     else:
                         transformed_df[variable], _ = pd.cut(transformed_df[variable], bins=n_bins, retbins=True, labels=range(n_bins))
                     binned_columns = pd.concat([binned_columns, transformed_df[variable]], axis=1)
