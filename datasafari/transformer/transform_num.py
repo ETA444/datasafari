@@ -302,7 +302,7 @@ def transform_num(
     # Check if variables are numerical
     numerical_types = evaluate_dtype(df, numerical_variables, output='list_n')
     if not all(numerical_types):
-        raise ValueError(f"transform_num(): The 'numerical_variables' list must contain only names of numerical variables.")
+        raise ValueError("transform_num(): The 'numerical_variables' list must contain only names of numerical variables.")
 
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in numerical_variables if var not in df.columns]
@@ -384,11 +384,11 @@ def transform_num(
 
     # Main Function #
     if method == 'standardize':
-        print(f"< STANDARDIZING DATA >")
-        print(f" This method centers the data around mean 0 with a standard deviation of 1, enhancing model performance and stability.")
-        print(f"  ✔ Standardizes each numerical variable to have mean=0 and variance=1.")
-        print(f"  ✔ Essential preprocessing step for many machine learning algorithms.\n")
-        print(f"✎ Note: Standardization is applied only to the specified numerical variables.\n")
+        print("< STANDARDIZING DATA >")
+        print(" This method centers the data around mean 0 with a standard deviation of 1, enhancing model performance and stability.")
+        print("  ✔ Standardizes each numerical variable to have mean=0 and variance=1.")
+        print("  ✔ Essential preprocessing step for many machine learning algorithms.\n")
+        print("✎ Note: Standardization is applied only to the specified numerical variables.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -412,11 +412,11 @@ def transform_num(
         return transformed_df, standardized_columns
 
     if method.lower() == 'log':
-        print(f"< LOG TRANSFORMATION >")
-        print(f" This method applies a natural logarithm transformation to positively skewed data.")
-        print(f"  ✔ Helps to stabilize variance and make the data more normally distributed.")
-        print(f"  ✔ Particularly useful for data with a heavy right tail (positively skewed).\n")
-        print(f"✎ Note: Log transformation is applied only to specified numerical variables. Zero or negative values in the data can cause issues and will skip those columns.\n")
+        print("< LOG TRANSFORMATION >")
+        print(" This method applies a natural logarithm transformation to positively skewed data.")
+        print("  ✔ Helps to stabilize variance and make the data more normally distributed.")
+        print("  ✔ Particularly useful for data with a heavy right tail (positively skewed).\n")
+        print("✎ Note: Log transformation is applied only to specified numerical variables. Zero or negative values in the data can cause issues and will skip those columns.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -452,12 +452,12 @@ def transform_num(
         return transformed_df, log_transformed_columns
 
     if method.lower() == 'normalize':
-        print(f"< NORMALIZATION TRANSFORMATION >")
-        print(f" This method scales numerical variables to a [0, 1] range, making them suitable for models sensitive to variable scales.")
-        print(f"  ✔ Adjusts each feature to a [0, 1] scale based on its minimum and maximum values.")
-        print(f"  ✔ Enhances model performance by ensuring numerical variables are on a similar scale.")
-        print(f"✎ Note: Ensure data is clean and outliers are handled for optimal results.\n")
-        print(f"☻ Tip: Use `explore_num()` for data inspection and outlier detection before applying normalization.\n")
+        print("< NORMALIZATION TRANSFORMATION >")
+        print(" This method scales numerical variables to a [0, 1] range, making them suitable for models sensitive to variable scales.")
+        print("  ✔ Adjusts each feature to a [0, 1] scale based on its minimum and maximum values.")
+        print("  ✔ Enhances model performance by ensuring numerical variables are on a similar scale.")
+        print("✎ Note: Ensure data is clean and outliers are handled for optimal results.\n")
+        print("☻ Tip: Use `explore_num()` for data inspection and outlier detection before applying normalization.\n")
 
         # initialize essentials
         transformed_df = df.copy()
@@ -481,11 +481,11 @@ def transform_num(
         return transformed_df, normalized_columns
 
     if method.lower() == 'quantile':
-        print(f"< QUANTILE TRANSFORMATION >")
+        print("< QUANTILE TRANSFORMATION >")
         print(f" This method maps the data to a '{output_distribution}' distribution and n_quantiles = {n_quantiles}. Random state set to {random_state}")
         print(f"  ✔ Transforms skewed or outlier-affected data to follow a standard {'normal' if output_distribution == 'normal' else 'uniform'} distribution, improving statistical analysis and ML model accuracy.")
         print(f"  ✔ Utilizes {n_quantiles} quantiles to finely approximate the empirical distribution, capturing the detailed data structure while balancing computational efficiency.\n")
-        print(f"☻ Tip: The choice of 1000 quantiles as a default provides a good compromise between detailed distribution mapping and practical computational demands. Adjust as needed based on dataset size and specificity.\n")
+        print("☻ Tip: The choice of 1000 quantiles as a default provides a good compromise between detailed distribution mapping and practical computational demands. Adjust as needed based on dataset size and specificity.\n")
 
         # initialize the DataFrame to work with
         transformed_df = df.copy()
@@ -510,10 +510,10 @@ def transform_num(
         return transformed_df, quantile_transformed_columns
 
     if method.lower() == 'robust':
-        print(f"< ROBUST SCALING TRANSFORMATION >")
-        print(f" This method scales your data by removing the median and scaling according to the quantile range.")
-        print(f"  ✔ Targets data with outliers by using median and quantiles, reducing the influence of extreme values.")
-        print(f"  ✔ Centers and scales data to be robust against outliers, improving model performance on skewed data.")
+        print("< ROBUST SCALING TRANSFORMATION >")
+        print(" This method scales your data by removing the median and scaling according to the quantile range.")
+        print("  ✔ Targets data with outliers by using median and quantiles, reducing the influence of extreme values.")
+        print("  ✔ Centers and scales data to be robust against outliers, improving model performance on skewed data.")
         print(f"✎ Note: With centering is {'enabled' if with_centering else 'disabled'}. Adjust `with_centering` as needed (provide bool).\n")
         print(f"☻ Tip: The quantile range is set to {quantile_range}. You can adjust it based on your data's distribution.\n")
 
@@ -540,11 +540,11 @@ def transform_num(
         return transformed_df, robust_scaled_columns
 
     if method.lower() == 'boxcox':
-        print(f"< BOX-COX TRANSFORMATION >")
-        print(f" This method applies the Box-Cox transformation to numerical variables to normalize their distribution.")
-        print(f"  ✔ Transforms skewed data to closely approximate a normal distribution.")
-        print(f"  ✔ Automatically finds and applies the optimal transformation parameter (lambda) for each variable.\n")
-        print(f"✎ Note: Box-Cox transformation requires all data to be positive. Columns with zero or negative values will be skipped.\n")
+        print("< BOX-COX TRANSFORMATION >")
+        print(" This method applies the Box-Cox transformation to numerical variables to normalize their distribution.")
+        print("  ✔ Transforms skewed data to closely approximate a normal distribution.")
+        print("  ✔ Automatically finds and applies the optimal transformation parameter (lambda) for each variable.\n")
+        print("✎ Note: Box-Cox transformation requires all data to be positive. Columns with zero or negative values will be skipped.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -580,10 +580,10 @@ def transform_num(
         return transformed_df, boxcox_transformed_columns
 
     if method.lower() == 'yeojohnson':
-        print(f"< YEO-JOHNSON TRANSFORMATION >")
-        print(f" This method transforms data to closely approximate a normal distribution, applicable to both positive and negative values.")
-        print(f"  ✔ Stabilizes variance and normalizes distribution.")
-        print(f"  ✔ Suitable for a wide range of data, including zero and negative values.\n")
+        print("< YEO-JOHNSON TRANSFORMATION >")
+        print(" This method transforms data to closely approximate a normal distribution, applicable to both positive and negative values.")
+        print("  ✔ Stabilizes variance and normalizes distribution.")
+        print("  ✔ Suitable for a wide range of data, including zero and negative values.\n")
 
         # initialize the DataFrame to work with
         transformed_df = df.copy()
@@ -609,12 +609,12 @@ def transform_num(
         return transformed_df, yeojohnson_transformed_columns
 
     if method.lower() == 'power' and (power is not None or power_map is not None):
-        print(f"< POWER TRANSFORMATION >")
-        print(f" This method raises numerical variables to specified powers, allowing for precise data distribution adjustments.")
-        print(f"  ✔ Individual powers can be set per variable using a 'power_map' for targeted transformations.")
-        print(f"  ✔ Alternatively, a single 'power' value applies uniformly to all specified numerical variables.")
-        print(f"  ✔ Facilitates skewness correction and distribution normalization to improve statistical analysis and ML model performance.\n")
-        print(f"☻ Tip: A power of 0.5 (square root) often works well for right-skewed data, while a square (power of 2) can help with left-skewed data. Choose the power that best fits your data characteristics.\n")
+        print("< POWER TRANSFORMATION >")
+        print(" This method raises numerical variables to specified powers, allowing for precise data distribution adjustments.")
+        print("  ✔ Individual powers can be set per variable using a 'power_map' for targeted transformations.")
+        print("  ✔ Alternatively, a single 'power' value applies uniformly to all specified numerical variables.")
+        print("  ✔ Facilitates skewness correction and distribution normalization to improve statistical analysis and ML model performance.\n")
+        print("☻ Tip: A power of 0.5 (square root) often works well for right-skewed data, while a square (power of 2) can help with left-skewed data. Choose the power that best fits your data characteristics.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -637,7 +637,7 @@ def transform_num(
 
         print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
         print(f"✔ Dataframe with only the power transformed columns:\n{power_transformed_columns.head()}\n")
-        print(f"☻ HOW TO: Apply this transformation using `transformed_df, power_transformed_columns = transform_num(your_df, your_numerical_variables, method='power', power_map=your_power_map)`.\n")
+        print("☻ HOW TO: Apply this transformation using `transformed_df, power_transformed_columns = transform_num(your_df, your_numerical_variables, method='power', power_map=your_power_map)`.\n")
 
         # sanity check
         print("< SANITY CHECK >")
@@ -648,9 +648,9 @@ def transform_num(
         return transformed_df, power_transformed_columns
 
     if method.lower() == 'winsorization' and (lower_percentile is not None and upper_percentile is not None) or winsorization_map is not None:
-        print(f"< WINSORIZATION TRANSFORMATION >")
-        print(f" This method caps extreme values in the data to reduce the impact of outliers.")
-        print(f"✎ Note: Specify `lower_percentile` and `upper_percentile` for all variables, or use `winsorization_map` for variable-specific thresholds.\n")
+        print("< WINSORIZATION TRANSFORMATION >")
+        print(" This method caps extreme values in the data to reduce the impact of outliers.")
+        print("✎ Note: Specify `lower_percentile` and `upper_percentile` for all variables, or use `winsorization_map` for variable-specific thresholds.\n")
 
         # initialize objects
         transformed_df = df.copy()
@@ -686,11 +686,11 @@ def transform_num(
         return transformed_df, winsorized_columns
 
     if method.lower() == 'interaction':
-        print(f"< INTERACTION TERMS TRANSFORMATION >")
-        print(f" This method creates new features by multiplying together pairs of numerical variables.")
-        print(f"  ✔ Captures the synergistic effects between variables that may impact the target variable.")
-        print(f"  ✔ Can unveil complex relationships not observable through individual variables alone.\n")
-        print(f"✎ Note: Specify pairs of variables using 'interaction_pairs', which is a list of tuples, where tuples are variable pairs.\n")
+        print("< INTERACTION TERMS TRANSFORMATION >")
+        print(" This method creates new features by multiplying together pairs of numerical variables.")
+        print("  ✔ Captures the synergistic effects between variables that may impact the target variable.")
+        print("  ✔ Can unveil complex relationships not observable through individual variables alone.\n")
+        print("✎ Note: Specify pairs of variables using 'interaction_pairs', which is a list of tuples, where tuples are variable pairs.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -722,11 +722,11 @@ def transform_num(
         return transformed_df, interaction_columns
 
     if method.lower() == 'polynomial' and (degree is not None or degree_map is not None):
-        print(f"< POLYNOMIAL FEATURES TRANSFORMATION >")
-        print(f" This method generates polynomial features up to a specified degree for numerical variables.")
-        print(f"  ✔ Captures non-linear relationships between variables and the target.")
-        print(f"  ✔ Enhances model performance by adding complexity through feature engineering.")
-        print(f"✎ Note: Specify the 'degree' for a global application or 'degree_map' for variable-specific degrees.\n")
+        print("< POLYNOMIAL FEATURES TRANSFORMATION >")
+        print(" This method generates polynomial features up to a specified degree for numerical variables.")
+        print("  ✔ Captures non-linear relationships between variables and the target.")
+        print("  ✔ Enhances model performance by adding complexity through feature engineering.")
+        print("✎ Note: Specify the 'degree' for a global application or 'degree_map' for variable-specific degrees.\n")
 
         # initialize essential objects
         transformed_df = df.copy()
@@ -767,10 +767,10 @@ def transform_num(
         return transformed_df, poly_features
 
     if method.lower() == 'bin' and (bins is not None or bin_map is not None):
-        print(f"< BINNING TRANSFORMATION >")
-        print(f" This method groups numerical data into bins or intervals, simplifying relationships and reducing noise.")
-        print(f"  ✔ Users can specify a uniform number of bins for all variables or define custom binning criteria per variable.")
-        print(f"✎ Note: Binning can be specified globally with 'bins' or individually with 'bin_map'.\n")
+        print("< BINNING TRANSFORMATION >")
+        print(" This method groups numerical data into bins or intervals, simplifying relationships and reducing noise.")
+        print("  ✔ Users can specify a uniform number of bins for all variables or define custom binning criteria per variable.")
+        print("✎ Note: Binning can be specified globally with 'bins' or individually with 'bin_map'.\n")
 
         transformed_df = df.copy()
         binned_columns = pd.DataFrame()

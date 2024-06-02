@@ -121,7 +121,7 @@ def explore_df(
         raise TypeError("explore_df(): The df parameter must be a pandas DataFrame.")
 
     if not isinstance(method, str):
-        raise TypeError(f"explore_df(): The method parameter must be a string.\nExample: method = 'all'")
+        raise TypeError("explore_df(): The method parameter must be a string.\nExample: method = 'all'")
 
     if not isinstance(output, str):
         raise TypeError(f"explore_df(): The output parameter must be a string.\nExample: output = 'print'")

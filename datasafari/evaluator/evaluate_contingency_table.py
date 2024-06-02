@@ -130,7 +130,7 @@ def evaluate_contingency_table(
     test_viability['barnard_exact'], test_viability['boschloo_exact'], test_viability['fisher_exact'] = barnard_viability, boschloo_viability, fisher_viability
 
     # console output
-    title = f"< CONTINGENCY TABLE EVALUATION >\n"
+    title = "< CONTINGENCY TABLE EVALUATION >\n"
     on_chi2 = f"Based on minimum expected freq. ({min_expected_frequency}) & minimum observed freq. ({min_observed_frequency}):\n  ➡ chi2_contingecy() viability: {'✔' if chi2_viability else '✘'}\n\n"
     on_yates = f"Based on table shape ({table_shape[0]}x{table_shape[1]}) & sample size ({sample_size}):\n  ➡ chi2_contingecy() Yate's correction viability: {'✔' if yates_correction_viability else '✘'}\n\n"
     on_exact = f"Based on table shape ({table_shape[0]}x{table_shape[1]}):\n  ➡ barnard_exact() viability: {'✔' if barnard_viability else '✘'}\n  ➡ boschloo_exact() viability: {'✔' if boschloo_viability else '✘'}\n  ➡ fisher_exact() viability: {'✔' if fisher_viability else '✘'}\n\n\n"

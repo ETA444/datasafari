@@ -219,15 +219,15 @@ def hypothesis_predictor_core_c(
     if chi2_viability:
         if yates_correction_viability:
             stat, p_val, dof, expected_frequencies = chi2_contingency(contingency_table, correction=True)
-            test_name = f"Chi-square test (with Yates' Correction)"
-            chi2_tip = f"\n\n☻ Tip: The Chi-square test of independence with Yates' Correction is used for 2x2 contingency tables with small sample sizes. Yates' Correction makes the test more conservative, reducing the Type I error rate by adjusting for the continuity of the chi-squared distribution. This correction is typically applied when sample sizes are small (often suggested for total sample sizes less than about 40), aiming to avoid overestimation of statistical significance."
+            test_name = "Chi-square test (with Yates' Correction)"
+            chi2_tip = "\n\n☻ Tip: The Chi-square test of independence with Yates' Correction is used for 2x2 contingency tables with small sample sizes. Yates' Correction makes the test more conservative, reducing the Type I error rate by adjusting for the continuity of the chi-squared distribution. This correction is typically applied when sample sizes are small (often suggested for total sample sizes less than about 40), aiming to avoid overestimation of statistical significance."
             conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})."
             chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'yates_correction': yates_correction_viability, 'tip': chi2_tip, 'test_name': test_name}
             output_info['chi2_contingency'] = chi2_output_info
         else:
             stat, p_val, dof, expected_frequencies = chi2_contingency(contingency_table, correction=False)
-            test_name = f"Chi-square test (without Yates' Correction)"
-            chi2_tip = f"\n\n☻ Tip: The Chi-square test of independence without Yates' Correction is preferred when analyzing larger contingency tables or when sample sizes are sufficiently large, even for 2x2 tables (often suggested for total sample sizes greater than 40). Removing Yates' Correction can increase the test's power by not artificially adjusting for continuity, making it more sensitive to detect genuine associations between variables in settings where the assumptions of the chi-squared test are met."
+            test_name = "Chi-square test (without Yates' Correction)"
+            chi2_tip = "\n\n☻ Tip: The Chi-square test of independence without Yates' Correction is preferred when analyzing larger contingency tables or when sample sizes are sufficiently large, even for 2x2 tables (often suggested for total sample sizes greater than 40). Removing Yates' Correction can increase the test's power by not artificially adjusting for continuity, making it more sensitive to detect genuine associations between variables in settings where the assumptions of the chi-squared test are met."
             conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})." if p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {p_val:.3f})."
             chi2_output_info = {'stat': stat, 'p_val': p_val, 'conclusion': conclusion, 'yates_correction': yates_correction_viability, 'tip': chi2_tip, 'test_name': test_name}
             output_info['chi2_contingency'] = chi2_output_info
@@ -237,7 +237,7 @@ def hypothesis_predictor_core_c(
             barnard_stat = barnard_test.statistic
             barnard_p_val = barnard_test.pvalue
             bernard_test_name = f"Barnard's exact test ({alternative.lower()})"
-            bernard_tip = f"\n\n☻ Tip: Barnard's exact test is often preferred for its power, especially in unbalanced designs or with small sample sizes, without the need for the continuity correction that Fisher's test applies."
+            bernard_tip = "\n\n☻ Tip: Barnard's exact test is often preferred for its power, especially in unbalanced designs or with small sample sizes, without the need for the continuity correction that Fisher's test applies."
             if alternative.lower() == 'two-sided':
                 bernard_conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {barnard_p_val:.3f})." if barnard_p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {barnard_p_val:.3f})."
             elif alternative.lower() == 'less':
@@ -254,7 +254,7 @@ def hypothesis_predictor_core_c(
             boschloo_stat = boschloo_test.statistic
             boschloo_p_val = boschloo_test.pvalue
             boschloo_test_name = f"Boschloo's exact test ({alternative.lower()})"
-            boschloo_tip = f"\n\n☻ Tip: Boschloo's exact test is an extension that increases power by combining the strengths of Fisher's and Barnard's tests, focusing on the most extreme probabilities."
+            boschloo_tip = "\n\n☻ Tip: Boschloo's exact test is an extension that increases power by combining the strengths of Fisher's and Barnard's tests, focusing on the most extreme probabilities."
             if alternative.lower() == 'two-sided':
                 boschloo_conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {boschloo_p_val:.3f})." if boschloo_p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {boschloo_p_val:.3f})."
             elif alternative.lower() == 'less':
@@ -262,7 +262,7 @@ def hypothesis_predictor_core_c(
             elif alternative.lower() == 'greater':
                 boschloo_conclusion = f"The data do not support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {boschloo_p_val:.3f})." if boschloo_p_val > 0.05 else f"The data support a statistically significant increase in the frequency of {categorical_variable1} compared to {categorical_variable2} (p = {boschloo_p_val:.3f})."
 
-            # consolidate info for ouput
+            # consolidate info for output
             boschloo_output_info = {'stat': boschloo_stat, 'p_val': boschloo_p_val, 'conclusion': boschloo_conclusion, 'alternative': alternative.lower(), 'tip': boschloo_tip, 'test_name': boschloo_test_name}
             output_info['boschloo_exact'] = boschloo_output_info
 
@@ -271,7 +271,7 @@ def hypothesis_predictor_core_c(
             fisher_stat = fisher_test[0]
             fisher_p_val = fisher_test[1]
             fisher_test_name = f"Fisher's exact test ({alternative.lower()})"
-            fisher_tip = f"\n☻ Tip: Fisher's exact test is traditionally used for small sample sizes, providing exact p-values under the null hypothesis of independence."
+            fisher_tip = "\n☻ Tip: Fisher's exact test is traditionally used for small sample sizes, providing exact p-values under the null hypothesis of independence."
             if alternative.lower() == 'two-sided':
                 fisher_conclusion = f"There is no statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {fisher_p_val:.3f})." if fisher_p_val > 0.05 else f"There is a statistically significant association between {categorical_variable1} and {categorical_variable2} (p = {fisher_p_val:.3f})."
             elif alternative.lower() == 'less':
@@ -523,27 +523,27 @@ def predict_hypothesis(
         hypothesis_testing = 'numerical'
         grouping_variable = var1
         target_variable = var2
-        print(f"< INITIALIZING predict_hypothesis() >\n")
+        print("< INITIALIZING predict_hypothesis() >\n")
         print(f"Performing {hypothesis_testing} hypothesis testing with:")
         print(f"  ➡ Grouping variable: '{grouping_variable}' (with groups: {df[grouping_variable].unique()})\n  ➡ Target variable: '{target_variable}'\n")
-        print(f"Output Contents:\n (1) Results of Normality Testing\n (2) Results of Variance Testing\n (3) Results of Hypothesis Testing\n\n")
+        print("Output Contents:\n (1) Results of Normality Testing\n (2) Results of Variance Testing\n (3) Results of Hypothesis Testing\n\n")
     elif data_types[var1] == 'numerical' and data_types[var2] == 'categorical':
         hypothesis_testing = 'numerical'
         grouping_variable = var2
         target_variable = var1
-        print(f"< INITIALIZING predict_hypothesis() >\n")
+        print("< INITIALIZING predict_hypothesis() >\n")
         print(f"Performing {hypothesis_testing} hypothesis testing with:")
         print(f"  ➡ Grouping variable: '{grouping_variable}' (with groups: {df[grouping_variable].unique()})\n  ➡ Target variable: '{target_variable}'\n")
-        print(f"Output Contents:\n (1) Results of Normality Testing\n (2) Results of Variance Testing\n (3) Results of Hypothesis Testing\n\n")
+        print("Output Contents:\n (1) Results of Normality Testing\n (2) Results of Variance Testing\n (3) Results of Hypothesis Testing\n\n")
     elif data_types[var1] == 'categorical' and data_types[var2] == 'categorical':
         hypothesis_testing = 'categorical'
         categorical_variable1 = var1
         categorical_variable2 = var2
-        print(f"< INITIALIZING predict_hypothesis() >")
+        print("< INITIALIZING predict_hypothesis() >")
         print(f"Performing {hypothesis_testing} hypothesis testing with:\n")
         print(f"  ➡ Categorical variable 1: '{categorical_variable1}'\n  ➡ Categorical variable 2: '{categorical_variable2}'\n\n")
     else:
-        raise ValueError(f"predict_hypothesis(): Both of the provided variables are numerical.\n - To do numerical hypothesis testing, provide a numerical variable (target variable) and a categorical variable (grouping variable).\n - To do categorical hypothesis testing, provide two categorical variables.")
+        raise ValueError("predict_hypothesis(): Both of the provided variables are numerical.\n - To do numerical hypothesis testing, provide a numerical variable (target variable) and a categorical variable (grouping variable).\n - To do categorical hypothesis testing, provide two categorical variables.")
 
     # perform appropriate hypothesis testing process
     if hypothesis_testing == 'numerical':

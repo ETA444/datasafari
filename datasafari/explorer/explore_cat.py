@@ -105,16 +105,16 @@ def explore_cat(
         raise TypeError("explore_cat(): The df parameter must be a pandas DataFrame.")
 
     if not isinstance(categorical_variables, list):
-        raise TypeError(f"explore_cat(): The categorical_variables parameter must be a list of variable names.\n Example: var_list = ['var1', 'var2', 'var3']")
+        raise TypeError("explore_cat(): The categorical_variables parameter must be a list of variable names.\n Example: var_list = ['var1', 'var2', 'var3']")
     else:
         if not all(isinstance(var, str) for var in categorical_variables):
             raise TypeError("explore_cat(): All items in the categorical_variables list must be strings representing column names.")
 
     if not isinstance(method, str):
-        raise TypeError(f"explore_cat(): The method parameter must be a string.\n Example: method = 'all'")
+        raise TypeError("explore_cat(): The method parameter must be a string.\n Example: method = 'all'")
 
     if not isinstance(output, str):
-        raise TypeError(f"explore_cat(): The output parameter must be a string. \n Example: output = 'return'")
+        raise TypeError("explore_cat(): The output parameter must be a string. \n Example: output = 'return'")
 
     # ValueErrors
 
@@ -138,7 +138,7 @@ def explore_cat(
     # Check if variables are categorical
     categorical_types = evaluate_dtype(df, categorical_variables, output='list_c')
     if not all(categorical_types):
-        raise ValueError(f"explore_cat(): The 'categorical_variables' list must contain only names of categorical variables.")
+        raise ValueError("explore_cat(): The 'categorical_variables' list must contain only names of categorical variables.")
 
     # Check if specified variables exist in the DataFrame
     missing_vars = [var for var in categorical_variables if var not in df.columns]
@@ -150,7 +150,7 @@ def explore_cat(
 
     if method.lower() in ['unique_values', 'all']:
         # initial append for title of method section
-        result.append(f"<<______UNIQUE VALUES PER VARIABLE______>>\n")
+        result.append("<<______UNIQUE VALUES PER VARIABLE______>>\n")
 
         # get the unique values per variable in categorical_variables list
         for variable_name in categorical_variables:
@@ -159,7 +159,7 @@ def explore_cat(
 
     if method.lower() in ['counts_percentage', 'all']:
         # initial append for title of method section
-        result.append(f"<<______COUNTS & PERCENTAGE______>>\n")
+        result.append("<<______COUNTS & PERCENTAGE______>>\n")
 
         # get the counts and percentages per unique value of variable in categorical_variables list
         for variable_name in categorical_variables:

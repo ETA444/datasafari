@@ -435,7 +435,7 @@ def data_preprocessing_core(
         raise ValueError("data_preprocessing_core(): The 'test_size' parameter must be a float between 0 and 1.")
 
     if data_state.lower() not in ['unprocessed', 'preprocessed'] or None:
-        raise ValueError(f"data_preprocessing_core(): The data_state must be one of the following: \n- 'unprocessed': activates predict_ml() preprocessing capabilities.\n - 'preprocessed': user opts out of preprocessing (Warning: ensure your data is properly preprocessed for ML)")
+        raise ValueError("data_preprocessing_core(): The data_state must be one of the following: \n- 'unprocessed': activates predict_ml() preprocessing capabilities.\n - 'preprocessed': user opts out of preprocessing (Warning: ensure your data is properly preprocessed for ML)")
 
     if y_col not in df.columns:
         raise ValueError(f"data_preprocessing_core(): The specified target column '{y_col}' is not present in the DataFrame.")
@@ -498,8 +498,8 @@ def data_preprocessing_core(
 
         # construct console output
         if verbose > 0:
-            print(f"< PREPROCESSING DATA REPORT >")
-            print(f" ☻ Tip: You can define your own SciKit preprocessors using the appropriate parameters, please refer to documentation. \n") if verbose > 1 else ''
+            print("< PREPROCESSING DATA REPORT >")
+            print(" ☻ Tip: You can define your own SciKit preprocessors using the appropriate parameters, please refer to documentation. \n") if verbose > 1 else ''
             print(f"  ➡ Numerical features processed [using {numeric_processor_name}]: {', '.join(numeric_features) if numeric_features else 'None'}\n")
             print(f"  ➡ Categorical features processed [using {categorical_processor_name}]: {', '.join(categorical_features) if categorical_features else 'None'}\n")
             print(f"  ➡ Text features processed [using {text_processor_name}]: {', '.join(text_features) if text_features else 'None'}\n")
@@ -765,11 +765,11 @@ def model_recommendation_core(
     top_models = sorted(composite_scores, key=composite_scores.get, reverse=True)[:n_top_models]
 
     if verbose > 0:
-        print(f"< MODEL RECOMMENDATIONS >")
+        print("< MODEL RECOMMENDATIONS >")
         print(f"The recommendation core has prioritized the following scoring metrics while choosing the best models: {', '.join([metric_name for metric_name, metric_func in scoring.items() if metric_func in priority_metrics])}\n") if priority_metrics else print(f"The recommendation core has not prioritized any metrics.\nTo prioritize a metric add it's name to the 'priority_metrics' list parameter. (e.g. priority_metrics=['explained_variance', 'neg_root_mean_squared_error']")
         [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") if scoring_metric in priority_metrics else '' for scoring_metric, score_tip in tips_scoring.items()] if verbose == 2 else ''
         [print(f" ☻ Tip on {scoring_metric}: {score_tip}\n") for scoring_metric, score_tip in tips_scoring.items()] if verbose == 3 else ''
-        print(f"Best untuned models:")
+        print("Best untuned models:")
         [print(f"  ➡ {model_name}()") for model_name in top_models]
         for model_name in top_models:
             print(f"\n► {model_name} (Composite Score: {composite_scores[model_name]:.4f}):")
@@ -1018,12 +1018,12 @@ def model_tuning_core(
         print(f"  ➡ Refit metric: {refit_metric}")
 
         if custom_param_grids:
-            print(f"  ➡ Parameter grid: Custom (defined by user)")
+            print("  ➡ Parameter grid: Custom (defined by user)")
         else:
             print("  ➡ Parameter grid: Default")
 
         if n_jobs == -1:
-            print(f"  ➡ Parallel processing: ON")
+            print("  ➡ Parallel processing: ON")
         else:
             print(f"  ➡ Parallel processing: OFF (n_jobs = {n_jobs})")
 
@@ -1281,8 +1281,8 @@ def model_recommendation_core_inference(
     )[:n_top_models]
 
     if verbose > 0:
-        print(f"\n< MODEL RECOMMENDATIONS >")
-        print(f" ☻ Tip: Use verbose = 2 to see model summaries, or access the models directly in the returned dictionary object.") if verbose < 2 else ''
+        print("\n< MODEL RECOMMENDATIONS >")
+        print(" ☻ Tip: Use verbose = 2 to see model summaries, or access the models directly in the returned dictionary object.") if verbose < 2 else ''
         for name, details in sorted_models:
             print(f"\n\n ➡ Model: {name}")
             for metric, value in details['metrics'].items():

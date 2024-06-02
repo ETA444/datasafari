@@ -31,7 +31,7 @@ def transform_cat(
 
     categorical_variables : list
         A list of strings representing the names of the categorical columns to be transformed.
-        
+
     method : str
         The method to use for transforming the categorical variables.
             - ``'uniform_simple'`` Basic cleaning transformations to standardize text, such as lowercase conversion, whitespace trimming, and special character removal. Also fills missing values with a specified placeholder.
@@ -205,7 +205,7 @@ def transform_cat(
     # Check if variables are categorical
     categorical_types = evaluate_dtype(df, categorical_variables, output='list_c')
     if not all(categorical_types):
-        raise ValueError(f"transform_cat(): The 'categorical_variables' list must contain only names of categorical variables.")
+        raise ValueError("transform_cat(): The 'categorical_variables' list must contain only names of categorical variables.")
 
     # Check if method is valid
     valid_methods = ['uniform_simple', 'uniform_smart', 'uniform_mapping', 'encode_onehot', 'encode_ordinal', 'encode_freq', 'encode_target', 'encode_binary']
@@ -238,12 +238,12 @@ def transform_cat(
 
     # Main Function #
     if method.lower() == 'uniform_simple':
-        print(f"< UNIFORM SIMPLE TRANSFORMATION* >")
-        print(f" This method applies basic but effective transformations to make categorical data uniform:")
-        print(f"  ✔ Lowercases all text to fix capitalization inconsistencies.")
-        print(f"  ✔ Trims leading and trailing whitespaces for cleanliness.")
-        print(f"  ✔ Removes special characters to standardize text.")
-        print(f"  ✔ Fills missing values with a placeholder to maintain data integrity. (use na_placeholder = '...', default 'Unknown')")
+        print("< UNIFORM SIMPLE TRANSFORMATION* >")
+        print(" This method applies basic but effective transformations to make categorical data uniform:")
+        print("  ✔ Lowercases all text to fix capitalization inconsistencies.")
+        print("  ✔ Trims leading and trailing whitespaces for cleanliness.")
+        print("  ✔ Removes special characters to standardize text.")
+        print("  ✔ Fills missing values with a placeholder to maintain data integrity. (use na_placeholder = '...', default 'Unknown')")
 
         # initialize dataframe to work with
         transformed_df = df.copy()
@@ -257,7 +257,7 @@ def transform_cat(
                 .fillna(na_placeholder)  # Customize this placeholder as needed
                 .str.lower()
                 .str.strip()
-                .str.replace('[^a-zA-Z0-9\s]', '', regex=True)
+                .str.replace(r'[^a-zA-Z0-9\s]', '', regex=True)
             )
             transformed_df[variable] = transformed_column
             uniform_columns = pd.concat([uniform_columns, transformed_column], axis=1)
@@ -277,13 +277,13 @@ def transform_cat(
         return transformed_df, uniform_columns
 
     if method.lower() == 'uniform_smart':
-        print(f"< UNIFORM SMART TRANSFORMATION* >")
-        print(f" This method leverages advanced data cleaning techniques for categorical variables, enhancing uniformity across your dataset:")
-        print(f"  ✔ Utilizes the `uniform_simple` method for initial preprocessing steps.")
-        print(f"  ✔ Employs Levenshtein distance to evaluate textual similarity among categories.")
-        print(f"  ✔ Applies hierarchical clustering to group similar categories together.")
-        print(f"  ✔ Selects the most representative category within each cluster to ensure data consistency.")
-        print(f"  ✔ Fills missing values with a placeholder to maintain data integrity. (default 'Unknown', customize with na_placeholder = '...')\n")
+        print("< UNIFORM SMART TRANSFORMATION* >")
+        print(" This method leverages advanced data cleaning techniques for categorical variables, enhancing uniformity across your dataset:")
+        print("  ✔ Utilizes the `uniform_simple` method for initial preprocessing steps.")
+        print("  ✔ Employs Levenshtein distance to evaluate textual similarity among categories.")
+        print("  ✔ Applies hierarchical clustering to group similar categories together.")
+        print("  ✔ Selects the most representative category within each cluster to ensure data consistency.")
+        print("  ✔ Fills missing values with a placeholder to maintain data integrity. (default 'Unknown', customize with na_placeholder = '...')\n")
 
         # initialize dataframe to work with
         transformed_df = df.copy()
@@ -341,7 +341,7 @@ def transform_cat(
         return transformed_df, uniform_columns
 
     if method.lower() == 'uniform_mapping' and abbreviation_map:
-        print(f"< MANUAL CATEGORY MAPPING >")
+        print("< MANUAL CATEGORY MAPPING >")
         print(" This method allows for manual mapping of categories to address specific cases:")
         print("  ✔ Maps categories based on user-defined rules.")
         print("  ✔ Useful for stubborn categories that automated methods can't uniformly transform.")
@@ -368,12 +368,12 @@ def transform_cat(
         return transformed_df, uniform_columns
 
     if method.lower() == 'encode_onehot':
-        print(f"< ONE-HOT ENCODING TRANSFORMATION >")
-        print(f" This method converts categorical variables into a form that could be provided to ML algorithms to do a better job in prediction:")
-        print(f"  ✔ Converts each category value into a new column and assigns a 1 or 0 (notation for true/false).")
-        print(f"  ✔ Ensures the data is ready for machine learning models without assuming any ordinal relationship.")
-        print(f"  ✔ Helps to tackle the issue of 'curse of dimensionality' in a controlled manner.")
-        print(f"✎ Note: Before encoding, ensure data uniformity and cleanliness.\n☻ Tip: Use `uniform_simple` or `uniform_smart` from `transform_cat()` for advanced categorical data cleaning.\n")
+        print("< ONE-HOT ENCODING TRANSFORMATION >")
+        print(" This method converts categorical variables into a form that could be provided to ML algorithms to do a better job in prediction:")
+        print("  ✔ Converts each category value into a new column and assigns a 1 or 0 (notation for true/false).")
+        print("  ✔ Ensures the data is ready for machine learning models without assuming any ordinal relationship.")
+        print("  ✔ Helps to tackle the issue of 'curse of dimensionality' in a controlled manner.")
+        print("✎ Note: Before encoding, ensure data uniformity and cleanliness.\n☻ Tip: Use `uniform_simple` or `uniform_smart` from `transform_cat()` for advanced categorical data cleaning.\n")
 
         # initialize dataframe to work with
         transformed_df = df.copy()
@@ -409,9 +409,9 @@ def transform_cat(
         return transformed_df, encoded_columns
 
     if method.lower() == 'encode_ordinal' and ordinal_map:
-        print(f"< ORDINAL ENCODING TRANSFORMATION >")
-        print(f" This method assigns an integer to each category value based on the provided ordinal order.")
-        print(f"✎ Note: Ensure the provided ordinal map correctly reflects the desired order of categories for each variable.")
+        print("< ORDINAL ENCODING TRANSFORMATION >")
+        print(" This method assigns an integer to each category value based on the provided ordinal order.")
+        print("✎ Note: Ensure the provided ordinal map correctly reflects the desired order of categories for each variable.")
         print("☻ Tip: An ordinal map dictionary looks like this: {'your_variable': ['level1', 'level2', 'level3'], ...}\n")
 
         # initialize dataframe to work with
@@ -442,10 +442,10 @@ def transform_cat(
         return transformed_df, encoded_columns
 
     if method.lower() == 'encode_freq':
-        print(f"< FREQUENCY ENCODING TRANSFORMATION >")
-        print(f" This method transforms categorical variables based on the frequency of each category.")
-        print(f"✎ Note: Frequency encoding helps to retain the information about the category's prevalence.")
-        print(f"☻ Tip: Useful for models where the frequency significance of categories impacts the prediction.\n")
+        print("< FREQUENCY ENCODING TRANSFORMATION >")
+        print(" This method transforms categorical variables based on the frequency of each category.")
+        print("✎ Note: Frequency encoding helps to retain the information about the category's prevalence.")
+        print("☻ Tip: Useful for models where the frequency significance of categories impacts the prediction.\n")
 
         # initialize dataframe to work with
         transformed_df = df.copy()
@@ -472,10 +472,10 @@ def transform_cat(
         return transformed_df, encoded_columns
 
     if method.lower() == 'encode_target' and target_variable:
-        print(f"< TARGET ENCODING TRANSFORMATION* >")
-        print(f" This method encodes categorical variables based on the mean of the target variable for each category.")
-        print(f"✎ Note: Target encoding captures the 'effect' of each category on the target variable.")
-        print(f"☻ Tip: To prevent data leakage and overfitting, apply target encoding within a cross-validation loop, ensuring it's computed separately for each fold.\n")
+        print("< TARGET ENCODING TRANSFORMATION* >")
+        print(" This method encodes categorical variables based on the mean of the target variable for each category.")
+        print("✎ Note: Target encoding captures the 'effect' of each category on the target variable.")
+        print("☻ Tip: To prevent data leakage and overfitting, apply target encoding within a cross-validation loop, ensuring it's computed separately for each fold.\n")
 
         # initialize dataframe to work with
         transformed_df = df.copy()
@@ -503,11 +503,11 @@ def transform_cat(
         return transformed_df, encoded_columns
 
     if method.lower() == 'encode_binary':
-        print(f"< BINARY ENCODING TRANSFORMATION >")
-        print(f" This method transforms categorical variables into binary columns, significantly reducing dimensionality for high cardinality features.")
-        print(f"  ✔ Efficiently handles categories by representing them with binary codes.")
-        print(f"  ✔ Reduces dataset size and model complexity compared to one-hot encoding.")
-        print(f"✎ Note: Ideal for categorical variables with many unique categories.\n☻ Tip: For categories with limited unique values, consider if binary encoding aligns with your data strategy.\n")
+        print("< BINARY ENCODING TRANSFORMATION >")
+        print(" This method transforms categorical variables into binary columns, significantly reducing dimensionality for high cardinality features.")
+        print("  ✔ Efficiently handles categories by representing them with binary codes.")
+        print("  ✔ Reduces dataset size and model complexity compared to one-hot encoding.")
+        print("✎ Note: Ideal for categorical variables with many unique categories.\n☻ Tip: For categories with limited unique values, consider if binary encoding aligns with your data strategy.\n")
 
         # initialize dataframe to work with
         transformed_df = df.copy()

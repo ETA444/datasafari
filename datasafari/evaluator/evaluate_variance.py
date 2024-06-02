@@ -171,7 +171,7 @@ def evaluate_variance(
 
         # construct console output
         levene_text = f"Results for samples in groups of '{grouping_variable}' for ['{target_variable}'] target variable:\n  ➡ statistic: {levene_stat}\n  ➡ p-value: {levene_pval}\n{(f'  ∴ Equal variances: Yes (H0 cannot be rejected)' if variance_info['levene'] else f'  ∴ Equal variances: No (H0 rejected)')}\n\n"
-        levene_title = f"< EQUAL VARIANCES TESTING: LEVENE >\n\n"
+        levene_title = "< EQUAL VARIANCES TESTING: LEVENE >\n\n"
         levene_tip = "☻ Tip: The Levene test is robust against departures from normality, making it suitable for a wide range of distributions, including those that are not normally distributed. It is preferred when you suspect that your data may not adhere to the normality assumption.\n"
 
         # output & return
@@ -188,7 +188,7 @@ def evaluate_variance(
 
         # construct console output
         fligner_text = f"Results for samples in groups of '{grouping_variable}' for ['{target_variable}'] target variable:\n  ➡ statistic: {fligner_stat}\n  ➡ p-value: {fligner_pval}\n{(f'  ∴ Equal variances: Yes (H0 cannot be rejected)' if variance_info['fligner'] else f'  ∴ Equal variances: No (H0 rejected)')}\n\n"
-        fligner_title = f"< EQUAL VARIANCES TESTING: FLIGNER-KILLEEN >\n\n"
+        fligner_title = "< EQUAL VARIANCES TESTING: FLIGNER-KILLEEN >\n\n"
         fligner_tip = "☻ Tip: The Fligner-Killeen test is a non-parametric alternative that is less sensitive to departures from normality compared to the Bartlett test. It's a good choice when dealing with data that might not be normally distributed, offering robustness similar to the Levene test but through a different statistical approach.\n"
 
         # output & return
@@ -205,7 +205,7 @@ def evaluate_variance(
 
         # construct console output
         bartlett_text = f"Results for samples in groups of '{grouping_variable}' for ['{target_variable}'] target variable:\n  ➡ statistic: {bartlett_stat}\n  ➡ p-value: {bartlett_pval}\n{(f'  ∴ Equal variances: Yes (H0 cannot be rejected)' if variance_info['bartlett'] else f'  ∴ Equal variances: No (H0 rejected)')}\n\n"
-        bartlett_title = f"< EQUAL VARIANCES TESTING: BARTLETT >\n\n"
+        bartlett_title = "< EQUAL VARIANCES TESTING: BARTLETT >\n\n"
         bartlett_tip = "☻ Tip: The Fligner-Killeen test is a non-parametric alternative that is less sensitive to departures from normality compared to the Bartlett test. It's a good choice when dealing with data that might not be normally distributed, offering robustness similar to the Levene test but through a different statistical approach.\n"
 
         # output & return

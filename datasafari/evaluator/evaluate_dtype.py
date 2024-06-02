@@ -162,7 +162,7 @@ def evaluate_dtype(
     if df.shape[0] < 60:
         warnings.warn(
             f"evaluate_dtype: Dataset size ({df.shape[0]}) is smaller than 60. "
-            f"Evaluation may be inaccurate.",
+            "Evaluation may be inaccurate.",
             UserWarning
         )
 
