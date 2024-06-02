@@ -61,7 +61,7 @@ def evaluate_variance(
         - If `normality_info` is provided but is not a boolean.
         - If `method` is not a string.
         - If `pipeline` is not a boolean.
-    
+
     ValueErrors:
         - If the `df` is empty.
         - If the `target_variable` or `grouping_variable` does not exist in the DataFrame.
