@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-"""The setup script."""
-
 from setuptools import setup, find_packages
 
 with open('README.md') as readme_file:
@@ -21,18 +19,18 @@ requirements = [
 ]
 
 dev_requirements = [
-    'pytest',
-    'flake8',
-    'tox',
-    'twine',
-    'cookiecutter',
-    'sphinx',
-    'furo',
-    'sphinx-favicon',
-    'sphinx-prompt',
-    'sphinx-copybutton',
-    'sphinxemoji',
-    'sphinx-opengraph'
+    'pytest>=8.2.0',
+    'flake8>=7.0.0',
+    'tox>=4.12.1',
+    'twine>=5.0.0',
+    'cookiecutter>=2.5.0',
+    'sphinx>=7.3.7',
+    'furo>=2024.5.6',
+    'sphinx-favicon>=1.0.1',
+    'sphinx-prompt>=1.8.0',
+    'sphinx-copybutton>=0.5.2',
+    'sphinxemoji>=0.3.1',
+    'sphinxext-opengraph>=0.6.0'
 ]
 
 setup(
@@ -56,13 +54,13 @@ setup(
     install_requires=requirements,
     extras_require={
         'docs': [
-            'sphinx',
-            'furo',
-            'sphinx-autobuild',
-            'sphinx_favicon',
-            'sphinx_prompt',
-            'sphinx_copybutton',
-            'sphinxemoji'
+            'sphinx>=7.3.7',
+            'furo>=2024.5.6',
+            'sphinx-favicon>=1.0.1',
+            'sphinx-prompt>=1.8.0',
+            'sphinx-copybutton>=0.5.2',
+            'sphinxemoji>=0.3.1',
+            'sphinxext-opengraph>=0.6.0'
         ],
         'dev': dev_requirements
     },
