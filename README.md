@@ -1,3 +1,4 @@
+![image info](./docs/_static/thumbs/ds-branding-thumb-main-web.png)
 # Welcome to DataSafari's Source Code!
 
 DataSafari simplifies complex data science tasks into straightforward, powerful commands. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.
