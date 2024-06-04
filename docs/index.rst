@@ -64,7 +64,7 @@ DataSafari simplifies complex data science tasks into straightforward, powerful 
 
    Installation Guide <installation>
    General Index <genindex>
-   License <license_page>
+   License <lic-gpl3>
    Contact <contact>
 
 |
