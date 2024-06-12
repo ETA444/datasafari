@@ -40,11 +40,15 @@ pygments_style = 'sphinx'
 
 # Metadata of project (opengraph)
 ogp_site_url = 'https://www.datasafari.dev/docs'
+ogp_site_name = 'DataSafari Official Docs'
 ogp_image = '_static/thumbs/ds-branding-thumb-main-docs.png'
 ogp_description_length = 300
 ogp_type = 'website'
 ogp_description = 'DataSafari simplifies complex data science tasks into straightforward, powerful commands.'
 
+ogp_social_cards = {
+    "enable": False
+}
 # -- Options for HTML output -------------------------------------------------
 
 html_theme = 'furo'
@@ -53,6 +57,7 @@ html_theme_options = {
     "dark_logo": "logos/ds-branding-logo-big-darkmode.png",
 }
 html_static_path = ['_static']
+html_favicon = '_static/favicons/favicon.ico'
 
 # -- Options for LaTeX output ------------------------------------------------
 
