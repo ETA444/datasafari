@@ -1,3 +1,6 @@
+.. meta::
+   :keywords: DataSafari, Python data analysis, machine learning, data preprocessing, data transformation, statistical analysis, hypothesis testing, data encoding, data cleaning, model selection, model tuning, predictive modeling, statistical inference, DataFrame manipulation, data visualization, exploratory data analysis, data science, advanced data processing, documentation, user guide
+
 Welcome to DataSafari's Documentation!
 =======================================
 
