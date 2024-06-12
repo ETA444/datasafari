@@ -1,3 +1,6 @@
+.. meta::
+   :keywords: DataSafari, GNU General Public License v3, GPL3, open source license, software license, freedom to share, freedom to modify, user rights, software redistribution, community-driven development
+
 License
 -------
 
