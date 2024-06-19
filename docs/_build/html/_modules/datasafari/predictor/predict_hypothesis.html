@@ -1,0 +1,895 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+        <title>datasafari.predictor.predict_hypothesis - DataSafari 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">DataSafari 1.0.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logos/ds-branding-logo-big-lightmode.png" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/logos/ds-branding-logo-big-darkmode.png" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">DataSafari 1.0.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../glance.html">Subpackages Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Explorers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasafari.explorer.explore_df.html">explore_df()</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasafari.explorer.explore_num.html">explore_num()</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasafari.explorer.explore_cat.html">explore_cat()</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Transformers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasafari.transformer.transform_num.html">transform_num()</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasafari.transformer.transform_cat.html">transform_cat()</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Evaluators</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasafari.evaluator.evaluate_normality.html">evaluate_normality()</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasafari.evaluator.evaluate_variance.html">evaluate_variance()</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasafari.evaluator.evaluate_dtype.html">evaluate_dtype()</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasafari.evaluator.evaluate_contingency_table.html">evaluate_contingency_table()</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Predictors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasafari.predictor.predict_hypothesis.html">predict_hypothesis()</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasafari.predictor.predict_ml.html">predict_ml()</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">General Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lic-gpl3.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for datasafari.predictor.predict_hypothesis</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy.stats.contingency</span> <span class="kn">import</span> <span class="n">expected_freq</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ttest_ind</span><span class="p">,</span> <span class="n">mannwhitneyu</span><span class="p">,</span> <span class="n">f_oneway</span><span class="p">,</span> <span class="n">kruskal</span><span class="p">,</span>  <span class="c1"># numerical hypothesis testing</span>
+    <span class="n">chi2_contingency</span><span class="p">,</span> <span class="n">barnard_exact</span><span class="p">,</span> <span class="n">boschloo_exact</span><span class="p">,</span> <span class="n">fisher_exact</span>  <span class="c1"># categorical hypothesis testing</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">datasafari.evaluator.evaluate_dtype</span> <span class="kn">import</span> <span class="n">evaluate_dtype</span>
+<span class="kn">from</span> <span class="nn">datasafari.evaluator.evaluate_variance</span> <span class="kn">import</span> <span class="n">evaluate_variance</span>
+<span class="kn">from</span> <span class="nn">datasafari.evaluator.evaluate_normality</span> <span class="kn">import</span> <span class="n">evaluate_normality</span>
+<span class="kn">from</span> <span class="nn">datasafari.evaluator.evaluate_contingency_table</span> <span class="kn">import</span> <span class="n">evaluate_contingency_table</span>
+
+
+<span class="c1"># Hypothesis Predictor Cores</span>
+<span class="k">def</span> <span class="nf">hypothesis_predictor_core_n</span><span class="p">(</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">target_variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">grouping_variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">normality_bool</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">equal_variances_bool</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    **Conducts hypothesis testing on numerical data, choosing appropriate tests based on data characteristics.**</span>
+
+<span class="sd">    This function performs hypothesis testing between groups defined by a categorical variable for a numerical target variable. It selects the appropriate statistical test based on the normality of the data and the homogeneity of variances across groups, utilizing t-tests, Mann-Whitney U tests, ANOVA, or Kruskal-Wallis tests as appropriate.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    df : pd.DataFrame</span>
+<span class="sd">        The DataFrame containing the data to be analyzed.</span>
+<span class="sd">    target_variable : str</span>
+<span class="sd">        The name of the numerical variable to test across groups.</span>
+<span class="sd">    grouping_variable : str</span>
+<span class="sd">        The name of the categorical variable used to define groups.</span>
+<span class="sd">    normality_bool : bool</span>
+<span class="sd">        A boolean indicating if the data follows a normal distribution within groups.</span>
+<span class="sd">    equal_variances_bool : bool</span>
+<span class="sd">        A boolean indicating if the groups have equal variances.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary containing the results of the hypothesis test, including test statistics, p-values, conclusions regarding the differences between groups, the name of the test used, and the assumptions tested (normality and equal variances).</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">    -------</span>
+<span class="sd">    TypeErrors:</span>
+<span class="sd">        - If `df` is not a pandas DataFrame.</span>
+<span class="sd">        - If `target_variable` or `grouping_variable` is not a string.</span>
+<span class="sd">        - If `normality_bool` or `equal_variances_bool` is not a boolean.</span>
+<span class="sd">    ValueErrors:</span>
+<span class="sd">        - If the `df` is empty, indicating that there&#39;s no data to evaluate.</span>
+<span class="sd">        - If `target_variable` or `grouping_variable` is not found in the DataFrame&#39;s columns.</span>
+<span class="sd">        - If `target_variable` is not numerical.</span>
+<span class="sd">        - If `grouping_variable` is not categorical.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Error Handling</span>
+    <span class="c1"># TypeErrors</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_numerical(): The &#39;df&#39; parameter must be a pandas DataFrame.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target_variable</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_numerical(): The &#39;target_variable&#39; must be a string.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">grouping_variable</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_numerical(): The &#39;grouping_variable&#39; must be a string.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">normality_bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_numerical(): The &#39;normality_bool&#39; must be a boolean.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">equal_variances_bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_numerical(): The &#39;equal_variances_bool&#39; must be a boolean.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ValueErrors</span>
+    <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;predictor_core_n(): The input DataFrame is empty.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">target_variable</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;predictor_core_n(): The target variable &#39;</span><span class="si">{</span><span class="n">target_variable</span><span class="si">}</span><span class="s2">&#39; was not found in the DataFrame.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">grouping_variable</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;predictor_core_n(): The grouping variable &#39;</span><span class="si">{</span><span class="n">grouping_variable</span><span class="si">}</span><span class="s2">&#39; was not found in the DataFrame.&quot;</span><span class="p">)</span>
+
+    <span class="n">target_variable_is_numerical</span> <span class="o">=</span> <span class="n">evaluate_dtype</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">[</span><span class="n">target_variable</span><span class="p">],</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;list_n&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">target_variable_is_numerical</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;predictor_core_n(): The target variable &#39;</span><span class="si">{</span><span class="n">target_variable</span><span class="si">}</span><span class="s2">&#39; must be a numerical variable.&quot;</span><span class="p">)</span>
+
+    <span class="n">grouping_variable_is_categorical</span> <span class="o">=</span> <span class="n">evaluate_dtype</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">[</span><span class="n">grouping_variable</span><span class="p">],</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;list_c&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">grouping_variable_is_categorical</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;predictor_core_n(): The grouping variable &#39;</span><span class="si">{</span><span class="n">grouping_variable</span><span class="si">}</span><span class="s2">&#39; must be a categorical variable.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Main Function</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">grouping_variable</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">grouping_variable</span><span class="p">]</span> <span class="o">==</span> <span class="n">group</span><span class="p">][</span><span class="n">target_variable</span><span class="p">]</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">]</span>
+
+    <span class="c1"># define output object</span>
+    <span class="n">output_info</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># two sample testing</span>
+        <span class="k">if</span> <span class="n">normality_bool</span> <span class="ow">and</span> <span class="n">equal_variances_bool</span><span class="p">:</span>  <span class="c1"># parametric testing</span>
+            <span class="n">stat</span><span class="p">,</span> <span class="n">p_val</span> <span class="o">=</span> <span class="n">ttest_ind</span><span class="p">(</span><span class="o">*</span><span class="n">samples</span><span class="p">)</span>
+            <span class="n">test_name</span> <span class="o">=</span> <span class="s1">&#39;Independent Samples T-Test&#39;</span>
+            <span class="n">conclusion</span> <span class="o">=</span> <span class="s2">&quot;The data do not provide sufficient evidence to conclude a significant difference between the group means, failing to reject the null hypothesis.&quot;</span> <span class="k">if</span> <span class="n">p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="s2">&quot;The data provide sufficient evidence to conclude a significant difference between the group means, rejecting the null hypothesis.&quot;</span>
+            <span class="n">output_info</span><span class="p">[</span><span class="s1">&#39;ttest_ind&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stat&#39;</span><span class="p">:</span> <span class="n">stat</span><span class="p">,</span> <span class="s1">&#39;p_val&#39;</span><span class="p">:</span> <span class="n">p_val</span><span class="p">,</span> <span class="s1">&#39;conclusion&#39;</span><span class="p">:</span> <span class="n">conclusion</span><span class="p">,</span> <span class="s1">&#39;test_name&#39;</span><span class="p">:</span> <span class="n">test_name</span><span class="p">,</span> <span class="s1">&#39;normality&#39;</span><span class="p">:</span> <span class="n">normality_bool</span><span class="p">,</span> <span class="s1">&#39;equal_variance&#39;</span><span class="p">:</span> <span class="n">equal_variances_bool</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># non-parametric testing</span>
+            <span class="n">stat</span><span class="p">,</span> <span class="n">p_val</span> <span class="o">=</span> <span class="n">mannwhitneyu</span><span class="p">(</span><span class="o">*</span><span class="n">samples</span><span class="p">)</span>
+            <span class="n">test_name</span> <span class="o">=</span> <span class="s1">&#39;Mann-Whitney U Rank Test (Two Independent Samples)&#39;</span>
+            <span class="n">conclusion</span> <span class="o">=</span> <span class="s2">&quot;The data do not provide sufficient evidence to conclude a significant difference in group distributions, failing to reject the null hypothesis.&quot;</span> <span class="k">if</span> <span class="n">p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="s2">&quot;The data provide sufficient evidence to conclude a significant difference in group distributions, rejecting the null hypothesis.&quot;</span>
+            <span class="n">output_info</span><span class="p">[</span><span class="s1">&#39;mannwhitneyu&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stat&#39;</span><span class="p">:</span> <span class="n">stat</span><span class="p">,</span> <span class="s1">&#39;p_val&#39;</span><span class="p">:</span> <span class="n">p_val</span><span class="p">,</span> <span class="s1">&#39;conclusion&#39;</span><span class="p">:</span> <span class="n">conclusion</span><span class="p">,</span> <span class="s1">&#39;test_name&#39;</span><span class="p">:</span> <span class="n">test_name</span><span class="p">,</span> <span class="s1">&#39;normality&#39;</span><span class="p">:</span> <span class="n">normality_bool</span><span class="p">,</span> <span class="s1">&#39;equal_variance&#39;</span><span class="p">:</span> <span class="n">equal_variances_bool</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># more than two samples</span>
+        <span class="k">if</span> <span class="n">normality_bool</span> <span class="ow">and</span> <span class="n">equal_variances_bool</span><span class="p">:</span>
+            <span class="n">stat</span><span class="p">,</span> <span class="n">p_val</span> <span class="o">=</span> <span class="n">f_oneway</span><span class="p">(</span><span class="o">*</span><span class="n">samples</span><span class="p">)</span>
+            <span class="n">test_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;One-way ANOVA (with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span><span class="si">}</span><span class="s1"> groups)&#39;</span>
+            <span class="n">conclusion</span> <span class="o">=</span> <span class="s2">&quot;The data do not provide sufficient evidence to conclude a significant difference among the group means, failing to reject the null hypothesis.&quot;</span> <span class="k">if</span> <span class="n">p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="s2">&quot;The data provide sufficient evidence to conclude a significant difference among the group means, rejecting the null hypothesis.&quot;</span>
+            <span class="n">output_info</span><span class="p">[</span><span class="s1">&#39;f_oneway&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stat&#39;</span><span class="p">:</span> <span class="n">stat</span><span class="p">,</span> <span class="s1">&#39;p_val&#39;</span><span class="p">:</span> <span class="n">p_val</span><span class="p">,</span> <span class="s1">&#39;conclusion&#39;</span><span class="p">:</span> <span class="n">conclusion</span><span class="p">,</span> <span class="s1">&#39;test_name&#39;</span><span class="p">:</span> <span class="n">test_name</span><span class="p">,</span> <span class="s1">&#39;normality&#39;</span><span class="p">:</span> <span class="n">normality_bool</span><span class="p">,</span> <span class="s1">&#39;equal_variance&#39;</span><span class="p">:</span> <span class="n">equal_variances_bool</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stat</span><span class="p">,</span> <span class="n">p_val</span> <span class="o">=</span> <span class="n">kruskal</span><span class="p">(</span><span class="o">*</span><span class="n">samples</span><span class="p">)</span>
+            <span class="n">test_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Kruskal-Wallis H-test (with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span><span class="si">}</span><span class="s1"> groups)&#39;</span>
+            <span class="n">conclusion</span> <span class="o">=</span> <span class="s2">&quot;The data do not provide sufficient evidence to conclude a significant difference among the group distributions, failing to reject the null hypothesis.&quot;</span> <span class="k">if</span> <span class="n">p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="s2">&quot;The data provide sufficient evidence to conclude a significant difference among the group distributions, rejecting the null hypothesis.&quot;</span>
+            <span class="n">output_info</span><span class="p">[</span><span class="s1">&#39;kruskal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stat&#39;</span><span class="p">:</span> <span class="n">stat</span><span class="p">,</span> <span class="s1">&#39;p_val&#39;</span><span class="p">:</span> <span class="n">p_val</span><span class="p">,</span> <span class="s1">&#39;conclusion&#39;</span><span class="p">:</span> <span class="n">conclusion</span><span class="p">,</span> <span class="s1">&#39;test_name&#39;</span><span class="p">:</span> <span class="n">test_name</span><span class="p">,</span> <span class="s1">&#39;normality&#39;</span><span class="p">:</span> <span class="n">normality_bool</span><span class="p">,</span> <span class="s1">&#39;equal_variance&#39;</span><span class="p">:</span> <span class="n">equal_variances_bool</span><span class="p">}</span>
+
+    <span class="c1"># construct console output and return</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt; HYPOTHESIS TESTING: </span><span class="si">{</span><span class="n">test_name</span><span class="si">}</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">Based on:</span><span class="se">\n</span><span class="s2">  ➡ Normality assumption: </span><span class="si">{</span><span class="s1">&#39;✔&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">normality_bool</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;✘&#39;</span><span class="si">}</span><span class="se">\n</span><span class="s2">  ➡ Equal variances assumption: </span><span class="si">{</span><span class="s1">&#39;✔&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">equal_variances_bool</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;✘&#39;</span><span class="si">}</span><span class="se">\n</span><span class="s2">  ➡ Nr. of Groups: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span><span class="si">}</span><span class="s2"> groups</span><span class="se">\n</span><span class="s2">  ∴ predict_hypothesis() is performing </span><span class="si">{</span><span class="n">test_name</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Results of </span><span class="si">{</span><span class="n">test_name</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">  ➡ statistic: </span><span class="si">{</span><span class="n">stat</span><span class="si">}</span><span class="se">\n</span><span class="s2">  ➡ p-value: </span><span class="si">{</span><span class="n">p_val</span><span class="si">}</span><span class="se">\n</span><span class="s2">  ∴ Conclusion: </span><span class="si">{</span><span class="n">conclusion</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_info</span>
+
+
+<span class="k">def</span> <span class="nf">hypothesis_predictor_core_c</span><span class="p">(</span>
+        <span class="n">contingency_table</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">chi2_viability</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">barnard_viability</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">boschloo_viability</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">fisher_viability</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">yates_correction_viability</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">alternative</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;two-sided&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    **Conducts categorical hypothesis testing using contingency tables and appropriate statistical tests.**</span>
+
+<span class="sd">    This function assesses the association between two categorical variables by applying a series of statistical tests. It evaluates the data&#39;s suitability for different tests based on the shape of the contingency table, the minimum expected and observed frequencies, and specific methodological preferences, including Yates&#39; correction for chi-square tests and alternatives for exact tests.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    contingency_table : pd.DataFrame</span>
+<span class="sd">        A contingency table of the two categorical variables.</span>
+<span class="sd">    chi2_viability : bool</span>
+<span class="sd">        Indicates whether chi-square tests should be considered based on the data&#39;s suitability.</span>
+<span class="sd">    barnard_viability : bool</span>
+<span class="sd">        Indicators for the applicability of Barnard&#39;s exact test.</span>
+<span class="sd">    boschloo_viability : bool</span>
+<span class="sd">        Indicators for the applicability of Boschloo&#39;s exact test.</span>
+<span class="sd">    fisher_viability : bool</span>
+<span class="sd">        Indicators for the applicability of Fisher&#39;s exact test.</span>
+<span class="sd">    yates_correction_viability : bool</span>
+<span class="sd">        Determines whether Yates&#39; correction is applicable based on the contingency table&#39;s shape and sample size.</span>
+<span class="sd">    alternative : str, optional, default: &#39;two-sided&#39;</span>
+<span class="sd">        Specifies the alternative hypothesis for exact tests. Options include ``&#39;two-sided&#39;``, ``&#39;less&#39;``, or ``&#39;greater&#39;``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A comprehensive dictionary detailing the outcomes of the statistical tests performed, including test names, statistics, p-values, and conclusions about the association between the categorical variables. The dictionary also contains specific details about the application of Yates&#39; correction and the chosen alternative hypothesis for exact tests.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">    -------</span>
+<span class="sd">    TypeErrors:</span>
+<span class="sd">        - If `contingency_table` is not a pandas DataFrame.</span>
+<span class="sd">        - If `chi2_viability`, `barnard_viability`, `boschloo_viability`, `fisher_viability`, or `yates_correction_viability` is not a boolean.</span>
+<span class="sd">        - If `alternative` is not a string indicating the alternative hypothesis (&#39;two-sided&#39;, &#39;less&#39;, &#39;greater&#39;).</span>
+<span class="sd">    ValueErrors:</span>
+<span class="sd">        - If the `contingency_table` is empty.</span>
+<span class="sd">        - If the `alternative` specified does not match one of the expected values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Error Handling</span>
+    <span class="c1"># TypeErrors</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contingency_table</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_c(): The &#39;contingency_table&#39; parameter must be a pandas DataFrame.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chi2_viability</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_c(): The &#39;chi2_viability&#39; parameter must be a boolean.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">barnard_viability</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_c(): The &#39;barnard_viability&#39; parameter must be a boolean.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">boschloo_viability</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_c(): The &#39;boschloo_viability&#39; parameter must be a boolean.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fisher_viability</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_c(): The &#39;fisher_viability&#39; parameter must be a boolean.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">yates_correction_viability</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_c(): The &#39;yates_correction_viability&#39; parameter must be a boolean.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alternative</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predictor_core_c(): The &#39;alternative&#39; parameter must be a string.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ValueErrors</span>
+    <span class="k">if</span> <span class="n">contingency_table</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;predictor_core_c(): The input contingency table is empty.&quot;</span><span class="p">)</span>
+
+    <span class="n">valid_alternatives</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;two-sided&#39;</span><span class="p">,</span> <span class="s1">&#39;less&#39;</span><span class="p">,</span> <span class="s1">&#39;greater&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">alternative</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_alternatives</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;predictor_core_c(): Invalid &#39;alternative&#39; value. Expected one of </span><span class="si">{</span><span class="n">valid_alternatives</span><span class="si">}</span><span class="s2">, got &#39;</span><span class="si">{</span><span class="n">alternative</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Main Function</span>
+    <span class="c1"># to avoid unnecessary parameter inputs use contingency_table object</span>
+    <span class="n">categorical_variable1</span> <span class="o">=</span> <span class="n">contingency_table</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">categorical_variable2</span> <span class="o">=</span> <span class="n">contingency_table</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">min_expected_frequency</span> <span class="o">=</span> <span class="n">expected_freq</span><span class="p">(</span><span class="n">contingency_table</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">min_observed_frequency</span> <span class="o">=</span> <span class="n">contingency_table</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">contingency_table_shape</span> <span class="o">=</span> <span class="n">contingency_table</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">sample_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">contingency_table</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="c1"># define output object</span>
+    <span class="n">output_info</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">chi2_viability</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">yates_correction_viability</span><span class="p">:</span>
+            <span class="n">stat</span><span class="p">,</span> <span class="n">p_val</span><span class="p">,</span> <span class="n">dof</span><span class="p">,</span> <span class="n">expected_frequencies</span> <span class="o">=</span> <span class="n">chi2_contingency</span><span class="p">(</span><span class="n">contingency_table</span><span class="p">,</span> <span class="n">correction</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;Chi-square test (with Yates&#39; Correction)&quot;</span>
+            <span class="n">chi2_tip</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">☻ Tip: The Chi-square test of independence with Yates&#39; Correction is used for 2x2 contingency tables with small sample sizes. Yates&#39; Correction makes the test more conservative, reducing the Type I error rate by adjusting for the continuity of the chi-squared distribution. This correction is typically applied when sample sizes are small (often suggested for total sample sizes less than about 40), aiming to avoid overestimation of statistical significance.&quot;</span>
+            <span class="n">conclusion</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;There is no statistically significant association between </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span> <span class="k">if</span> <span class="n">p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;There is a statistically significant association between </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="n">chi2_output_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stat&#39;</span><span class="p">:</span> <span class="n">stat</span><span class="p">,</span> <span class="s1">&#39;p_val&#39;</span><span class="p">:</span> <span class="n">p_val</span><span class="p">,</span> <span class="s1">&#39;conclusion&#39;</span><span class="p">:</span> <span class="n">conclusion</span><span class="p">,</span> <span class="s1">&#39;yates_correction&#39;</span><span class="p">:</span> <span class="n">yates_correction_viability</span><span class="p">,</span> <span class="s1">&#39;tip&#39;</span><span class="p">:</span> <span class="n">chi2_tip</span><span class="p">,</span> <span class="s1">&#39;test_name&#39;</span><span class="p">:</span> <span class="n">test_name</span><span class="p">}</span>
+            <span class="n">output_info</span><span class="p">[</span><span class="s1">&#39;chi2_contingency&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chi2_output_info</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stat</span><span class="p">,</span> <span class="n">p_val</span><span class="p">,</span> <span class="n">dof</span><span class="p">,</span> <span class="n">expected_frequencies</span> <span class="o">=</span> <span class="n">chi2_contingency</span><span class="p">(</span><span class="n">contingency_table</span><span class="p">,</span> <span class="n">correction</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;Chi-square test (without Yates&#39; Correction)&quot;</span>
+            <span class="n">chi2_tip</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">☻ Tip: The Chi-square test of independence without Yates&#39; Correction is preferred when analyzing larger contingency tables or when sample sizes are sufficiently large, even for 2x2 tables (often suggested for total sample sizes greater than 40). Removing Yates&#39; Correction can increase the test&#39;s power by not artificially adjusting for continuity, making it more sensitive to detect genuine associations between variables in settings where the assumptions of the chi-squared test are met.&quot;</span>
+            <span class="n">conclusion</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;There is no statistically significant association between </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span> <span class="k">if</span> <span class="n">p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;There is a statistically significant association between </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="n">chi2_output_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stat&#39;</span><span class="p">:</span> <span class="n">stat</span><span class="p">,</span> <span class="s1">&#39;p_val&#39;</span><span class="p">:</span> <span class="n">p_val</span><span class="p">,</span> <span class="s1">&#39;conclusion&#39;</span><span class="p">:</span> <span class="n">conclusion</span><span class="p">,</span> <span class="s1">&#39;yates_correction&#39;</span><span class="p">:</span> <span class="n">yates_correction_viability</span><span class="p">,</span> <span class="s1">&#39;tip&#39;</span><span class="p">:</span> <span class="n">chi2_tip</span><span class="p">,</span> <span class="s1">&#39;test_name&#39;</span><span class="p">:</span> <span class="n">test_name</span><span class="p">}</span>
+            <span class="n">output_info</span><span class="p">[</span><span class="s1">&#39;chi2_contingency&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chi2_output_info</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">barnard_viability</span><span class="p">:</span>
+            <span class="n">barnard_test</span> <span class="o">=</span> <span class="n">barnard_exact</span><span class="p">(</span><span class="n">contingency_table</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">barnard_stat</span> <span class="o">=</span> <span class="n">barnard_test</span><span class="o">.</span><span class="n">statistic</span>
+            <span class="n">barnard_p_val</span> <span class="o">=</span> <span class="n">barnard_test</span><span class="o">.</span><span class="n">pvalue</span>
+            <span class="n">bernard_test_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Barnard&#39;s exact test (</span><span class="si">{</span><span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="n">bernard_tip</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">☻ Tip: Barnard&#39;s exact test is often preferred for its power, especially in unbalanced designs or with small sample sizes, without the need for the continuity correction that Fisher&#39;s test applies.&quot;</span>
+            <span class="k">if</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;two-sided&#39;</span><span class="p">:</span>
+                <span class="n">bernard_conclusion</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;There is no statistically significant association between </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">barnard_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span> <span class="k">if</span> <span class="n">barnard_p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;There is a statistically significant association between </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">barnard_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="k">elif</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;less&#39;</span><span class="p">:</span>
+                <span class="n">bernard_conclusion</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The data do not support a statistically significant decrease in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">barnard_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span> <span class="k">if</span> <span class="n">barnard_p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;The data support a statistically significant decrease in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">barnard_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="k">elif</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;greater&#39;</span><span class="p">:</span>
+                <span class="n">bernard_conclusion</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The data do not support a statistically significant increase in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">barnard_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span> <span class="k">if</span> <span class="n">barnard_p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;The data support a statistically significant increase in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">barnard_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span>
+
+            <span class="c1"># consolidate info for output</span>
+            <span class="n">bernard_output_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stat&#39;</span><span class="p">:</span> <span class="n">barnard_stat</span><span class="p">,</span> <span class="s1">&#39;p_val&#39;</span><span class="p">:</span> <span class="n">barnard_p_val</span><span class="p">,</span> <span class="s1">&#39;conclusion&#39;</span><span class="p">:</span> <span class="n">bernard_conclusion</span><span class="p">,</span> <span class="s1">&#39;alternative&#39;</span><span class="p">:</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s1">&#39;tip&#39;</span><span class="p">:</span> <span class="n">bernard_tip</span><span class="p">,</span> <span class="s1">&#39;test_name&#39;</span><span class="p">:</span> <span class="n">bernard_test_name</span><span class="p">}</span>
+            <span class="n">output_info</span><span class="p">[</span><span class="s1">&#39;barnard_exact&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bernard_output_info</span>
+
+        <span class="k">if</span> <span class="n">boschloo_viability</span><span class="p">:</span>
+            <span class="n">boschloo_test</span> <span class="o">=</span> <span class="n">boschloo_exact</span><span class="p">(</span><span class="n">contingency_table</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">boschloo_stat</span> <span class="o">=</span> <span class="n">boschloo_test</span><span class="o">.</span><span class="n">statistic</span>
+            <span class="n">boschloo_p_val</span> <span class="o">=</span> <span class="n">boschloo_test</span><span class="o">.</span><span class="n">pvalue</span>
+            <span class="n">boschloo_test_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Boschloo&#39;s exact test (</span><span class="si">{</span><span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="n">boschloo_tip</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">☻ Tip: Boschloo&#39;s exact test is an extension that increases power by combining the strengths of Fisher&#39;s and Barnard&#39;s tests, focusing on the most extreme probabilities.&quot;</span>
+            <span class="k">if</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;two-sided&#39;</span><span class="p">:</span>
+                <span class="n">boschloo_conclusion</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;There is no statistically significant association between </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">boschloo_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span> <span class="k">if</span> <span class="n">boschloo_p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;There is a statistically significant association between </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">boschloo_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="k">elif</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;less&#39;</span><span class="p">:</span>
+                <span class="n">boschloo_conclusion</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The data do not support a statistically significant decrease in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">boschloo_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span> <span class="k">if</span> <span class="n">boschloo_p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;The data support a statistically significant decrease in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">boschloo_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="k">elif</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;greater&#39;</span><span class="p">:</span>
+                <span class="n">boschloo_conclusion</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The data do not support a statistically significant increase in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">boschloo_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span> <span class="k">if</span> <span class="n">boschloo_p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;The data support a statistically significant increase in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">boschloo_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span>
+
+            <span class="c1"># consolidate info for output</span>
+            <span class="n">boschloo_output_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stat&#39;</span><span class="p">:</span> <span class="n">boschloo_stat</span><span class="p">,</span> <span class="s1">&#39;p_val&#39;</span><span class="p">:</span> <span class="n">boschloo_p_val</span><span class="p">,</span> <span class="s1">&#39;conclusion&#39;</span><span class="p">:</span> <span class="n">boschloo_conclusion</span><span class="p">,</span> <span class="s1">&#39;alternative&#39;</span><span class="p">:</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s1">&#39;tip&#39;</span><span class="p">:</span> <span class="n">boschloo_tip</span><span class="p">,</span> <span class="s1">&#39;test_name&#39;</span><span class="p">:</span> <span class="n">boschloo_test_name</span><span class="p">}</span>
+            <span class="n">output_info</span><span class="p">[</span><span class="s1">&#39;boschloo_exact&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">boschloo_output_info</span>
+
+        <span class="k">if</span> <span class="n">fisher_viability</span><span class="p">:</span>
+            <span class="n">fisher_test</span> <span class="o">=</span> <span class="n">fisher_exact</span><span class="p">(</span><span class="n">contingency_table</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">fisher_stat</span> <span class="o">=</span> <span class="n">fisher_test</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">fisher_p_val</span> <span class="o">=</span> <span class="n">fisher_test</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">fisher_test_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Fisher&#39;s exact test (</span><span class="si">{</span><span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="n">fisher_tip</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">☻ Tip: Fisher&#39;s exact test is traditionally used for small sample sizes, providing exact p-values under the null hypothesis of independence.&quot;</span>
+            <span class="k">if</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;two-sided&#39;</span><span class="p">:</span>
+                <span class="n">fisher_conclusion</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;There is no statistically significant association between </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">fisher_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span> <span class="k">if</span> <span class="n">fisher_p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;There is a statistically significant association between </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">fisher_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="k">elif</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;less&#39;</span><span class="p">:</span>
+                <span class="n">fisher_conclusion</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The data do not support a statistically significant decrease in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">fisher_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span> <span class="k">if</span> <span class="n">fisher_p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;The data support a statistically significant decrease in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">fisher_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="k">elif</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;greater&#39;</span><span class="p">:</span>
+                <span class="n">fisher_conclusion</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The data do not support a statistically significant increase in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">fisher_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span> <span class="k">if</span> <span class="n">fisher_p_val</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;The data support a statistically significant increase in the frequency of </span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2"> compared to </span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">fisher_p_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">).&quot;</span>
+
+            <span class="c1"># consolidate info for output</span>
+            <span class="n">fisher_output_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stat&#39;</span><span class="p">:</span> <span class="n">fisher_stat</span><span class="p">,</span> <span class="s1">&#39;p_val&#39;</span><span class="p">:</span> <span class="n">fisher_p_val</span><span class="p">,</span> <span class="s1">&#39;conclusion&#39;</span><span class="p">:</span> <span class="n">fisher_conclusion</span><span class="p">,</span> <span class="s1">&#39;alternative&#39;</span><span class="p">:</span> <span class="n">alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s1">&#39;tip&#39;</span><span class="p">:</span> <span class="n">fisher_tip</span><span class="p">,</span> <span class="s1">&#39;test_name&#39;</span><span class="p">:</span> <span class="n">fisher_test_name</span><span class="p">}</span>
+            <span class="n">output_info</span><span class="p">[</span><span class="s1">&#39;fisher_exact&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fisher_output_info</span>
+
+    <span class="c1"># console output &amp; return</span>
+    <span class="n">generate_test_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;test_name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">output_info</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+    <span class="c1"># generate_test_names = (output_info[0][&#39;test_name&#39;] if len(output_info) == 1 else [info[&#39;test_name&#39;] for info in output_info.values()])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt; HYPOTHESIS TESTING: </span><span class="si">{</span><span class="n">generate_test_names</span><span class="si">}</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">Based on:</span><span class="se">\n</span><span class="s2">  ➡ Sample size: </span><span class="si">{</span><span class="n">sample_size</span><span class="si">}</span><span class="se">\n</span><span class="s2">  ➡ Minimum Observed Frequency: </span><span class="si">{</span><span class="n">min_observed_frequency</span><span class="si">}</span><span class="se">\n</span><span class="s2">  ➡ Minimum Expected Frequency: </span><span class="si">{</span><span class="n">min_expected_frequency</span><span class="si">}</span><span class="se">\n</span><span class="s2">  ➡ Contingency table shape: </span><span class="si">{</span><span class="n">contingency_table_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">contingency_table_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">  ∴ Performing </span><span class="si">{</span><span class="n">generate_test_names</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">☻ Tip: Consider the tips provided for each test and assess which of the exact tests provided is most suitable for your data.&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">output_info</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="p">[</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Results of </span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;test_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">  ➡ statistic: </span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;stat&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">  ➡ p-value: </span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;p_val&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">  ∴ Conclusion: </span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;conclusion&#39;</span><span class="p">]</span><span class="si">}{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;tip&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">output_info</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="n">output_info</span>
+
+
+<span class="c1"># Main function</span>
+<div class="viewcode-block" id="predict_hypothesis">
+<a class="viewcode-back" href="../../../datasafari.predictor.predict_hypothesis.html#datasafari.predictor.predict_hypothesis">[docs]</a>
+<span class="k">def</span> <span class="nf">predict_hypothesis</span><span class="p">(</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">var1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">var2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">normality_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;consensus&#39;</span><span class="p">,</span>
+        <span class="n">variance_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;consensus&#39;</span><span class="p">,</span>
+        <span class="n">exact_tests_alternative</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;two-sided&#39;</span><span class="p">,</span>
+        <span class="n">yates_min_sample_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    **Conduct the optimal hypothesis test on a DataFrame, tailoring the approach based on the variable types and automating the testing prerequisites and analyses, outputting test results and interpretation.**</span>
+
+<span class="sd">    This function simplifies hypothesis testing to requiring only two variables and a DataFrame, intelligently determining the test type, assessing necessary assumptions, and providing detailed test outcomes and conclusions.</span>
+
+<span class="sd">        The combination of `var1` and `var2` data types determines the type of hypothesis test to perform:</span>
+<span class="sd">            - A pairing with two categorical variables triggers categorical testing (e.g., Chi-square, Fisher&#39;s exact test, etc.).</span>
+<span class="sd">            - A numerical and categorical variable pairing, interpreted as target and grouping variables respectively, leads to numerical testing (e.g., t-tests, ANOVA, etc.).</span>
+<span class="sd">            - Numerical and numerical variable pairings are not supported.</span>
+
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    df : pd.DataFrame</span>
+<span class="sd">        The DataFrame containing the data for hypothesis testing.</span>
+
+<span class="sd">    var1 : str</span>
+<span class="sd">        The name of the first variable for hypothesis testing.</span>
+
+<span class="sd">    var2 : str</span>
+<span class="sd">        The name of the second variable for hypothesis testing.</span>
+
+<span class="sd">    normality_method : str, optional, default: &#39;consensus&#39;</span>
+<span class="sd">        Specifies the method to evaluate normality within numerical hypothesis testing.</span>
+
+<span class="sd">        - ``&#39;shapiro&#39;`` Shapiro-Wilk test.</span>
+<span class="sd">        - ``&#39;anderson&#39;`` Anderson-Darling test.</span>
+<span class="sd">        - ``&#39;normaltest&#39;`` D’Agostino and Pearson’s test.</span>
+<span class="sd">        - ``&#39;lilliefors&#39;`` Lilliefors test for normality.</span>
+<span class="sd">        - ``&#39;consensus&#39;`` Utilizes a combination of the above tests to reach a consensus on normality.</span>
+
+<span class="sd">            *Note: For more details, refer to:* :doc:`evaluate_normality() documentation &lt;datasafari.evaluator.evaluate_normality&gt;`</span>
+
+<span class="sd">    variance_method : str, optional, default: &#39;consensus&#39;</span>
+<span class="sd">        Determines the method to evaluate variance homogeneity (equal variances) across groups in numerical hypothesis testing.</span>
+
+<span class="sd">        - ``&#39;levene&#39;`` Levene&#39;s test, robust to non-normal distributions.</span>
+<span class="sd">        - ``&#39;bartlett&#39;`` Bartlett’s test, sensitive to non-normal distributions.</span>
+<span class="sd">        - ``&#39;fligner&#39;`` Fligner-Killeen test, a non-parametric alternative.</span>
+<span class="sd">        - ``&#39;consensus&#39;`` A combination approach to determine equal variances across methods.</span>
+
+<span class="sd">            *Note: For more details, refer to:* :doc:`evaluate_variance() documentation &lt;datasafari.evaluator.evaluate_variance&gt;`</span>
+
+<span class="sd">    exact_tests_alternative : str, optional, default: &#39;two-sided&#39;</span>
+<span class="sd">        For categorical hypothesis testing, this parameter specifies the alternative hypothesis direction for exact tests.</span>
+
+<span class="sd">        - ``&#39;two-sided&#39;`` Tests for any difference between the two variables without directionality.</span>
+<span class="sd">        - ``&#39;less&#39;`` Tests if the first variable is less than the second variable.</span>
+<span class="sd">        - ``&#39;greater&#39;`` Tests if the first variable is greater than the second variable.</span>
+
+<span class="sd">    yates_min_sample_size : int, optional, default: 40</span>
+<span class="sd">        Specifies the minimum sample size threshold for applying Yates&#39; correction in chi-square testing to adjust for continuity. The correction is applied to 2x2 contingency tables with small sample sizes to prevent overestimation of the significance level.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary with *key* the short test name (e.g. ``&#39;f_oneway&#39;``) and *value* another dictionary which contains all results from that test, namely:</span>
+<span class="sd">            - ``&#39;stat&#39;`` The test statistic value, quantifying the degree to which the observed data conform to the null hypothesis.</span>
+<span class="sd">            - ``&#39;p_val&#39;`` The p-value, indicating the probability of observing the test results under the null hypothesis.</span>
+<span class="sd">            - ``&#39;conclusion&#39;`` A textual interpretation of the test outcome, stating whether the evidence was sufficient to reject the null hypothesis.</span>
+<span class="sd">            - ``&#39;test_name&#39;`` The full name of the statistical test performed (e.g., &#39;Independent Samples T-Test&#39;, &#39;Chi-square test&#39;).</span>
+
+<span class="sd">                *Additional values in certain scenarios may be:*</span>
+<span class="sd">                    - ``&#39;alternative&#39;`` Specifies the alternative hypothesis direction used in exact tests (&#39;two-sided&#39;, &#39;less&#39;, &#39;greater&#39;).</span>
+<span class="sd">                    - ``&#39;yates_correction&#39;`` A boolean that indicates whether a Yate&#39;s correction was applied used in Chi-square test.</span>
+<span class="sd">                    - ``&#39;normality&#39;`` A boolean that indicates whether the data were found to meet the normality assumption.</span>
+<span class="sd">                    - ``&#39;equal_variance&#39;`` A boolean that indicates whether the data were found to have equal variances across groups.</span>
+<span class="sd">                    - ``&#39;tip&#39;`` Helpful insights or considerations regarding the test&#39;s application or interpretation.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">    -------</span>
+<span class="sd">    TypeErrors:</span>
+<span class="sd">        - If `df` is not a pandas DataFrame.</span>
+<span class="sd">        - If `var1` or `var2` is not a string.</span>
+<span class="sd">        - If `normality_method`, `variance_method`, or `exact_tests_alternative` is not a string.</span>
+<span class="sd">        - If `yates_min_sample_size` is not an integer.</span>
+<span class="sd">    ValueErrors:</span>
+<span class="sd">        - If the `df` is empty.</span>
+<span class="sd">        - If `normality_method` is not one of the valid options.</span>
+<span class="sd">        - If `variance_method` is not one of the valid options.</span>
+<span class="sd">        - If `exact_tests_alternative` is not one of the valid options.</span>
+<span class="sd">        - If `yates_min_sample_size` is less than 1.</span>
+
+
+<span class="sd">    Examples:</span>
+<span class="sd">    ---------</span>
+<span class="sd">    First, we create a DataFrame with categorical and numerical variables to use in our examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; import datasafari</span>
+<span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame({</span>
+<span class="sd">    ...     &#39;Group&#39;: np.random.choice([&#39;Control&#39;, &#39;Treatment&#39;], size=100),</span>
+<span class="sd">    ...     &#39;Score&#39;: np.random.normal(0, 1, 100),</span>
+<span class="sd">    ...     &#39;Category&#39;: np.random.choice([&#39;Type1&#39;, &#39;Type2&#39;], size=100),</span>
+<span class="sd">    ...     &#39;Feature2&#39;: np.random.exponential(1, 100)</span>
+<span class="sd">    ... })</span>
+
+<span class="sd">    Scenario 1: Basic numerical hypothesis testing (T-test or ANOVA based on groups)</span>
+
+<span class="sd">    &gt;&gt;&gt; output_num_basic = predict_hypothesis(df, &#39;Group&#39;, &#39;Score&#39;)</span>
+
+<span class="sd">    Scenario 2: Numerical hypothesis testing specifying method to evaluate normality</span>
+
+<span class="sd">    &gt;&gt;&gt; output_num_normality = predict_hypothesis(df, &#39;Group&#39;, &#39;Score&#39;, normality_method=&#39;shapiro&#39;)</span>
+
+<span class="sd">    Scenario 3: Numerical hypothesis testing with a specified method to evaluate variance</span>
+
+<span class="sd">    &gt;&gt;&gt; output_num_variance = predict_hypothesis(df, &#39;Group&#39;, &#39;Score&#39;, variance_method=&#39;levene&#39;)</span>
+
+<span class="sd">    Scenario 4: Categorical hypothesis testing (Chi-square or Fisher&#39;s exact test)</span>
+
+<span class="sd">    &gt;&gt;&gt; output_cat_basic = predict_hypothesis(df, &#39;Group&#39;, &#39;Category&#39;)</span>
+
+<span class="sd">    Scenario 5: Categorical hypothesis testing with alternative hypothesis specified</span>
+
+<span class="sd">    &gt;&gt;&gt; output_cat_alternative = predict_hypothesis(df, &#39;Category&#39;, &#39;Group&#39;, exact_tests_alternative=&#39;less&#39;)</span>
+
+<span class="sd">    Scenario 6: Applying Yates&#39; correction in a Chi-square test for small samples</span>
+
+<span class="sd">    &gt;&gt;&gt; output_yates_correction = predict_hypothesis(df, &#39;Group&#39;, &#39;Category&#39;, yates_min_sample_size=30)</span>
+
+<span class="sd">    Scenario 7: Comprehensive numerical hypothesis testing using consensus for normality and variance evaluation</span>
+
+<span class="sd">    &gt;&gt;&gt; output_num_comprehensive = predict_hypothesis(df, &#39;Group&#39;, &#39;Score&#39;, normality_method=&#39;consensus&#39;, variance_method=&#39;consensus&#39;)</span>
+
+<span class="sd">    Scenario 8: Testing with a numerical variable against a different grouping variable</span>
+
+<span class="sd">    &gt;&gt;&gt; output_different_group = predict_hypothesis(df, &#39;Feature2&#39;, &#39;Group&#39;)</span>
+
+<span class="sd">    Scenario 9: Exploring exact tests in categorical hypothesis testing for a 2x2 table</span>
+
+<span class="sd">    &gt;&gt;&gt; df_small = df.sample(20) # Smaller sample for demonstration</span>
+<span class="sd">    &gt;&gt;&gt; output_exact_tests = predict_hypothesis(df_small, &#39;Category&#39;, &#39;Group&#39;, exact_tests_alternative=&#39;two-sided&#39;)</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">    ------</span>
+<span class="sd">    ``predict_hypothesis()`` is engineered to facilitate an intuitive yet powerful entry into hypothesis testing.</span>
+
+<span class="sd">    Here is a deeper look into its operational logic:</span>
+<span class="sd">        1. **Type Determination and Variable Interpretation**:</span>
+
+<span class="sd">            - **Numerical Testing**: Activated when one variable is numerical and the other categorical. The numerical variable is considered the &#39;target variable&#39;, subject to hypothesis testing across groups defined by the categorical &#39;grouping variable&#39;.</span>
+<span class="sd">            - **Categorical Testing**: Engaged when both variables are categorical, examining the association between them through appropriate exact tests.</span>
+
+<span class="sd">        2. **Assumption Evaluation and Preparatory Checks**:</span>
+
+<span class="sd">            - For **numerical data**, it evaluates:</span>
+<span class="sd">                - **Normality**: Using methods such as Shapiro-Wilk, Anderson-Darling, D&#39;Agostino&#39;s K-squared test, and Lilliefors test to assess the distribution of data.</span>
+<span class="sd">                - **Homogeneity of Variances**: With Levene, Bartlett, or Fligner-Killeen tests to ensure variance uniformity across groups, guiding the choice between parametric and non-parametric tests.</span>
+
+<span class="sd">            - For **categorical data**, it checks:</span>
+<span class="sd">                - **Adequacy of Frequencies**: Ensuring observed and expected frequencies support the validity of Chi-square and other exact tests.</span>
+<span class="sd">                - **Table Shape**: Determining the applicability of tests like Fisher’s exact test or Barnard’s test, based on the contingency table&#39;s dimensions.</span>
+
+<span class="sd">        3. **Test Selection and Execution**:</span>
+
+<span class="sd">            - **Numerical Hypothesis Tests** may include:</span>
+<span class="sd">                - T-tests (independent samples, paired samples) for normally distributed data with equal variances.</span>
+<span class="sd">                - ANOVA or Welch&#39;s ANOVA for comparing more than two groups, under respective assumptions.</span>
+<span class="sd">                - Mann-Whitney U, Wilcoxon signed-rank, Kruskal-Wallis H, or Friedman tests as non-parametric alternatives.</span>
+
+<span class="sd">            - **Categorical Hypothesis Tests** encompass:</span>
+<span class="sd">                - Chi-square test of independence, with or without Yates’ correction, for general association between two categorical variables.</span>
+<span class="sd">                - Fisher’s exact test for small sample sizes or when Chi-square assumptions are not met.</span>
+<span class="sd">                - Barnard’s exact test, offering more power in some scenarios compared to Fisher’s test.</span>
+<span class="sd">                - Boschloo’s exact test, aiming to increase the power further by combining strengths of Fisher’s and Barnard’s tests.</span>
+
+<span class="sd">        4. **Conclusive Results and Interpretation**: Outputs include test statistics, p-values, and clear conclusions.</span>
+
+<span class="sd">            - The function demystifies statistical analysis, making it approachable for users across various disciplines, enabling informed decisions based on robust statistical evidence.</span>
+
+<span class="sd">    This function stands out by automating complex decision trees involved in statistical testing, offering a simplified yet comprehensive approach to hypothesis testing. It exemplifies how advanced statistical analysis can be made accessible and actionable, fostering data-driven decision-making.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Error Handling</span>
+    <span class="c1"># TypeErrors</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predict_hypothesis(): The &#39;df&#39; parameter must be a pandas DataFrame.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var2</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predict_hypothesis(): The &#39;var1&#39; and &#39;var2&#39; parameters must be strings.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">normality_method</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predict_hypothesis(): The &#39;normality_method&#39; parameter must be a string.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">variance_method</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predict_hypothesis(): The &#39;variance_method&#39; parameter must be a string.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exact_tests_alternative</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predict_hypothesis(): The &#39;exact_tests_alternative&#39; parameter must be a string.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">yates_min_sample_size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;predict_hypothesis(): The &#39;yates_min_sample_size&#39; parameter must be an integer.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ValueErrors</span>
+    <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;model_recommendation_core_inference(): The input DataFrame is empty.&quot;</span><span class="p">)</span>
+
+    <span class="n">valid_normality_methods</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;shapiro&#39;</span><span class="p">,</span> <span class="s1">&#39;anderson&#39;</span><span class="p">,</span> <span class="s1">&#39;normaltest&#39;</span><span class="p">,</span> <span class="s1">&#39;lilliefors&#39;</span><span class="p">,</span> <span class="s1">&#39;consensus&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">normality_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_normality_methods</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;predict_hypothesis(): Invalid &#39;normality_method&#39; value. Expected one of </span><span class="si">{</span><span class="n">valid_normality_methods</span><span class="si">}</span><span class="s2">, got &#39;</span><span class="si">{</span><span class="n">normality_method</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="n">valid_variance_methods</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;levene&#39;</span><span class="p">,</span> <span class="s1">&#39;bartlett&#39;</span><span class="p">,</span> <span class="s1">&#39;fligner&#39;</span><span class="p">,</span> <span class="s1">&#39;consensus&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">variance_method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_variance_methods</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;predict_hypothesis(): Invalid &#39;variance_method&#39; value. Expected one of </span><span class="si">{</span><span class="n">valid_variance_methods</span><span class="si">}</span><span class="s2">, got &#39;</span><span class="si">{</span><span class="n">variance_method</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="n">valid_alternatives</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;two-sided&#39;</span><span class="p">,</span> <span class="s1">&#39;less&#39;</span><span class="p">,</span> <span class="s1">&#39;greater&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">exact_tests_alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_alternatives</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;predict_hypothesis(): Invalid &#39;exact_tests_alternative&#39; value. Expected one of </span><span class="si">{</span><span class="n">valid_alternatives</span><span class="si">}</span><span class="s2">, got &#39;</span><span class="si">{</span><span class="n">exact_tests_alternative</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">yates_min_sample_size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;predict_hypothesis(): The &#39;yates_min_sample_size&#39; must be at least 1.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Main Function</span>
+    <span class="c1"># determine appropriate testing procedure and variable interpretation</span>
+    <span class="n">data_types</span> <span class="o">=</span> <span class="n">evaluate_dtype</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col_names</span><span class="o">=</span><span class="p">[</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">],</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;dict&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">data_types</span><span class="p">[</span><span class="n">var1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;categorical&#39;</span> <span class="ow">and</span> <span class="n">data_types</span><span class="p">[</span><span class="n">var2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;numerical&#39;</span><span class="p">:</span>
+        <span class="n">hypothesis_testing</span> <span class="o">=</span> <span class="s1">&#39;numerical&#39;</span>
+        <span class="n">grouping_variable</span> <span class="o">=</span> <span class="n">var1</span>
+        <span class="n">target_variable</span> <span class="o">=</span> <span class="n">var2</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&lt; INITIALIZING predict_hypothesis() &gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Performing </span><span class="si">{</span><span class="n">hypothesis_testing</span><span class="si">}</span><span class="s2"> hypothesis testing with:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ➡ Grouping variable: &#39;</span><span class="si">{</span><span class="n">grouping_variable</span><span class="si">}</span><span class="s2">&#39; (with groups: </span><span class="si">{</span><span class="n">df</span><span class="p">[</span><span class="n">grouping_variable</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">  ➡ Target variable: &#39;</span><span class="si">{</span><span class="n">target_variable</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Output Contents:</span><span class="se">\n</span><span class="s2"> (1) Results of Normality Testing</span><span class="se">\n</span><span class="s2"> (2) Results of Variance Testing</span><span class="se">\n</span><span class="s2"> (3) Results of Hypothesis Testing</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">data_types</span><span class="p">[</span><span class="n">var1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;numerical&#39;</span> <span class="ow">and</span> <span class="n">data_types</span><span class="p">[</span><span class="n">var2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;categorical&#39;</span><span class="p">:</span>
+        <span class="n">hypothesis_testing</span> <span class="o">=</span> <span class="s1">&#39;numerical&#39;</span>
+        <span class="n">grouping_variable</span> <span class="o">=</span> <span class="n">var2</span>
+        <span class="n">target_variable</span> <span class="o">=</span> <span class="n">var1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&lt; INITIALIZING predict_hypothesis() &gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Performing </span><span class="si">{</span><span class="n">hypothesis_testing</span><span class="si">}</span><span class="s2"> hypothesis testing with:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ➡ Grouping variable: &#39;</span><span class="si">{</span><span class="n">grouping_variable</span><span class="si">}</span><span class="s2">&#39; (with groups: </span><span class="si">{</span><span class="n">df</span><span class="p">[</span><span class="n">grouping_variable</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">  ➡ Target variable: &#39;</span><span class="si">{</span><span class="n">target_variable</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Output Contents:</span><span class="se">\n</span><span class="s2"> (1) Results of Normality Testing</span><span class="se">\n</span><span class="s2"> (2) Results of Variance Testing</span><span class="se">\n</span><span class="s2"> (3) Results of Hypothesis Testing</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">data_types</span><span class="p">[</span><span class="n">var1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;categorical&#39;</span> <span class="ow">and</span> <span class="n">data_types</span><span class="p">[</span><span class="n">var2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;categorical&#39;</span><span class="p">:</span>
+        <span class="n">hypothesis_testing</span> <span class="o">=</span> <span class="s1">&#39;categorical&#39;</span>
+        <span class="n">categorical_variable1</span> <span class="o">=</span> <span class="n">var1</span>
+        <span class="n">categorical_variable2</span> <span class="o">=</span> <span class="n">var2</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&lt; INITIALIZING predict_hypothesis() &gt;&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Performing </span><span class="si">{</span><span class="n">hypothesis_testing</span><span class="si">}</span><span class="s2"> hypothesis testing with:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ➡ Categorical variable 1: &#39;</span><span class="si">{</span><span class="n">categorical_variable1</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">  ➡ Categorical variable 2: &#39;</span><span class="si">{</span><span class="n">categorical_variable2</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;predict_hypothesis(): Both of the provided variables are numerical.</span><span class="se">\n</span><span class="s2"> - To do numerical hypothesis testing, provide a numerical variable (target variable) and a categorical variable (grouping variable).</span><span class="se">\n</span><span class="s2"> - To do categorical hypothesis testing, provide two categorical variables.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># perform appropriate hypothesis testing process</span>
+    <span class="k">if</span> <span class="n">hypothesis_testing</span> <span class="o">==</span> <span class="s1">&#39;numerical&#39;</span><span class="p">:</span>
+        <span class="c1"># evaluate test assumptions</span>
+        <span class="n">normality_bool</span> <span class="o">=</span> <span class="n">evaluate_normality</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">target_variable</span><span class="p">,</span> <span class="n">grouping_variable</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">normality_method</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">pipeline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">equal_variance_bool</span> <span class="o">=</span> <span class="n">evaluate_variance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">target_variable</span><span class="p">,</span> <span class="n">grouping_variable</span><span class="p">,</span> <span class="n">normality_info</span><span class="o">=</span><span class="n">normality_bool</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">variance_method</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">pipeline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># perform hypothesis testing</span>
+        <span class="n">output_info</span> <span class="o">=</span> <span class="n">hypothesis_predictor_core_n</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">target_variable</span><span class="p">,</span> <span class="n">grouping_variable</span><span class="p">,</span> <span class="n">normality_bool</span><span class="p">,</span> <span class="n">equal_variance_bool</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output_info</span>
+    <span class="k">elif</span> <span class="n">hypothesis_testing</span> <span class="o">==</span> <span class="s1">&#39;categorical&#39;</span><span class="p">:</span>
+        <span class="c1"># create contingency table</span>
+        <span class="n">contingency_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">categorical_variable1</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">categorical_variable2</span><span class="p">])</span>
+
+        <span class="c1"># evaluate test criteria</span>
+        <span class="n">chi2_viability</span><span class="p">,</span> <span class="n">yates_correction_viability</span><span class="p">,</span> <span class="n">barnard_viability</span><span class="p">,</span> <span class="n">boschloo_viability</span><span class="p">,</span> <span class="n">fisher_viability</span> <span class="o">=</span> <span class="n">evaluate_contingency_table</span><span class="p">(</span><span class="n">contingency_table</span><span class="p">,</span> <span class="n">min_sample_size_yates</span><span class="o">=</span><span class="n">yates_min_sample_size</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># perform hypothesis testing</span>
+        <span class="n">output_info</span> <span class="o">=</span> <span class="n">hypothesis_predictor_core_c</span><span class="p">(</span><span class="n">contingency_table</span><span class="p">,</span> <span class="n">chi2_viability</span><span class="p">,</span> <span class="n">barnard_viability</span><span class="p">,</span> <span class="n">boschloo_viability</span><span class="p">,</span> <span class="n">fisher_viability</span><span class="p">,</span> <span class="n">yates_correction_viability</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="n">exact_tests_alternative</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">output_info</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, George Dreemer
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    </body>
+</html>
