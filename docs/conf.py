@@ -28,7 +28,7 @@ extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.napoleon',
     'sphinx.ext.autosummary', 'sphinx_favicon', 'sphinxext.opengraph',
     'sphinx_prompt', 'sphinx_copybutton', 'sphinx.ext.mathjax',
-    'sphinxemoji.sphinxemoji'
+    'sphinxemoji.sphinxemoji', 'sphinx.ext.githubpages'
 ]
 
 templates_path = ['_templates']
