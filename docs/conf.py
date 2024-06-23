@@ -44,7 +44,7 @@ ogp_site_name = 'DataSafari Official Docs'
 ogp_image = '_static/thumbs/ds-branding-thumb-main-docs.png'
 ogp_description_length = 300
 ogp_type = 'website'
-ogp_description = 'DataSafari simplifies complex data science tasks into straightforward, powerful commands.'
+ogp_description = 'Welcome to DataSafari\'s Official Docs! DataSafari simplifies complex data science tasks into straightforward, powerful commands.'
 
 ogp_social_cards = {
     "enable": False
