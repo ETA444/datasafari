@@ -70,3 +70,18 @@ jobs:
         run: |
           python --version
           pip freeze
+
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.DS_SERVER_SSH_PRIVATE_KEY }}
+
+      - name: Add SSH key to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DS_SERVER_IP }}:${{ secrets.DS_SERVER_SSH_PORT }} ${{{ secrets.DS_SERVER_FINGERPRINT }}" >> ~/.ssh/known_hosts
+
+      - name: Sync documentation to server
+        run: rsync -avz --delete -e "ssh -p ${{ secrets.DS_SERVER_SSH_PORT }}" ./docs/_build/html/ ${{ secrets.DS_SERVER_USERNAME }}@${{ secrets.DS_SERVER_IP }}:${{ secrets.DS_SERVER_DOCS_PATH }}
+        env:
+          RSYNC_RSH: ssh -o StrictHostKeyChecking=accept-new
