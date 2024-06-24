@@ -58,6 +58,7 @@ html_theme_options = {
 }
 html_static_path = ['_static']
 html_favicon = '_static/favicons/favicon.ico'
+html_title = 'DataSafari Official Docs'
 
 # -- Options for LaTeX output ------------------------------------------------
 
