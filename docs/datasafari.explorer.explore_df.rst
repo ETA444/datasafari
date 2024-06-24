@@ -3,7 +3,10 @@
 :og:image: https://www.datasafari.dev/docs/_static/thumbs/ds-branding-thumb-sub-docs-explorer.png
 
 .. meta::
+   :description: Explore a DataFrame and gain a birds-eye view of summary statistics, NAs, data types and more.
    :keywords: DataSafari, DataSafari documentation, DataFrame exploration, summary statistics, data types, missing values analysis, DataFrame summary, pandas DataFrame, data analysis, data exploration, DataSafari documentation, DataFrame info, DataFrame head, DataFrame description
+   :author: George Dreemer
+   :robots: index, follow
 
 ============
 explore_df()

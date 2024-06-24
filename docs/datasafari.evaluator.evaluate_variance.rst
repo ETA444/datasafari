@@ -3,7 +3,10 @@
 :og:image: https://www.datasafari.dev/docs/_static/thumbs/ds-branding-thumb-sub-docs-evaluator.png
 
 .. meta::
+   :description: Evaluate variance homogeneity across groups defined by a categorical variable within a dataset, using several statistical tests, dynamically chosen based on data suitability.
    :keywords: DataSafari, DataSafari documentation, variance homogeneity, Levene's test, Bartlett's test, Fligner-Killeen test, consensus method, statistical testing, group variance analysis, pandas DataFrame, statistical inference, data homogeneity, analytical decision-making, automated testing pipelines, non-parametric tests, statistical data analysis, normality assumption
+   :author: George Dreemer
+   :robots: index, follow
 
 ===================
 evaluate_variance()

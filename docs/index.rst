@@ -4,9 +4,11 @@
 
 .. meta::
    :keywords: DataSafari, Python data analysis, machine learning, data preprocessing, data transformation, statistical analysis, hypothesis testing, data encoding, data cleaning, model selection, model tuning, predictive modeling, statistical inference, DataFrame manipulation, data visualization, exploratory data analysis, data science, advanced data processing, documentation, user guide
+   :author: George Dreemer
+   :robots: index, follow
 
 Welcome to DataSafari's Documentation!
-=======================================
+======================================
 
 DataSafari simplifies complex data science tasks into straightforward, powerful commands. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.
 
