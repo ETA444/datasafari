@@ -1,3 +1,5 @@
+# DS Website .htaccess file backup
+
 # Disable Google's mod_pagespeed if present
 <IfModule pagespeed_module>
 	ModPagespeed off
@@ -13,7 +15,7 @@
 	ExpiresByType text/css "access plus 1 year"
 	ExpiresByType text/javascript "access plus 1 year"
 	ExpiresByType application/javascript "access plus 1 year"
-	ExpiresByType font/otf "access plus 1 year"  # Extending caching for fonts
+	ExpiresByType font/otf "access plus 1 year"
 	ExpiresByType font/ttf "access plus 1 year"
 	ExpiresByType font/woff "access plus 1 year"
 	ExpiresByType font/woff2 "access plus 1 year"
@@ -46,22 +48,30 @@
 ErrorDocument 401 "Unauthorized"
 ErrorDocument 403 "Forbidden"
 
-# URL Rewriting: Handle authorization and server info, along with specific URL rules
+# URL Rewriting: Handle authorization, server info, and specific URL rules
 <IfModule mod_negotiation.c>
 	#Options -MultiViews
 </IfModule>
 RewriteEngine On
 RewriteBase /
+
+# Remove the .html extension
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+?)/?$ $1.html [L]
+
+# Redirect direct .html accesses to URL without .html
+RewriteCond %{THE_REQUEST} \s(.+)\.html\s [NC]
+RewriteRule ^ %1 [R=301,L,NE]
+
 RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 RewriteCond %{HTTP:X-Server-Addr} ^(.*)
 RewriteRule .* - [e=HTTP_X_SERVER_ADDR:%1]
 RewriteRule ^\.well-known/.+ - [L]
 
-# Directory Index: Specifies default files to serve when a directory is requested
+# Persistent Content: Ensures that certain content types bypass site builder redirects
 DirectoryIndex index.php index.cgi index.html
-
-# Rewrite Conditions: Check for existing files or specific paths to bypass normal rewrite rules
 RewriteCond %{REQUEST_FILENAME} !-f [OR]
 RewriteCond %{REQUEST_URI} ^\/(js\/(main\.js|bootstrap\.min\.js)|css\/([0-9a-f]+\.css|common\.css|site\.css|bootstrap\.min\.css)|sitemap\.xml)$
 RewriteCond %{REQUEST_FILENAME} !-d
