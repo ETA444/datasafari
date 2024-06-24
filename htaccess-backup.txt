@@ -1,0 +1,69 @@
+# .htaccess of DataSafari.dev
+# (for version control/backup purposes)
+
+# Disable Google's mod_pagespeed if present
+<IfModule pagespeed_module>
+	ModPagespeed off
+</IfModule>
+
+# Browser Caching: Enables and sets the caching rules for various file types
+<IfModule mod_expires.c>
+	ExpiresActive On
+	ExpiresDefault "access plus 2 days"  # Default caching period for unspecified types
+	ExpiresByType image/gif "access plus 1 year"
+	ExpiresByType image/png "access plus 1 year"
+	ExpiresByType image/jpeg "access plus 1 year"
+	ExpiresByType text/css "access plus 1 year"
+	ExpiresByType text/javascript "access plus 1 year"
+	ExpiresByType application/javascript "access plus 1 year"
+	ExpiresByType font/otf "access plus 1 year"
+	ExpiresByType font/ttf "access plus 1 year"
+	ExpiresByType font/woff "access plus 1 year"
+	ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# GZIP Compression: Compresses various file types to reduce their transfer size
+<IfModule mod_deflate.c>
+	AddOutputFilterByType DEFLATE text/plain
+	AddOutputFilterByType DEFLATE text/html
+	AddOutputFilterByType DEFLATE text/xml
+	AddOutputFilterByType DEFLATE text/css
+	AddOutputFilterByType DEFLATE application/xml
+	AddOutputFilterByType DEFLATE application/xhtml+xml
+	AddOutputFilterByType DEFLATE application/rss+xml
+	AddOutputFilterByType DEFLATE application/javascript
+	AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
+
+# Security: Prevents direct access to 'web.config' file on Apache servers
+<FilesMatch "^(web\.config)$">
+	<IfModule mod_authz_core.c>
+		Require all denied
+	</IfModule>
+	<IfModule !mod_authz_core.c>
+		Order allow,deny
+	</IfModule>
+</FilesMatch>
+
+# Custom error documents
+ErrorDocument 401 "Unauthorized"
+ErrorDocument 403 "Forbidden"
+
+# URL Rewriting: Various rewrite rules for handling URLs, authorization, and server info
+<IfModule mod_negotiation.c>
+	#Options -MultiViews
+</IfModule>
+RewriteEngine On
+RewriteBase /
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+RewriteCond %{HTTP:X-Server-Addr} ^(.*)
+RewriteRule .* - [e=HTTP_X_SERVER_ADDR:%1]
+RewriteRule ^\.well-known/.+ - [L]
+
+# Persistent Content: Ensures that certain content types bypass site builder redirects
+DirectoryIndex index.php index.cgi index.html
+RewriteCond %{REQUEST_FILENAME} !-f [OR]
+RewriteCond %{REQUEST_URI} ^\/(js\/(main\.js|bootstrap\.min\.js)|css\/([0-9a-f]+\.css|common\.css|site\.css|bootstrap\.min\.css)|sitemap\.xml)$
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ ncsitebuilder/$1 [L,QSA]
