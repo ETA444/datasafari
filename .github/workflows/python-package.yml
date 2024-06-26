@@ -84,6 +84,6 @@ jobs:
           echo "${{ secrets.DS_SERVER_HOST_KEY_ED25519 }}" >> ~/.ssh/known_hosts
 
       - name: Sync documentation to server
-        run: rsync -avz --delete -e "ssh -p ${{ secrets.DS_SERVER_SSH_PORT }}" ./docs/_build/html/ ${{ secrets.DS_SERVER_USERNAME }}@${{ secrets.DS_SERVER_IP }}:${{ secrets.DS_SERVER_DOCS_PATH }}
+        run: rsync -avz --delete -e "ssh -p ${{ secrets.DS_SERVER_SSH_PORT }}" --verbose ./docs/_build/html/ ${{ secrets.DS_SERVER_USERNAME }}@${{ secrets.DS_SERVER_IP }}:${{ secrets.DS_SERVER_DOCS_PATH }}
         env:
           RSYNC_RSH: ssh -o StrictHostKeyChecking=accept-new
