@@ -3,7 +3,7 @@
 
 DataSafari simplifies complex data science tasks into straightforward, powerful commands. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.
 
-> In this README you can find a brief overview of how to start using DataSafari and what features you can utilize. For a more complete presentation you can visit [DataSafari's docs](https://www.google.com).
+> In this README you can find a brief overview of how to start using DataSafari and what features you can utilize. For a more complete presentation you can visit [DataSafari's docs](https://www.datasafari.dev/docs).
 
 ## Quick Start
 
@@ -23,7 +23,7 @@ Import DataSafari in your Python script to begin:
 import datasafari as ds
 ```
 
-For detailed installation options, including installing from source, check our [Installation Guide in the docs](https://www.google.com).
+For detailed installation options, including installing from source, check our [Installation Guide in the docs](https://www.datasafari.dev/docs/other/installation).
 
 ## DataSafari at a Glance
 
