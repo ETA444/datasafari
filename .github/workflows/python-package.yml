@@ -79,7 +79,9 @@ jobs:
       - name: Add SSH key to known hosts
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DS_SERVER_IP }}:${{ secrets.DS_SERVER_SSH_PORT }} ${{ secrets.DS_SERVER_FINGERPRINT }}" >> ~/.ssh/known_hosts
+          echo "${{ secrets.HOST_KEY_RSA }}" >> ~/.ssh/known_hosts
+          echo "${{ secrets.HOST_KEY_ECDSA }}" >> ~/.ssh/known_hosts
+          echo "${{ secrets.HOST_KEY_ED25519 }}" >> ~/.ssh/known_hosts
 
       - name: Sync documentation to server
         run: rsync -avz --delete -e "ssh -p ${{ secrets.DS_SERVER_SSH_PORT }}" ./docs/_build/html/ ${{ secrets.DS_SERVER_USERNAME }}@${{ secrets.DS_SERVER_IP }}:${{ secrets.DS_SERVER_DOCS_PATH }}
