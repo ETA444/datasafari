@@ -14,7 +14,7 @@ DataSafari simplifies complex data science tasks into straightforward, powerful 
 
 ----
 
-.. include:: contact.rst
+.. include:: other/contact.rst
 
 
 .. toctree::
@@ -30,45 +30,45 @@ DataSafari simplifies complex data science tasks into straightforward, powerful 
    :caption: Explorers
    :hidden:
 
-   datasafari.explorer.explore_df
-   datasafari.explorer.explore_num
-   datasafari.explorer.explore_cat
+   explorers/explore_df
+   explorers/explore_num
+   explorers/explore_cat
 
 .. toctree::
    :maxdepth: 1
    :caption: Transformers
    :hidden:
 
-   datasafari.transformer.transform_num
-   datasafari.transformer.transform_cat
+   transformers/transform_num
+   transformers/transform_cat
 
 .. toctree::
    :maxdepth: 1
    :caption: Evaluators
    :hidden:
 
-   datasafari.evaluator.evaluate_normality
-   datasafari.evaluator.evaluate_variance
-   datasafari.evaluator.evaluate_dtype
-   datasafari.evaluator.evaluate_contingency_table
+   evaluators/evaluate_normality
+   evaluators/evaluate_variance
+   evaluators/evaluate_dtype
+   evaluators/evaluate_contingency_table
 
 .. toctree::
    :maxdepth: 1
    :caption: Predictors
    :hidden:
 
-   datasafari.predictor.predict_hypothesis
-   datasafari.predictor.predict_ml
+   predictors/predict_hypothesis
+   predictors/predict_ml
 
 .. toctree::
    :maxdepth: 1
    :caption: Other
    :hidden:
 
-   Installation Guide <installation>
+   Installation Guide <other/installation>
    General Index <genindex>
-   License <lic-gpl3>
-   Contact <contact>
+   License <other/lic-gpl3>
+   Contact <other/contact>
 
 |
 

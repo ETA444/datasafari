@@ -58,7 +58,7 @@ def evaluate_normality(
         - If the `df` is empty.
         - If the `target_variable` or `grouping_variable` does not exist in the DataFrame.
         - If the `method` specified is not supported.
-        - If the `target_variable` is not numerical, or if the `grouping_variable` is not categorical, as determined by evaluating their data types with :doc:`evaluate_dtype() <datasafari.evaluator.evaluate_dtype>`.
+        - If the `target_variable` is not numerical, or if the `grouping_variable` is not categorical, as determined by evaluating their data types with :doc:`evaluate_dtype() <evaluate_dtype>`.
 
     Examples:
     ---------

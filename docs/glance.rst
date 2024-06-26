@@ -16,11 +16,11 @@ Explorers
 
    * - Module
      - Description
-   * - :doc:`explore_df() <datasafari.explorer.explore_df>`
+   * - :doc:`explore_df() <explorers/explore_df>`
      - Explore a DataFrame and gain a birds-eye view of summary statistics, NAs, data types and more.
-   * - :doc:`explore_num() <datasafari.explorer.explore_num>`
+   * - :doc:`explore_num() <explorers/explore_num>`
      - Explore numerical variables in a DataFrame and gain insights on distribution characteristics, outlier detection using multiple methods (Z-score, IQR, Mahalanobis), normality tests, skewness, kurtosis, correlation analysis, and multicollinearity detection.
-   * - :doc:`explore_cat() <datasafari.explorer.explore_cat>`
+   * - :doc:`explore_cat() <explorers/explore_cat>`
      - Explore categorical variables within a DataFrame and gain insights on unique values, counts and percentages, and the entropy of variables to quantify data diversity.
 
 For example, use ``explore_num()`` to gain detailed insights into numerical features.
@@ -50,9 +50,9 @@ Transformers
 
    * - Module
      - Description
-   * - :doc:`transform_num() <datasafari.transformer.transform_num>`
+   * - :doc:`transform_num() <transformers/transform_num>`
      - Transform numerical variables in a DataFrame through operations like standardization, log-transformation, various scalings, winsorization, and interaction term creation.
-   * - :doc:`transform_cat() <datasafari.transformer.transform_cat>`
+   * - :doc:`transform_cat() <transformers/transform_cat>`
      - Transforms categorical variables in a DataFrame through a range of encoding options and basic to advanced machine learning-based methods for uniform data cleaning.
 
 For example, use ``transform_cat()`` with the ``'uniform_smart'`` method for advanced, ML-based categorical data cleaning.
@@ -85,13 +85,13 @@ Evaluators
 
    * - Module
      - Description
-   * - :doc:`evaluate_normality() <datasafari.evaluator.evaluate_normality>`
+   * - :doc:`evaluate_normality() <evaluators/evaluate_normality>`
      - Evaluate normality of numerical data within groups defined by a categorical variable, employing multiple statistical tests, dynamically chosen based on data suitability.
-   * - :doc:`evaluate_variance() <datasafari.evaluator.evaluate_variance>`
+   * - :doc:`evaluate_variance() <evaluators/evaluate_variance>`
      - Evaluate variance homogeneity across groups defined by a categorical variable within a dataset, using several statistical tests, dynamically chosen based on data suitability.
-   * - :doc:`evaluate_dtype() <datasafari.evaluator.evaluate_dtype>`
+   * - :doc:`evaluate_dtype() <evaluators/evaluate_dtype>`
      - Evaluate and automatically categorize the data types of DataFrame columns, effectively distinguishing between ambiguous cases based on detailed logical assessments.
-   * - :doc:`evaluate_contingency_table() <datasafari.evaluator.evaluate_contingency_table>`
+   * - :doc:`evaluate_contingency_table() <evaluators/evaluate_contingency_table>`
      - Evaluate the suitability of statistical tests for a given contingency table by analyzing its characteristics and guiding the selection of appropriate tests.
 
 For example, use ``evaluate_normality()`` to check if data distribution fits normality, running the most appropriate normality tests and utilizing a consensus mechanism making for a robust decision on normality.
@@ -120,9 +120,9 @@ Predictors
 
    * - Module
      - Description
-   * - :doc:`predict_hypothesis() <datasafari.predictor.predict_hypothesis>`
+   * - :doc:`predict_hypothesis() <predictors/predict_hypothesis>`
      - Conduct the optimal hypothesis test on a DataFrame, tailoring the approach based on the variable types and automating the testing prerequisites and analyses, outputting test results and interpretation.
-   * - :doc:`predict_ml() <datasafari.predictor.predict_ml>`
+   * - :doc:`predict_ml() <predictors/predict_ml>`
      - Streamline the entire process of data preprocessing, model selection, and tuning, delivering optimal model recommendations based on the data provided.
 
 For example, use ``predict_ml()`` to preprocess your data, tune models and get the top ML models for your data.

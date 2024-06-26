@@ -333,7 +333,7 @@ def predict_hypothesis(
         - ``'lilliefors'`` Lilliefors test for normality.
         - ``'consensus'`` Utilizes a combination of the above tests to reach a consensus on normality.
 
-            *Note: For more details, refer to:* :doc:`evaluate_normality() documentation <datasafari.evaluator.evaluate_normality>`
+            *Note: For more details, refer to:* :doc:`evaluate_normality() documentation <../evaluators/evaluate_normality>`
 
     variance_method : str, optional, default: 'consensus'
         Determines the method to evaluate variance homogeneity (equal variances) across groups in numerical hypothesis testing.
@@ -343,7 +343,7 @@ def predict_hypothesis(
         - ``'fligner'`` Fligner-Killeen test, a non-parametric alternative.
         - ``'consensus'`` A combination approach to determine equal variances across methods.
 
-            *Note: For more details, refer to:* :doc:`evaluate_variance() documentation <datasafari.evaluator.evaluate_variance>`
+            *Note: For more details, refer to:* :doc:`evaluate_variance() documentation <../evaluators/evaluate_variance>`
 
     exact_tests_alternative : str, optional, default: 'two-sided'
         For categorical hypothesis testing, this parameter specifies the alternative hypothesis direction for exact tests.

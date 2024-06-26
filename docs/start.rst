@@ -15,7 +15,7 @@ Getting started with DataSafari is straightforward.
     import datasafari as ds
 
 
-For detailed installation options, including installing from the source, see the :doc:`Installation Guide <installation>`.
+For detailed installation options, including installing from the source, see the :doc:`Installation Guide <other/installation>`.
 
 |
 
