@@ -63,9 +63,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-# docs/_build/
-# Documentation is self-hosted, therefore we need this folder to be synced so that it is available in
-# our server's DataSafari repository clone. From there we can host it on datasafari.dev/docs.
+docs/_build/
 
 # PyBuilder
 target/
