@@ -213,7 +213,7 @@ def explore_num(
 
         # construct console output per method
         for correlation_method, correlation_df in correlation_analysis.items():
-            result.append(f"\n<<______CORRELATIONS ({correlation_method.upper()})______>>\n")
+            result.append(f"\n<______CORRELATIONS ({correlation_method.upper()})______>\n")
             result.append(f"Overview of {correlation_method.title()} Correlation Coefficients*\n")
             result.append(correlation_df.to_string())
 
@@ -224,7 +224,7 @@ def explore_num(
 
         # appends #
         # (1) title of method section
-        result.append("\n<<______DISTRIBUTION ANALYSIS______>>\n")
+        result.append("\n<______DISTRIBUTION ANALYSIS______>\n")
         # (2) subtitle
         result.append("✎ Overview of Results*")
 
@@ -310,7 +310,7 @@ def explore_num(
 
         # appends #
         # (1) title of method section
-        result.append("\n<<______OUTLIERS - IQR METHOD______>>\n")
+        result.append("\n<______OUTLIERS - IQR METHOD______>\n")
         # (2) suitability tip
         result.append("☻ Tip: The IQR method is robust against extreme values, ideal for identifying outliers\nin skewed distributions by focusing on the data's middle 50%.\n")
         # (3) subtitle
@@ -370,7 +370,7 @@ def explore_num(
 
         # appends #
         # (1) title of method section
-        result.append("\n<<______OUTLIERS - Z-SCORE METHOD______>>\n")
+        result.append("\n<______OUTLIERS - Z-SCORE METHOD______>\n")
         # (2) suitability tip
         result.append("☻ Tip: The Z-Score method excels at identifying outliers in data with a distribution\nclose to normal, highlighting values far from the mean.\n")
         # (3) subtitle
@@ -447,7 +447,7 @@ def explore_num(
             data.drop(columns=['mahalanobis'], inplace=True)
 
             # construct console output
-            result.append("\n<<______OUTLIERS - MAHALANOBIS METHOD*______>>\n")
+            result.append("\n<______OUTLIERS - MAHALANOBIS METHOD*______>\n")
             result.append(f"Identified outliers based on Mahalanobis distance exceeding the critical value ({critical_value:.2f}) from the chi-square distribution (p-val < {p_value_threshold}.\n")
             result.append(outliers_mahalanobis_df.to_string())
 
@@ -468,7 +468,7 @@ def explore_num(
         data = data[numerical_variables].dropna()
 
         vifs = calculate_vif(data, numerical_variables)
-        result.append("\n<<______MULTICOLLINEARITY CHECK - VIF______>>\n")
+        result.append("\n<______MULTICOLLINEARITY CHECK - VIF______>\n")
         result.append(f"Variance Inflation Factors:\n{vifs.to_string()}\n")
         result.append("☻ Tip: VIF > 10 indicates potential multicollinearity concerns.")
 

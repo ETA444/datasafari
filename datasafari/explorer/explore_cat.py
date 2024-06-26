@@ -150,7 +150,7 @@ def explore_cat(
 
     if method.lower() in ['unique_values', 'all']:
         # initial append for title of method section
-        result.append("<<______UNIQUE VALUES PER VARIABLE______>>\n")
+        result.append("<______UNIQUE VALUES PER VARIABLE______>\n")
 
         # get the unique values per variable in categorical_variables list
         for variable_name in categorical_variables:
@@ -159,7 +159,7 @@ def explore_cat(
 
     if method.lower() in ['counts_percentage', 'all']:
         # initial append for title of method section
-        result.append("<<______COUNTS & PERCENTAGE______>>\n")
+        result.append("<______COUNTS & PERCENTAGE______>\n")
 
         # get the counts and percentages per unique value of variable in categorical_variables list
         for variable_name in categorical_variables:
@@ -175,7 +175,7 @@ def explore_cat(
             result.append(f"< Counts and percentages per unique value of ['{variable_name}'] >\n\n{summary_df}\n\n")
 
     if method.lower() in ['entropy', 'all']:
-        result.append("<<______ENTROPY OF CATEGORICAL VARIABLES______>>\n")
+        result.append("<______ENTROPY OF CATEGORICAL VARIABLES______>\n")
 
         # include a tip on interpretation
         result.append("Tip: Higher entropy indicates greater diversity.*\n")

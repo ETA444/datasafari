@@ -149,25 +149,25 @@ def explore_df(
 
     if method.lower() in ["desc", "all"]:
         desc_kwargs = filter_kwargs('describe', kwargs, valid_kwargs)
-        result.append(f"<<______DESCRIBE______>>\n{str(df.describe(**desc_kwargs))}\n")
+        result.append(f"<______DESCRIBE______>\n{str(df.describe(**desc_kwargs))}\n")
 
     if method.lower() in ["head", "all"]:
         head_kwargs = filter_kwargs('head', kwargs, valid_kwargs)
         pd.set_option('display.max_columns', None)
-        result.append(f"<<______HEAD______>>\n{str(df.head(**head_kwargs))}\n")
+        result.append(f"<______HEAD______>\n{str(df.head(**head_kwargs))}\n")
         pd.reset_option('display.max_columns')
 
     if method.lower() in ["info", "all"]:
         info_kwargs = filter_kwargs('info', kwargs, valid_kwargs)
         buffer = io.StringIO()
         df.info(buf=buffer, **info_kwargs)
-        result.append(f"<<______INFO______>>\n{buffer.getvalue()}\n")
+        result.append(f"<______INFO______>\n{buffer.getvalue()}\n")
 
     if method.lower() in ["na", "all"]:
         na_count = df.isna().sum()
         na_percent = (df.isna().sum() / df.shape[0]) * 100
-        result.append(f"<<______NA_COUNT______>>\n{na_count}\n")
-        result.append(f"<<______NA_PERCENT______>>\n{na_percent}\n")
+        result.append(f"<______NA_COUNT______>\n{na_count}\n")
+        result.append(f"<______NA_PERCENT______>\n{na_percent}\n")
 
     # Combine all results
     combined_result = "\n".join(result)
