@@ -100,7 +100,7 @@ def test_explore_df_head_with_zero_rows(sample_df):
     Ensure head method with n=0 returns an empty DataFrame description.
     """
     result = explore_df(sample_df, 'head', output='return', n=0)
-    assert result == "<<______HEAD______>>\nEmpty DataFrame\nColumns: [A, B, C]\nIndex: []\n"
+    assert result == "<______HEAD______>\nEmpty DataFrame\nColumns: [A, B, C]\nIndex: []\n"
 
 
 def test_explore_df_info_verbose(sample_df):
