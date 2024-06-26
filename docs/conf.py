@@ -40,7 +40,7 @@ pygments_style = 'sphinx'
 
 # Metadata of project (opengraph)
 ogp_site_url = 'https://www.datasafari.dev/docs'
-ogp_site_name = 'DataSafari Official Docs'
+ogp_site_name = 'DataSafari Documentation'
 ogp_image = '_static/thumbs/ds-branding-thumb-main-docs.png'
 ogp_description_length = 300
 ogp_type = 'website'
@@ -58,7 +58,7 @@ html_theme_options = {
 }
 html_static_path = ['_static']
 html_favicon = '_static/favicons/favicon.ico'
-html_title = 'DataSafari Official Docs'
+html_title = 'DataSafari Documentation'
 
 # -- Options for LaTeX output ------------------------------------------------
 
