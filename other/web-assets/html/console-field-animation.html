@@ -8,11 +8,13 @@
             background-color: #000;
             font-size: 20px;
             border: solid 1px #333;
-            padding: 10px;
+            padding: 10px 10px 10px 20px;
             width: 33.3%;  /* Default width for wide screens/desktops */
             margin: auto;
             white-space: nowrap;
             overflow: hidden;
+            box-shadow: 0 0 10px rgba(177, 132, 255, 0.5);
+            border-radius: 8px; /* Elegant rounded corners */
         }
         .cursor {
             opacity: 1;
@@ -32,18 +34,19 @@
         /* Mobile screens */
         @media (max-width: 480px) {
             .console {
-                width: 77.7%;
+                width: 88.8%;
             }
         }
     </style>
 </head>
 <body>
-<div id="typing-console" class="console">
+<div id="typing-console" class="console" aria-label="Interactive command line simulation">
     <span id="text"></span>
     <span class="cursor">|</span>
 </div>
 
 <script>
+    (function() {
         const phrases = ["explore_df()", "evaluate_normality()", "predict_hypothesis()", "predict_ml()"];
         let currentPhrase = 0;
         let currentCharacter = 0;
@@ -52,27 +55,36 @@
         const deletingSpeed = 50;
 
         function typePhrase() {
-            if (currentCharacter < phrases[currentPhrase].length) {
+            if (!isPaused && currentCharacter < phrases[currentPhrase].length) {
                 textElement.textContent += phrases[currentPhrase].charAt(currentCharacter);
                 currentCharacter++;
                 setTimeout(typePhrase, typingSpeed);
-            } else {
+            } else if (!isPaused) {
                 setTimeout(deletePhrase, 2000); // Wait before deleting
             }
         }
 
         function deletePhrase() {
-            if (currentCharacter > 0) {
+            if (!isPaused && currentCharacter > 0) {
                 textElement.textContent = phrases[currentPhrase].slice(0, currentCharacter - 1);
                 currentCharacter--;
                 setTimeout(deletePhrase, deletingSpeed);
-            } else {
+            } else if (!isPaused) {
                 currentPhrase = (currentPhrase + 1) % phrases.length; // Move to the next phrase
                 setTimeout(typePhrase, 500); // Wait before starting to type
             }
         }
 
+        let isPaused = false;
+        window.toggleTyping = function() {
+            isPaused = !isPaused;
+            if (!isPaused) {
+                typePhrase();
+            }
+        };
+
         setTimeout(typePhrase, 500); // Initial delay before typing starts
-    </script>
+    })();
+</script>
 </body>
 </html>
