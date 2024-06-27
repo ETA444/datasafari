@@ -1,16 +1,15 @@
-<!-- HTML Block code that generates the Console-like window animation in the datasafari.dev landing page -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <style>
         .console {
             font-family: 'Courier New', Courier, monospace;
-            color: #33ff33;
+            color: #b184ff;
             background-color: #000;
             font-size: 20px;
             border: solid 1px #333;
             padding: 10px;
-            width: 95%;
+            width: 33.3%;  /* Default width for wide screens/desktops */
             margin: auto;
             white-space: nowrap;
             overflow: hidden;
@@ -22,6 +21,20 @@
         @keyframes blink {
             50% { opacity: 0; }
         }
+
+        /* Tablet screens */
+        @media (max-width: 768px) {
+            .console {
+                width: 44.4%;
+            }
+        }
+
+        /* Mobile screens */
+        @media (max-width: 480px) {
+            .console {
+                width: 77.7%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -31,7 +44,7 @@
 </div>
 
 <script>
-        const phrases = ["predict_hypothesis()", "explore_df()", "predict_ml()", "transform_cat()"];
+        const phrases = ["explore_df()", "evaluate_normality()", "predict_hypothesis()", "predict_ml()"];
         let currentPhrase = 0;
         let currentCharacter = 0;
         const textElement = document.getElementById('text');
