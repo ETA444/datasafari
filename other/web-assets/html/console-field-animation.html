@@ -1,0 +1,65 @@
+<!-- HTML Block code that generates the Console-like window animation in the datasafari.dev landing page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .console {
+            font-family: 'Courier New', Courier, monospace;
+            color: #33ff33;
+            background-color: #000;
+            font-size: 20px;
+            border: solid 1px #333;
+            padding: 10px;
+            width: 95%;
+            margin: auto;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .cursor {
+            opacity: 1;
+            animation: blink 0.7s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+<div id="typing-console" class="console">
+    <span id="text"></span>
+    <span class="cursor">|</span>
+</div>
+
+<script>
+        const phrases = ["predict_hypothesis()", "explore_df()", "predict_ml()", "transform_cat()"];
+        let currentPhrase = 0;
+        let currentCharacter = 0;
+        const textElement = document.getElementById('text');
+        const typingSpeed = 120;
+        const deletingSpeed = 50;
+
+        function typePhrase() {
+            if (currentCharacter < phrases[currentPhrase].length) {
+                textElement.textContent += phrases[currentPhrase].charAt(currentCharacter);
+                currentCharacter++;
+                setTimeout(typePhrase, typingSpeed);
+            } else {
+                setTimeout(deletePhrase, 2000); // Wait before deleting
+            }
+        }
+
+        function deletePhrase() {
+            if (currentCharacter > 0) {
+                textElement.textContent = phrases[currentPhrase].slice(0, currentCharacter - 1);
+                currentCharacter--;
+                setTimeout(deletePhrase, deletingSpeed);
+            } else {
+                currentPhrase = (currentPhrase + 1) % phrases.length; // Move to the next phrase
+                setTimeout(typePhrase, 500); // Wait before starting to type
+            }
+        }
+
+        setTimeout(typePhrase, 500); // Initial delay before typing starts
+    </script>
+</body>
+</html>
