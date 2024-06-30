@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Code Block with Copy Functionality</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+        .code-container {
+            position: relative;
+            background-color: #1e1e1e; /* Darker background for the code */
+            border-radius: 5px;
+            width: 80%;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+        .code-header {
+            background-color: #2c2c2c; /* Slightly lighter header */
+            padding: 10px 15px;
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        .code-content {
+            padding: 20px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            color: #dcdcdc; /* Light grey for better contrast */
+            background-color: #1e1e1e; /* Ensuring the background is consistent */
+            white-space: pre-wrap;
+        }
+        .copy-button {
+            cursor: pointer;
+            background-color: #AD72FF; /* Brand palette hue */
+            color: #282C34;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        /* Syntax highlighting styles */
+        .keyword { color: #569cd6; } /* blue */
+        .function { color: #c586c0; } /* pink */
+        .comment { color: #6A9955; } /* green */
+        .string { color: #ce9178; } /* orange */
+        .normal { color: #dcdcdc; } /* whiteish */
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <div class="code-header">
+        python
+        <button class="copy-button" onclick="copyCode()">Copy Code</button>
+    </div>
+    <pre class="code-content">
+<span class="keyword">from</span> <span class="function">datasafari.predictor</span> <span class="keyword">import</span> <span class="function">predict_hypothesis</span>
+<span class="keyword">import</span> <span class="function">pandas</span> <span class="keyword">as</span> <span class="function">pd</span>
+<span class="keyword">import</span> <span class="function">numpy</span> <span class="keyword">as</span> <span class="function">np</span>
+
+<span class="comment"># Create a sample DataFrame</span>
+<span class="normal">df_hypothesis</span> <span class="normal">=</span> <span class="function">pd.DataFrame</span><span class="normal">({</span>
+    <span class="string">'Group'</span><span class="normal">:</span> <span class="function">np.random.choice</span><span class="normal">([</span><span class="string">'Control'</span><span class="normal">,</span> <span class="string">'Treatment'</span><span class="normal">], size=</span><span class="string">100</span>)<span class="normal">,</span>
+    <span class="string">'Score'</span><span class="normal">:</span> <span class="function">np.random.normal</span><span class="normal">(</span><span class="string">0<span class="normal">,</span> 1<span class="normal">,</span> 100</span><span class="normal">)</span>
+<span class="normal">})</span>
+
+<span class="comment"># Perform hypothesis testing</span>
+<span class="normal">results</span> <span class="normal">=</span> <span class="function">predict_hypothesis</span><span class="normal">(</span><span class="string">df_hypothesis</span><span class="normal">,</span> <span class="string">'Group'</span><span class="normal">,</span> <span class="string">'Score'</span)</span>
+        </pre>
+</div>
+
+<script>
+        function copyCode() {
+            const text = document.querySelector('.code-content').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Code copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>
