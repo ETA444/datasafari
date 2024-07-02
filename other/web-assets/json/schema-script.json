@@ -1,0 +1,15 @@
+{
+  "@context": "http://schema.org",
+  "@type": "WebSite",
+  "name": "DataSafari Official Website",
+  "url": "https://www.datasafari.dev/",
+  "description": "DataSafari simplifies complex data science tasks into straightforward, powerful one-liners.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "DataSafari",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.datasafari.dev/docs/_static/logos/ds-branding-logo-big-darkmode.png"
+    }
+  }
+}
