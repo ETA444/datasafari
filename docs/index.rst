@@ -1,5 +1,5 @@
 :og:title: DataSafari Official Docs
-:og:description: Welcome to DataSafari's Official Docs! DataSafari simplifies complex data science tasks into straightforward, powerful commands.
+:og:description: DataSafari simplifies complex data science tasks into straightforward, powerful one-liners.
 :og:image: https://www.datasafari.dev/docs/_static/thumbs/ds-branding-thumb-main-docs.png
 
 .. meta::
@@ -10,7 +10,7 @@
 Welcome to DataSafari's Documentation!
 ======================================
 
-DataSafari simplifies complex data science tasks into straightforward, powerful commands. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.
+DataSafari simplifies complex data science tasks into straightforward, powerful one-liners. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.
 
 .. include:: start.rst
 
