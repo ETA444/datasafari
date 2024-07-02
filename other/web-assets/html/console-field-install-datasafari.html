@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .terminal-console {
+            color: #7CFC00;
+            background-color: #1C1C1C;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            padding: 10px 10px 10px 35px;
+            width: 60%;
+            margin: 20px auto;
+            border-radius: 5px;
+            border: 1px solid #333;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .terminal-cursor {
+            display: inline-block;
+            width: 6px;
+            height: 18px;
+            background-color: #7CFC00;
+            animation: blink-animation 0.7s steps(2, start) infinite;
+        }
+        @keyframes blink-animation {
+            50% { background-color: transparent; }
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .terminal-console {
+                width: 80%;
+                font-size: 14px;
+            }
+        }
+        @media (max-width: 480px) {
+            .terminal-console {
+                width: 95%;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="terminal-console" class="terminal-console">
+    <span id="terminal-text"></span>
+    <span class="terminal-cursor"></span>
+</div>
+
+<script>
+    (function() {
+        const terminalCommand = "pip install datasafari";
+        let currentCharacter = 0;
+        const terminalTextElement = document.getElementById('terminal-text');
+        const terminalTypingSpeed = 100;
+        const terminalPauseDuration = 2000;
+
+        function typeTerminalCommand() {
+            if (currentCharacter < terminalCommand.length) {
+                terminalTextElement.textContent += terminalCommand.charAt(currentCharacter);
+                currentCharacter++;
+                setTimeout(typeTerminalCommand, terminalTypingSpeed);
+            } else {
+                setTimeout(() => {
+                    terminalTextElement.textContent = ''; // Clear the console
+                    currentCharacter = 0; // Reset character position
+                    setTimeout(typeTerminalCommand, terminalPauseDuration); // Restart typing
+                }, terminalPauseDuration);
+            }
+        }
+
+        setTimeout(typeTerminalCommand, 500); // Initial delay before typing starts
+    })();
+</script>
+</body>
+</html>
