@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .ide-console {
+            background-color: #282C34; /* Dark background for the IDE */
+            color: #ABB2BF; /* Light gray text color */
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 16px;
+            padding: 10px 10px 10px 50px; /* Space for line numbers */
+            width: 60%;
+            margin: 20px auto;
+            border-radius: 5px;
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+        }
+        .ide-console:before { /* Line numbers */
+            content: '1'; /* Only one line for simplicity */
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            top: 10px;
+            color: #FFFFFF; /* White color for line numbers */
+            text-align: right;
+            width: 20px; /* Fixed width for line number */
+        }
+        .ide-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 18px;
+            background-color: #ABB2BF;
+            animation: blink-animation 0.7s steps(2, start) infinite;
+        }
+        @keyframes blink-animation {
+            50% { background-color: transparent; }
+        }
+        .keyword { color: #61AFEF; } /* Blue for keywords */
+        .function { color: #C678DD; } /* Purple for function names */
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .ide-console {
+                width: 80%;
+                font-size: 14px;
+            }
+        }
+        @media (max-width: 480px) {
+            .ide-console {
+                width: 95%;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="ide-console" class="ide-console">
+    <span id="ide-text"></span>
+    <span class="ide-cursor"></span>
+</div>
+
+<script>
+    (function() {
+        const elements = [
+            { text: 'import', type: 'keyword' },
+            { text: ' ', type: 'normal' },
+            { text: 'datasafari', type: 'function' },
+            { text: ' ', type: 'normal' },
+            { text: 'as', type: 'keyword' },
+            { text: ' ', type: 'normal' },
+            { text: 'ds', type: 'function' }
+        ];
+        let currentElement = 0;
+        let currentCharacter = 0;
+        const ideTextElement = document.getElementById('ide-text');
+        const ideTypingSpeed = 100;
+        const idePauseDuration = 2000;
+        let span;
+
+        function typeIdeCommand() {
+            if (currentElement < elements.length) {
+                if (currentCharacter === 0) {
+                    span = document.createElement('span');
+                    span.className = elements[currentElement].type;
+                    ideTextElement.appendChild(span);
+                }
+                if (currentCharacter < elements[currentElement].text.length) {
+                    span.textContent += elements[currentElement].text.charAt(currentCharacter);
+                    currentCharacter++;
+                    setTimeout(typeIdeCommand, ideTypingSpeed);
+                } else {
+                    currentElement++;
+                    currentCharacter = 0;
+                    setTimeout(typeIdeCommand, 100); // Pause before starting next element
+                }
+            } else {
+                setTimeout(() => {
+                    ideTextElement.innerHTML = ''; // Clear the console
+                    currentElement = 0; // Reset to start of command
+                    setTimeout(typeIdeCommand, idePauseDuration); // Restart typing
+                }, idePauseDuration);
+            }
+        }
+
+        setTimeout(typeIdeCommand, 500); // Initial delay before typing starts
+    })();
+</script>
+</body>
+</html>
