@@ -40,7 +40,7 @@ setup(
     author_email='georgedreemer@proton.me',
     python_requires='>=3.9, <4',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
@@ -50,7 +50,7 @@ setup(
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12'
     ],
-    description="DataSafari simplifies complex data science tasks into straightforward, powerful commands. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.",
+    description="DataSafari simplifies complex data science tasks into straightforward, powerful one-liners. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.",
     install_requires=requirements,
     extras_require={
         'docs': [
@@ -81,6 +81,11 @@ setup(
     packages=find_packages(include=['datasafari', 'datasafari.*']),
     test_suite='tests',
     url='https://github.com/ETA444/datasafari',
+    project_urls={
+        'Documentation': 'https://www.datasafari.dev/docs',
+        'Official Website': 'https://www.datasafari.dev',
+        'Source Code': 'https://github.com/ETA444/datasafari'
+    },
     version='1.0.0',
     zip_safe=False,
 )
