@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "datasafari"
+version = "1.0.0"
+description = "DataSafari simplifies complex data science tasks into straightforward, powerful one-liners."
+authors = ["George Dreemer <georgedreemer@proton.me>"]
+license = "GNU General Public License v3"
+readme = "README.md"
+homepage = "https://www.datasafari.dev"
+repository = "https://github.com/ETA444/datasafari"
+documentation = "https://www.datasafari.dev/docs"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+numpy = "*"
+pandas = "*"
+"scikit-learn" = "<1.5"
+"scikit-optimize" = "^0.10.1"
+scipy = "*"
+matplotlib = "*"
+seaborn = "*"
+statsmodels = "*"
+"category-encoders" = "*"
+"python-Levenshtein" = "*"
+
+[tool.poetry.dev-dependencies]
+pytest = "^8.2.0"
+flake8 = "^7.0.0"
+tox = "^4.12.1"
+twine = "^5.0.0"
+wheel = "^0.37.0"
+setuptools = "^58.0.0"
+cookiecutter = "^2.5.0"
+sphinx = "^7.3.7"
+furo = "^2024.5.6"
+"sphinx-favicon" = "^1.0.1"
+"sphinx-prompt" = "^1.8.0"
+"sphinx-copybutton" = "^0.5.2"
+sphinxemoji = "^0.3.1"
+"sphinxext-opengraph" = "^0.6.0"
+
+[tool.poetry.scripts]
+# Define any command-line scripts here
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
