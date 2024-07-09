@@ -87,6 +87,18 @@ exclude = [
     "other/**"
 ]
 
+[tool.poetry-dynamic-versioning]
+enable = true
+style = "semver"
+
+[tool.flake8]
+exclude = ["docs", "__init__.py"]
+max-line-length = 222
+ignore = ["E501", "E721", "W391", "C901"]
+
+[tool.pytest.ini_options]
+addopts = "--ignore=setup.py"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
