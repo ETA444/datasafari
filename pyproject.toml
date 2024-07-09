@@ -9,11 +9,13 @@ homepage = "https://www.datasafari.dev"
 repository = "https://github.com/ETA444/datasafari"
 documentation = "https://www.datasafari.dev/docs"
 
+# Additional URLs
 [tool.poetry.urls]
 "Documentation" = "https://www.datasafari.dev/docs"
 "Official Website" = "https://www.datasafari.dev"
 "Source Code" = "https://github.com/ETA444/datasafari"
 
+# Dependencies
 [tool.poetry.dependencies]
 python = "^3.9, <4"
 numpy = "*"
@@ -27,6 +29,7 @@ statsmodels = "*"
 "category-encoders" = "*"
 "python-Levenshtein" = "*"
 
+# Development dependencies
 [tool.poetry.dev-dependencies]
 pytest = "^8.2.0"
 flake8 = "^7.0.0"
@@ -43,6 +46,7 @@ furo = "^2024.5.6"
 sphinxemoji = "^0.3.1"
 "sphinxext-opengraph" = "^0.6.0"
 
+# Classifiers
 [tool.poetry.classifiers]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -56,9 +60,32 @@ classifiers = [
     "Programming Language :: Python :: 3.12"
 ]
 
-[tool.poetry.readme]
-long_description = {file = "README.md"}
-long_description_content_type = "text/markdown"
+# Include and exclude patterns
+[tool.poetry]
+include = [
+    "LICENSE",
+    "README.md",
+    "HISTORY.md",
+    "docs/**/*.rst",
+    "docs/**/*.py",
+    "docs/**/*.html",
+    "docs/**/*.js",
+    "docs/**/*.css",
+    "docs/**/*.svg",
+    "docs/**/*.png",
+    "docs/**/*.jpg",
+    "docs/**/*.gif",
+    "docs/**/*.md",
+    "tests/**/*.py"
+]
+exclude = [
+    "**/__pycache__",
+    "**/*.pyc",
+    "**/*.pyo",
+    ".git/**",
+    ".idea/**",
+    "other/**"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
