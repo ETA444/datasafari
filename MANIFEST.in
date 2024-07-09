@@ -20,3 +20,4 @@ recursive-exclude * *.pyo
 # Exclude all .git and .idea directories
 recursive-exclude .git *
 recursive-exclude .idea *
+recursive-exclude other *
