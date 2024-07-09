@@ -9,9 +9,6 @@ recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif *.md *.
 # Include tests
 recursive-include tests *.py
 
-# Include dataset examples for use with documentation or tests
-recursive-include datasets *.csv
-
 # General Python and IDE specific files to exclude
 recursive-exclude * __pycache__
 recursive-exclude * *.pyc
