@@ -9,8 +9,13 @@ homepage = "https://www.datasafari.dev"
 repository = "https://github.com/ETA444/datasafari"
 documentation = "https://www.datasafari.dev/docs"
 
+[tool.poetry.urls]
+"Documentation" = "https://www.datasafari.dev/docs"
+"Official Website" = "https://www.datasafari.dev"
+"Source Code" = "https://github.com/ETA444/datasafari"
+
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.9, <4"
 numpy = "*"
 pandas = "*"
 "scikit-learn" = "<1.5"
@@ -38,8 +43,22 @@ furo = "^2024.5.6"
 sphinxemoji = "^0.3.1"
 "sphinxext-opengraph" = "^0.6.0"
 
-[tool.poetry.scripts]
-# Define any command-line scripts here
+[tool.poetry.classifiers]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
+]
+
+[tool.poetry.readme]
+long_description = {file = "README.md"}
+long_description_content_type = "text/markdown"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
