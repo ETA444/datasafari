@@ -8,7 +8,7 @@ readme = "README.md"
 homepage = "https://www.datasafari.dev"
 repository = "https://github.com/ETA444/datasafari"
 documentation = "https://www.datasafari.dev/docs"
-keywords=[
+keywords = [
     'data science', 'data analysis', 'machine learning', 'data preprocessing',
     'statistical testing', 'data transformation', 'predictive modeling',
     'data visualization', 'exploratory data analysis', 'hypothesis testing',
@@ -27,6 +27,30 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12"
+]
+include = [
+    "LICENSE",
+    "README.md",
+    "HISTORY.md",
+    "docs/**/*.rst",
+    "docs/**/*.py",
+    "docs/**/*.html",
+    "docs/**/*.js",
+    "docs/**/*.css",
+    "docs/**/*.svg",
+    "docs/**/*.png",
+    "docs/**/*.jpg",
+    "docs/**/*.gif",
+    "docs/**/*.md",
+    "tests/**/*.py"
+]
+exclude = [
+    "**/__pycache__",
+    "**/*.pyc",
+    "**/*.pyo",
+    ".git/**",
+    ".idea/**",
+    "other/**"
 ]
 
 # Additional URLs
@@ -66,32 +90,6 @@ furo = "^2024.5.6"
 sphinxemoji = "^0.3.1"
 "sphinxext-opengraph" = "^0.6.0"
 
-# Include and exclude patterns
-include = [
-    "LICENSE",
-    "README.md",
-    "HISTORY.md",
-    "docs/**/*.rst",
-    "docs/**/*.py",
-    "docs/**/*.html",
-    "docs/**/*.js",
-    "docs/**/*.css",
-    "docs/**/*.svg",
-    "docs/**/*.png",
-    "docs/**/*.jpg",
-    "docs/**/*.gif",
-    "docs/**/*.md",
-    "tests/**/*.py"
-]
-exclude = [
-    "**/__pycache__",
-    "**/*.pyc",
-    "**/*.pyo",
-    ".git/**",
-    ".idea/**",
-    "other/**"
-]
-
 [tool.poetry-dynamic-versioning]
 enable = true
 style = "semver"
@@ -107,3 +105,6 @@ addopts = "--ignore=setup.py"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.repositories]
+testpypi = { url = "https://test.pypi.org/legacy/" }
