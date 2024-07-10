@@ -105,6 +105,3 @@ addopts = "--ignore=setup.py"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.repositories]
-testpypi = { url = "https://test.pypi.org/legacy/" }
