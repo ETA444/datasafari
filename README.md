@@ -1,7 +1,7 @@
 ![image info](./docs/_static/thumbs/ds-branding-thumb-main-web.png)
-# Welcome to DataSafari's Source Code!
+# Welcome to DataSafari!
 
-DataSafari simplifies complex data science tasks into straightforward, powerful commands. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.
+DataSafari simplifies complex data science tasks into straightforward, powerful one-liners. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.
 
 > In this README you can find a brief overview of how to start using DataSafari and what features you can utilize. For a more complete presentation you can visit [DataSafari's docs](https://www.datasafari.dev/docs).
 
@@ -13,6 +13,12 @@ To get started with DataSafari, install it using pip:
 
 ```console
 pip install datasafari
+```
+
+Or, if you prefer using Poetry:
+
+```console
+poetry add datasafari
 ```
 
 ### Importing

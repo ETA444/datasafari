@@ -23,6 +23,21 @@ you through the process.
 .. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
 
 
+Using Poetry
+------------
+
+If you prefer using `Poetry`_ for dependency management, you can add DataSafari to your project with:
+
+.. code-block:: console
+
+    $ poetry add datasafari
+
+If you don't have `Poetry`_ installed, this `Poetry installation guide`_ can guide you through the process.
+
+.. _Poetry: https://python-poetry.org
+.. _Poetry installation guide: https://python-poetry.org/docs/#installation
+
+
 From sources
 ------------
 
@@ -41,6 +56,12 @@ Or download the `tarball`_:
     $ curl -OJL https://github.com/ETA444/datasafari/tarball/master
 
 Once you have a copy of the source, you can install it with:
+
+.. code-block:: console
+
+    $ poetry install
+
+Alternatively, if you prefer using `setup.py`, you can still install it with:
 
 .. code-block:: console
 

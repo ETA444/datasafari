@@ -8,6 +8,12 @@ Getting started with DataSafari is straightforward.
 
     pip install datasafari
 
+**Or install it using Poetry:**
+
+.. code-block:: console
+
+    poetry add datasafari
+
 **Import DataSafari in your Python script:**
 
 .. code-block:: python
