@@ -5,6 +5,12 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
 
 jobs:
   build:
@@ -22,54 +28,38 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Cache pip packages
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Cache Poetry virtual environment
         uses: actions/cache@v4
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/dev-requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: ${{ runner.os }}-poetry-
 
-      - name: Install production and development dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r dev-requirements.txt
+      - name: Install dependencies
+        run: poetry install
 
-      - name: Lint with flake8
-        run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=222 --statistics
+      - name: Lint (flake8)
+        run: poetry run flake8 datasafari tests
 
-      - name: Run tests with coverage
-        run: |
-          pip install pytest-cov
-          pytest --cov=datasafari --cov-report=xml
+      - name: Run tests with coverage (pytest)
+        run: poetry run pytest --cov=datasafari --cov-report=xml
 
-      - name: Build and check the package
-        run: |
-          python setup.py sdist bdist_wheel
-          twine check dist/*
+      - name: Build the package
+        run: poetry build
 
-      - name: Build documentation with Sphinx
-        run: |
-          cd docs
-          make html
+      - name: Check the package (Twine)
+        run: poetry run twine check dist/*
 
-      - name: Static security scan with Bandit
-        run: |
-          pip install bandit
-          bandit -r .
+      - name: Static security scan (Bandit)
+        run: poetry run bandit -r .
 
-      - name: Scan for dependency vulnerabilities with Safety CLI 3
+      - name: Scan for dependency vulnerabilities (SafetyCLI 3)
         uses: pyupio/safety-action@v1.0.0
         with:
           api-key: ${{ secrets.SAFETY_CLI_API_KEY }}
-
-      - name: Environment information
-        run: |
-          python --version
-          pip freeze
 
       - name: Install SSH key
         uses: webfactory/ssh-agent@v0.5.3
@@ -87,3 +77,35 @@ jobs:
         run: rsync -avz --delete -e "ssh -p ${{ secrets.DS_SERVER_SSH_PORT }}" --verbose ./docs/_build/html/ ${{ secrets.DS_SERVER_USERNAME }}@${{ secrets.DS_SERVER_IP }}:${{ secrets.DS_SERVER_DOCS_PATH }}
         env:
           RSYNC_RSH: ssh -o StrictHostKeyChecking=accept-new
+
+      - name: Determine Bump Type
+        id: bump_type
+        run: |
+          TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          if [[ $TAG == *"-patch" ]]; then
+            echo "::set-output name=bump_type::patch"
+          elif [[ $TAG == *"-minor" ]]; then
+            echo "::set-output name=bump_type::minor"
+          elif [[ $TAG == *"-major" ]]; then
+            echo "::set-output name=bump_type::major"
+          else
+            echo "::set-output name=bump_type::patch" # Default to patch if no specific tag
+          fi
+
+      - name: Bump Version
+        run: bumpversion --config-file .bumpversion.cfg ${{ steps.bump_type.outputs.bump_type }}
+
+      - name: Create Release Tag
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/')
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git tag v$(poetry version -s)
+          git push origin --tags
+
+      - name: Publish to PyPI
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: poetry publish --username $TWINE_USERNAME --password $TWINE_PASSWORD
