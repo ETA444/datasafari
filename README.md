@@ -1,4 +1,4 @@
-![image info](./docs/_static/thumbs/ds-branding-thumb-main-web.png)
+![DataSafari Banner](https://www.datasafari.dev/docs/_static/thumbs/ds-branding-thumb-main-web.png)
 # Welcome to DataSafari!
 
 DataSafari simplifies complex data science tasks into straightforward, powerful one-liners. Whether you're exploring data, evaluating statistical assumptions, transforming datasets, or building predictive models, DataSafari provides all the tools you need in one package.
@@ -157,4 +157,4 @@ DataSafari is licensed under the GNU General Public License v3.0. This ensures t
 
 Connect with me on [LinkedIn](https://www.linkedin.com/in/georgedreemer) or visit my [website](https://www.georgedreemer.com).
 
-> Thank you very much for taking an interest in DataSafari! :green_heart: - George
+> Thank you very much for taking an interest in DataSafari! 💚 - George
