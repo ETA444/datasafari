@@ -53,11 +53,6 @@ exclude = [
     "other/**"
 ]
 
-# Additional URLs
-[tool.poetry.urls]
-"Author's Website" = "https://www.georgedreemer.com"
-"Author's LinkedIn" = "https://www.linkedin.com/in/georgedreemer"
-
 # Dependencies
 [tool.poetry.dependencies]
 python = "^3.9, <4"
