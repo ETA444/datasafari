@@ -38,37 +38,35 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with flake8
-	flake8 datasafari tests
+	poetry run flake8 datasafari tests
 
 test: ## run tests quickly with the default Python
-	pytest
+	poetry run pytest
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source datasafari -m pytest
-	coverage report -m
-	coverage html
-	$(BROWSER) htmlcov/index.html
+	poetry run coverage run --source datasafari -m pytest
+	poetry run coverage report -m
+	poetry run coverage html
+	@echo "Open htmlcov/index.html in your browser to view the report."
 
 docs: clean-docs ## generate Sphinx HTML documentation, including API docs
-	sphinx-apidoc -o docs/source/ datasafari
-	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
+	poetry run sphinx-build -b html docs/ docs/_build/html
+	@echo "Open docs/_build/html/index.html in your browser to view the documentation."
 
 clean-docs: ## remove previously built docs
 	rm -rf docs/_build/
-	rm -f docs/datasafari.rst
-	rm -f docs/modules.rst
 
 servedocs: docs ## compile the docs watching for changes
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+	poetry run watchmedo shell-command -p '*.rst' -c 'make docs' -R -D .
 
 release: dist ## package and upload a release
-	twine upload dist/*
+	poetry publish --username ETA444
 
 dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
+	poetry build
 
 install: clean ## install the package to the active Python's site-packages
-	python setup.py install
+	poetry install
+
+activate: ## activate the virtual environment
+	source venv/bin/activate && exec $$SHELL
