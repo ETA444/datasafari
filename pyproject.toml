@@ -8,12 +8,31 @@ readme = "README.md"
 homepage = "https://www.datasafari.dev"
 repository = "https://github.com/ETA444/datasafari"
 documentation = "https://www.datasafari.dev/docs"
+keywords=[
+    'data science', 'data analysis', 'machine learning', 'data preprocessing',
+    'statistical testing', 'data transformation', 'predictive modeling',
+    'data visualization', 'exploratory data analysis', 'hypothesis testing',
+    'feature engineering', 'model evaluation', 'model tuning', 'data cleaning',
+    'data insights', 'numerical analysis', 'categorical data', 'statistics',
+    'ML automation', 'data workflow', 'data discovery', 'sklearn integration',
+    'statistical inference', 'automated machine learning', 'data exploration'
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
+]
 
 # Additional URLs
 [tool.poetry.urls]
-"Documentation" = "https://www.datasafari.dev/docs"
-"Official Website" = "https://www.datasafari.dev"
-"Source Code" = "https://github.com/ETA444/datasafari"
+"Author's Website" = "https://www.georgedreemer.com"
+"Author's LinkedIn" = "https://www.linkedin.com/in/georgedreemer"
 
 # Dependencies
 [tool.poetry.dependencies]
@@ -47,20 +66,6 @@ furo = "^2024.5.6"
 sphinxemoji = "^0.3.1"
 "sphinxext-opengraph" = "^0.6.0"
 
-# Classifiers
-[tool.poetry.classifiers]
-classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Natural Language :: English",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12"
-]
-
 # Include and exclude patterns
 include = [
     "LICENSE",
@@ -78,7 +83,6 @@ include = [
     "docs/**/*.md",
     "tests/**/*.py"
 ]
-
 exclude = [
     "**/__pycache__",
     "**/*.pyc",
