@@ -15,10 +15,6 @@ documentation = "https://www.datasafari.dev/docs"
 "Official Website" = "https://www.datasafari.dev"
 "Source Code" = "https://github.com/ETA444/datasafari"
 
-[tool.poetry.readme]
-long_description = {file = "README.md"}
-long_description_content_type = "text/markdown"
-
 # Dependencies
 [tool.poetry.dependencies]
 python = "^3.9, <4"
@@ -51,7 +47,6 @@ furo = "^2024.5.6"
 sphinxemoji = "^0.3.1"
 "sphinxext-opengraph" = "^0.6.0"
 
-
 # Classifiers
 [tool.poetry.classifiers]
 classifiers = [
@@ -67,7 +62,6 @@ classifiers = [
 ]
 
 # Include and exclude patterns
-[tool.poetry]
 include = [
     "LICENSE",
     "README.md",
@@ -84,6 +78,7 @@ include = [
     "docs/**/*.md",
     "tests/**/*.py"
 ]
+
 exclude = [
     "**/__pycache__",
     "**/*.pyc",
