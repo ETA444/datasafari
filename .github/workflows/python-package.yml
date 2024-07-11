@@ -54,7 +54,7 @@ jobs:
         run: poetry run twine check dist/*
 
       - name: Static security scan (Bandit)
-        run: poetry run bandit -r .
+        run: poetry run bandit -c pyproject.toml -r .
 
       - name: Scan for dependency vulnerabilities (SafetyCLI 3)
         uses: pyupio/safety-action@v1.0.0
