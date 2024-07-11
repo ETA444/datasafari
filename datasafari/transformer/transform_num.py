@@ -671,7 +671,7 @@ def transform_num(
                 transformed_column = winsorize(transformed_df[variable], limits=(lower_percentile, 1 - upper_percentile))
                 transformed_df[variable] = transformed_column
                 winsorized_columns[variable] = transformed_column
-                print(f"✔ '{variable}' has been winsorized with lower percentile = {lower_percentile*100}% and upper percentile = {upper_percentile*100}%.\n")
+                print(f"✔ '{variable}' has been winsorized with lower percentile = {lower_percentile * 100}% and upper percentile = {upper_percentile * 100}%.\n")
 
         print(f"✔ New transformed dataframe:\n{transformed_df.head()}\n")
         print(f"✔ Dataframe with only the power transformed columns:\n{winsorized_columns.head()}\n")
