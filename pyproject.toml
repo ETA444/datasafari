@@ -94,6 +94,10 @@ exclude = ["docs", "__init__.py", "venv"]
 max-line-length = 222
 ignore = ["E501", "E721", "W391", "C901"]
 
+[tool.bandit]
+exclude_dirs = ["tests", "venv", "other", "dist"]
+skips = ["B101"]
+
 [tool.pytest.ini_options]
 addopts = "--ignore=setup.py"
 
