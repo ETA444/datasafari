@@ -6,6 +6,9 @@ scanning-settings:
     - "node_modules"
     - "tests/**"
     - "**/*.js"
+    - "venv/**"
+    - "dist/**"
+    - "other/**"
   include-files:
     - path: requirements.txt
       file-type: requirements.txt
