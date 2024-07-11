@@ -53,13 +53,12 @@ exclude = [
     "other/**"
 ]
 
-# Dependencies
 [tool.poetry.dependencies]
 python = "^3.9, <4"
 numpy = "*"
 pandas = "*"
 "scikit-learn" = "<1.5"
-"scikit-optimize" = "^0.10.1"
+"scikit-optimize" = ">=0.10.1"
 scipy = "*"
 matplotlib = "*"
 seaborn = "*"
@@ -67,30 +66,30 @@ statsmodels = "*"
 "category-encoders" = "*"
 "python-Levenshtein" = "*"
 
-# Development dependencies
-[tool.poetry.dev-dependencies]
-pytest = "^8.2.0"
-flake8 = "^7.0.0"
-tox = "^4.12.1"
-twine = "^5.0.0"
-wheel = "^0.37.0"
-setuptools = "^58.0.0"
-bump2version = "^1.0.1"
-cookiecutter = "^2.5.0"
-sphinx = "^7.3.7"
-furo = "^2024.5.6"
-"sphinx-favicon" = "^1.0.1"
-"sphinx-prompt" = "^1.8.0"
-"sphinx-copybutton" = "^0.5.2"
-sphinxemoji = "^0.3.1"
-"sphinxext-opengraph" = "^0.6.0"
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.2.0"
+pytest-cov = "*"
+flake8 = ">=7.0.0"
+tox = ">=4.12.1"
+twine = ">=5.0.0"
+wheel = ">=0.37.0"
+setuptools = ">=58.0.0"
+bump2version = ">=1.0.1"
+cookiecutter = ">=2.5.0"
+sphinx = ">=7.3.7"
+furo = ">=2024.5.6"
+"sphinx-favicon" = ">=1.0.1"
+"sphinx-prompt" = ">=1.8.0"
+"sphinx-copybutton" = ">=0.5.2"
+sphinxemoji = ">=0.3.1"
+"sphinxext-opengraph" = ">=0.6.0"
 
 [tool.poetry-dynamic-versioning]
 enable = true
 style = "semver"
 
 [tool.flake8]
-exclude = ["docs", "__init__.py"]
+exclude = ["docs", "__init__.py", "venv"]
 max-line-length = 222
 ignore = ["E501", "E721", "W391", "C901"]
 
