@@ -1,13 +1,13 @@
-=======
-Credits
-=======
+====================
+DataSafari Creator
+====================
 
-Development Lead
-----------------
+**George Dreemer**
 
-* George Dreemer <georgedreemer@proton.me>
+- **Website**: `www.georgedreemer.com <https://www.georgedreemer.com>`_
+- **LinkedIn**: `George Dreemer <https://www.linkedin.com/in/georgedreemer>`_
 
-Contributors
-------------
+Acknowledgments
+---------------
 
-None yet. Why not be the first?
+Thanks to everyone who explores DataSafari and contributes to its future. Your interest and feedback are what keep this project moving forward!
