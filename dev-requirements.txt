@@ -1,5 +1,6 @@
 # Development dependencies
 pytest>=8.2.0
+pytest-cov
 flake8>=7.0.0
 tox>=4.12.1
 twine>=5.0.0
