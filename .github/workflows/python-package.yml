@@ -22,6 +22,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -57,12 +60,12 @@ jobs:
         run: poetry run bandit -c pyproject.toml -r .
 
       - name: Scan for dependency vulnerabilities (SafetyCLI 3)
-        uses: pyupio/safety-action@v1.0.0
+        uses: pyupio/safety-action@v1.0.1
         with:
           api-key: ${{ secrets.SAFETY_CLI_API_KEY }}
 
       - name: Install SSH key
-        uses: webfactory/ssh-agent@v0.5.3
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.DS_SERVER_SSH_PRIVATE_KEY }}
 
@@ -73,39 +76,71 @@ jobs:
           echo "${{ secrets.DS_SERVER_HOST_KEY_ECDSA }}" >> ~/.ssh/known_hosts
           echo "${{ secrets.DS_SERVER_HOST_KEY_ED25519 }}" >> ~/.ssh/known_hosts
 
+      - name: Configure Git Identity
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Determine Bump Type
+        run: |
+          set -e
+          TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          if [[ "$TAG" == *"-patch" ]]; then
+            echo "bump_type=patch" >> $GITHUB_ENV
+          elif [[ "$TAG" == *"-minor" ]]; then
+            echo "bump_type=minor" >> $GITHUB_ENV
+          elif [[ "$TAG" == *"-major" ]]; then
+            echo "bump_type=major" >> $GITHUB_ENV
+          else
+            echo "bump_type=patch" >> $GITHUB_ENV
+          fi
+
+      - name: Bump Version (bump2version)
+        run: poetry run bump2version --config-file .bumpversion.cfg ${{ env.bump_type }} --no-tag --commit
+
+      - name: Build documentation (Sphinx)
+        run: poetry run sphinx-build -b html docs/ docs/_build/html
+
       - name: Sync documentation to server
         run: rsync -avz --delete -e "ssh -p ${{ secrets.DS_SERVER_SSH_PORT }}" --verbose ./docs/_build/html/ ${{ secrets.DS_SERVER_USERNAME }}@${{ secrets.DS_SERVER_IP }}:${{ secrets.DS_SERVER_DOCS_PATH }}
         env:
           RSYNC_RSH: ssh -o StrictHostKeyChecking=accept-new
 
-      - name: Determine Bump Type
-        id: bump_type
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Build the package
+        run: poetry build
+
+      - name: Create Release Tag and Publish
         run: |
-          TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-          if [[ $TAG == *"-patch" ]]; then
-            echo "::set-output name=bump_type::patch"
-          elif [[ $TAG == *"-minor" ]]; then
-            echo "::set-output name=bump_type::minor"
-          elif [[ $TAG == *"-major" ]]; then
-            echo "::set-output name=bump_type::major"
+          NEW_TAG=v$(poetry version -s)
+          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          if ! git rev-parse --quiet --verify $NEW_TAG >/dev/null; then
+              git tag $NEW_TAG
+              git push origin --tags
           else
-            echo "::set-output name=bump_type::patch" # Default to patch if no specific tag
+              echo "Tag $NEW_TAG already exists. No new tag created."
           fi
 
-      - name: Bump Version
-        run: bumpversion --config-file .bumpversion.cfg ${{ steps.bump_type.outputs.bump_type }}
-
-      - name: Create Release Tag
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/')
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git tag v$(poetry version -s)
-          git push origin --tags
-
       - name: Publish to PyPI
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: poetry publish --username $TWINE_USERNAME --password $TWINE_PASSWORD
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: poetry publish --username __token__ --password ${{ secrets.PYPI_API_TOKEN }}
